@@ -23,6 +23,7 @@ en:
   backlogs_points_burn_direction: "Points burn up/down"
   backlogs_product_backlog: "Product backlog"
   backlogs_scaled_agile: "Scaled agile"
+  backlogs_scaled_agile_enabled: "Enable scaled agile features"
   backlogs_scrum_stats_menu_application: "Application menu"
   backlogs_scrum_stats_menu_none: None
   backlogs_scrum_stats_menu_position: "Position of Scrum Statistics menu"

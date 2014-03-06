@@ -311,6 +311,11 @@
 <fieldset>
   <legend><%= l(:backlogs_scaled_agile) %></legend>
   <p>
+    <%= content_tag(:label, l(:backlogs_scaled_agile_enabled)) %>
+    <%= check_box_tag("settings[scaled_agile_enabled]", 'enabled',
+        Backlogs.setting[:scaled_agile_enabled]) %>
+  </p>
+  <p>
     <%= content_tag(:label, l(:backlogs_epic_tracker)) %>
     <%= select_tag("settings[epic_trackers]", options_from_collection_for_select(Tracker.all, :id, :name, Backlogs.setting[:epic_trackers]), :multiple => true) %>
     <br />
