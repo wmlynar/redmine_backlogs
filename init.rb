@@ -102,6 +102,7 @@ Redmine::Plugin.register :redmine_backlogs do
 
     permission :view_taskboards,      {
                                         :rb_taskboards       => [:current, :show],
+                                        :rb_genericboards       => :show,
                                         :rb_sprints          => :show,
                                         :rb_stories          => [:index, :show, :tooltip],
                                         :rb_tasks            => [:index, :show],
@@ -153,13 +154,13 @@ Redmine::Plugin.register :redmine_backlogs do
   menu :project_menu, :rb_releases, { :controller => :rb_releases, :action => :index }, :caption => :label_release_plural, :after => :rb_taskboards, :param => :project_id, :if => Proc.new { Backlogs.configured? }
 
   menu :top_menu, :rb_statistics, { :controller => :rb_all_projects, :action => :statistics}, :caption => :label_scrum_statistics,
-    :if => Proc.new { 
+    :if => Proc.new {
       Backlogs.configured? &&
       User.current.allowed_to?({:controller => :rb_all_projects, :action => :statistics}, nil, :global => true) &&
       (Backlogs.setting[:scrum_stats_menu_position].nil? || Backlogs.setting[:scrum_stats_menu_position] == 'top')
     }
   menu :application_menu, :rb_statistics, { :controller => :rb_all_projects, :action => :statistics}, :caption => :label_scrum_statistics,
-    :if => Proc.new { 
+    :if => Proc.new {
       Backlogs.configured? &&
       User.current.allowed_to?({:controller => :rb_all_projects, :action => :statistics}, nil, :global => true) &&
       Backlogs.setting[:scrum_stats_menu_position] == 'application'
