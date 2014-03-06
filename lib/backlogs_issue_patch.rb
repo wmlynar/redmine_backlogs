@@ -40,6 +40,14 @@ module Backlogs
         RbReleaseBurnchartDayCache.where(:issue_id => self.id, :release_id => release_id)
       end
 
+      def is_epic?
+        return RbGeneric.epictrackers.include?(tracker_id)
+      end
+
+      def is_feature?
+        return RbGeneric.featuretrackers.include?(tracker_id)
+      end
+
       def is_story?
         return RbStory.trackers.include?(tracker_id)
       end
@@ -47,7 +55,7 @@ module Backlogs
       def is_task?
         return (tracker_id == RbTask.tracker)
       end
-      
+
       def backlogs_issue_type
         return "story" if self.is_story?
         return "impediment" if self.blocks(true).any?

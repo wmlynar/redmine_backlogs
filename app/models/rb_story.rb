@@ -1,4 +1,4 @@
-class RbStory < Issue
+class RbStory < RbGeneric
   unloadable
 
   RELEASE_RELATIONSHIP = %w(auto initial continued added)
@@ -180,33 +180,6 @@ class RbStory < Issue
           updated_since(since)
   end
 
-  def self.trackers(options = {})
-    # legacy
-    options = {:type => options} if options.is_a?(Symbol)
-
-    # somewhere early in the initialization process during first-time migration this gets called when the table doesn't yet exist
-    trackers = []
-    if has_settings_table
-      trackers = Backlogs.setting[:story_trackers]
-      trackers = [] if trackers.blank?
-    end
-
-    trackers = Tracker.find_all_by_id(trackers)
-    trackers = trackers & options[:project].trackers if options[:project]
-    trackers = trackers.sort_by { |t| [t.position] }
-
-    case options[:type]
-      when :trackers      then return trackers
-        when :array, nil  then return trackers.collect{|t| t.id}
-        when :string      then return trackers.collect{|t| t.id.to_s}.join(',')
-        else                   raise "Unexpected return type #{options[:type].inspect}"
-    end
-  end
-
-  def self.has_settings_table
-    ActiveRecord::Base.connection.tables.include?('settings')
-  end
-
   def tasks
     return self.children
   end
@@ -226,34 +199,6 @@ class RbStory < Issue
     return notsized if story_points == nil || story_points.blank?
     return 'S' if story_points == 0
     return story_points.to_s
-  end
-
-  def update_and_position!(params)
-    params['prev'] = params.delete('prev_id') if params.include?('prev_id')
-    params['next'] = params.delete('next_id') if params.include?('next_id')
-    self.position!(params)
-
-    # lft and rgt fields are handled by acts_as_nested_set
-    attribs = params.select{|k,v| !['prev', 'id', 'project_id', 'lft', 'rgt'].include?(k) && RbStory.column_names.include?(k) }
-    attribs = Hash[*attribs.flatten]
-
-    return self.journalized_update_attributes attribs
-  end
-
-  def position!(params)
-    if params.include?('prev')
-      if params['prev'].blank?
-        self.move_to_top # move after 'prev'. Meaning no prev, we go at top
-      else
-        self.move_after(RbStory.find(params['prev']))
-      end
-    elsif params.include?('next')
-      if params['next'].blank?
-        self.move_to_bottom
-      else
-        self.move_before(RbStory.find(params['next']))
-      end
-    end
   end
 
 

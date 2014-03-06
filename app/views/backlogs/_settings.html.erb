@@ -317,14 +317,14 @@
   </p>
   <p>
     <%= content_tag(:label, l(:backlogs_epic_tracker)) %>
-    <%= select_tag("settings[epic_trackers]", options_from_collection_for_select(Tracker.all, :id, :name, Backlogs.setting[:epic_trackers]), :multiple => true) %>
+    <%= select_tag("settings[epic_trackers]", options_from_collection_for_select(Tracker.all, :id, :name, RbGeneric.epic_trackers), :multiple => true) %>
     <br />
     <%= content_tag(:label, l(:backlogs_default_epic_tracker)) %>
     <%= select_tag("settings[default_epic_tracker]", options_from_collection_for_select(Tracker.all, :id, :name, Backlogs.setting[:default_epic_tracker])) %>
   </p>
   <p>
     <%= content_tag(:label, l(:backlogs_feature_tracker)) %>
-    <%= select_tag("settings[feature_trackers]", options_from_collection_for_select(Tracker.all, :id, :name, Backlogs.setting[:feature_trackers]), :multiple => true) %>
+    <%= select_tag("settings[feature_trackers]", options_from_collection_for_select(Tracker.all, :id, :name, RbGeneric.feature_trackers), :multiple => true) %>
     <br />
     <%= content_tag(:label, l(:backlogs_default_feature_tracker)) %>
     <%= select_tag("settings[default_feature_tracker]", options_from_collection_for_select(Tracker.all, :id, :name, Backlogs.setting[:default_feature_tracker])) %>
