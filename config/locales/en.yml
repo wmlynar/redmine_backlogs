@@ -7,7 +7,11 @@ en:
   backlogs_burndown_print_width: "Burndown print width"
   backlogs_burndown_settings: "Burndown settings"
   backlogs_card_specification: "Label types for card printing"
+  backlogs_default_epic_tracker: "Default epic tracker"
+  backlogs_default_feature_tracker: "Default feature tracker"
   backlogs_default_story_tracker: "Default story tracker"
+  backlogs_epic_tracker: "Epic trackers"
+  backlogs_feature_tracker: "Feature trackers"
   backlogs_general_settings: "General settings"
   backlogs_impediment: Impediment
   backlogs_include_sat_and_sun: "Include Saturday and Sunday in Burndown"
@@ -18,6 +22,7 @@ en:
   backlogs_pblpage_settings: "Product backlog page settings"
   backlogs_points_burn_direction: "Points burn up/down"
   backlogs_product_backlog: "Product backlog"
+  backlogs_scaled_agile: "Scaled agile"
   backlogs_scrum_stats_menu_application: "Application menu"
   backlogs_scrum_stats_menu_none: None
   backlogs_scrum_stats_menu_position: "Position of Scrum Statistics menu"
