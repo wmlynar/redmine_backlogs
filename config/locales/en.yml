@@ -232,4 +232,8 @@ en:
   error_cannot_close_sprint_with_open_stories: "Cannot close a sprint while it still has open stories."
   label_rb_genericboard: "Board"
   label_rb_genericboard_plural: "Boards"
+  label_rb_genericbord_elements: "ELements"
+  label_rb_genericbord_columns: "Column type"
+  label_rb_genericbord_rows: "Row type"
+  label_rb_genericboard_new: "New generic board"
   
