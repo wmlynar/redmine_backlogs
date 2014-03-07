@@ -114,7 +114,6 @@ ActionController::Routing::Routes.draw do |map|
     rb.resources  :tasks,            :only => :index,               :controller => :rb_tasks,           :as => "tasks/:story_id"
     rb.resource   :taskboard,        :only => :show,                :controller => :rb_taskboards,      :as => "taskboards/:sprint_id"
     rb.resource   :taskboard,        :only => :current,             :controller => :rb_taskboards,      :as => "projects/:project_id/taskboard"
-    rb.resource   :genericboard,     :only => :show,                :controller => :rb_genericboards,   :as => "genericboards/:project_id"
 
     rb_common_routes rb
   end
@@ -134,14 +133,14 @@ else
 
     rb_common_routes rb
 
-  resources :task, :except => :index, :controller => :rb_tasks
-  rb_match rb, 'tasks/:story_id', :to => 'rb_tasks#index'
+    resources :genericboards, :controller => :rb_genericboards
 
-  rb_match rb, 'taskboards/:sprint_id',
+    resources :task, :except => :index, :controller => :rb_tasks
+    rb_match rb, 'tasks/:story_id', :to => 'rb_tasks#index'
+
+    rb_match rb, 'taskboards/:sprint_id',
             :to => 'rb_taskboards#show'
-  rb_match rb, 'genericboards/:project_id',
-            :to => 'rb_genericboards#show'
-  rb_match rb, 'projects/:project_id/taskboard',
+    rb_match rb, 'projects/:project_id/taskboard',
             :to => 'rb_taskboards#current'
   end
 end

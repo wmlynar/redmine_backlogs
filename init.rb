@@ -102,7 +102,7 @@ Redmine::Plugin.register :redmine_backlogs do
 
     permission :view_taskboards,      {
                                         :rb_taskboards       => [:current, :show],
-                                        :rb_genericboards       => :show,
+                                        :rb_genericboards       => [ :show, :index ],
                                         :rb_sprints          => :show,
                                         :rb_stories          => [:index, :show, :tooltip],
                                         :rb_tasks            => [:index, :show],
