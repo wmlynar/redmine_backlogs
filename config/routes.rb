@@ -133,7 +133,7 @@ else
 
     rb_common_routes rb
 
-    resources :genericboards, :controller => :rb_genericboards
+    resources :genericboards, :controller => :rb_genericboards_admin
 
     resources :task, :except => :index, :controller => :rb_tasks
     rb_match rb, 'tasks/:story_id', :to => 'rb_tasks#index'
@@ -145,6 +145,6 @@ else
     rb_match rb, 'projects/:project_id/genericboards/:id',
             :to => 'rb_genericboards#show'
     rb_match rb, 'projects/:project_id/genericboard',
-            :to => 'rb_genericboards#show_first'
+            :to => 'rb_genericboards#index'
   end
 end
