@@ -90,6 +90,8 @@ class RbGenericboard < ActiveRecord::Base
       "Release"
     when '__team'
       "Team"
+    when '__state'
+      "State"
     else #assume an id of tracker, see our options in helper
       tracker_id = object_type
       tracker = Tracker.find(tracker_id)
@@ -101,12 +103,29 @@ class RbGenericboard < ActiveRecord::Base
     end
   end
 
+  def element_type_name
+    type_name(element_type)
+  end
+
   def row_type_name
     type_name(row_type)
   end
 
   def col_type_name
     type_name(col_type)
+  end
+
+  def prefilter_name
+    case prefilter
+    when '__current_release'
+      "Current Release"
+    when '__current_sprint'
+      "Current Sprint"
+    when '__my_team'
+      "my Team"
+    else
+      ""
+    end
   end
 
   def columns(project, options={})

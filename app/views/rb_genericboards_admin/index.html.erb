@@ -10,12 +10,20 @@
   <table class="list genericboards">
     <thead><tr>
     <th><%=l(:label_rb_genericboard)%></th>
+    <th>Elements</th>
+    <th>Row type</th>
+    <th>Column type</th>
+    <th>Filter</th>
     <th></th>
     </tr></thead>
     <tbody>
   <% @rb_genericboards.each do |genericboard| %>
     <tr class="<%= cycle 'odd', 'even' %>">
       <td><%= link_to h(genericboard.name), edit_rb_genericboard_path(genericboard) %></td>
+      <td><%= genericboard.element_type_name %></td>
+      <td><%= genericboard.row_type_name %></td>
+      <td><%= genericboard.col_type_name %></td>
+      <td><%= genericboard.prefilter_name %></td>
       <td class="buttons"><%= delete_link genericboard %></td>
     </tr>
   <% end %>
@@ -23,4 +31,3 @@
   <% else %>
   <p class="nodata"><%= l(:label_no_data) %></p>
   <% end %>
-

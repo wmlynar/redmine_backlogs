@@ -11,6 +11,8 @@ module RbGenericboardsHelper
     values.append(["Sprint", '__sprint'])
     values.append(["Release", '__release'])
     values.append(["Team", '__team'])
+    values.append(["State", '__state'])
+    values.append(["None", 0])
     options_for_select((values || []), selected)
   end
 
@@ -19,7 +21,18 @@ module RbGenericboardsHelper
     values.append(["Sprint", '__sprint'])
     values.append(["Release", '__release'])
     values.append(["Team", '__team'])
+    values.append(["None", 0])
     options_for_select((values || []), selected)
   end
+
+  def genericboards_prefilter_options_for_select(selected=nil)
+    values = []
+    values.append(["No filter", 0])
+    values.append(["Current Release", '__current_release'])
+    values.append(["Current Sprint", '__current_sprint'])
+    values.append(["My team", '__my_team'])
+    options_for_select((values || []), selected)
+  end
+
 
 end
