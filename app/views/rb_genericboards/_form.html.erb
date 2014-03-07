@@ -2,4 +2,7 @@
 
 <div class="box tabular">
   <p><%= f.text_field :name %></p>
+  <p><%= f.select :elements, genericboards_elements_options_for_select(@rb_genericboard.elements), :label=>:label_rb_genericbord_elements %></p>
+  <p><%= f.select :cols, genericboards_columns_options_for_select(@rb_genericboard.cols), :label=>:label_rb_genericbord_columns %></p>
+  <p><%= f.select :rows, genericboards_rows_options_for_select(@rb_genericboard.rows), :label=>:label_rb_genericbord_rows %></p>
 </div>

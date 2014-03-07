@@ -5,9 +5,101 @@ class RbGeneric < Issue
 
   private
 
+
+  def self.__find_options_normalize_option(option)
+    option = [option] if option && !option.is_a?(Array)
+    option = option.collect{|s| s.is_a?(Integer) ? s : s.id} if option
+  end
+
+  def self.__find_options_add_permissions(options)
+    permission = options.delete(:permission)
+    permission = false if permission.nil?
+
+    options[:conditions] ||= []
+    if permission
+      if Issue.respond_to? :visible_condition
+        visible = Issue.visible_condition(User.current, :project => project || Project.find(project_id))
+      else
+        visible = Project.allowed_to_condition(User.current, :view_issues)
+      end
+      Backlogs::ActiveRecord.add_condition(options, visible)
+    end
+  end
+
+  def self.__find_options_sprint_condition(project_id, sprint_ids, tracker_ids)
+    if Backlogs.settings[:sharing_enabled]
+      ["
+        tracker_id in (?)
+        and fixed_version_id IN (?)", tracker_ids, sprint_ids]
+    else
+      ["
+        project_id = ?
+        and tracker_id in (?)
+        and fixed_version_id IN (?)", project_id, tracker_ids, sprint_ids]
+    end
+  end
+
+  def self.__find_options_release_condition(project_id, release_ids, tracker_ids)
+    ["
+      project_id in (#{Project.find(project_id).projects_in_shared_product_backlog.map{|p| p.id}.join(',')})
+      and tracker_id in (?)
+      and fixed_version_id is NULL
+      and release_id in (?)", tracker_ids, release_ids]
+  end
+
+  def self.__find_options_pbl_condition(project_id, tracker_ids)
+    ["
+      project_id in (#{Project.find(project_id).projects_in_shared_product_backlog.map{|p| p.id}.join(',')})
+      and tracker_id in (?)
+      and release_id is NULL
+      and fixed_version_id is NULL
+      and is_closed = ?", tracker_ids, false]
+  end
+
   public
 
+  def self.find_options(options)
+    options = options.dup
+
+    project = options.delete(:project)
+    if project.nil?
+      project_id = nil
+    elsif project.is_a?(Integer)
+      project_id = project
+      project = nil
+    else
+      project_id = project.id
+    end
+
+    self.__find_options_add_permissions(options)
+
+    sprint_ids = self.__find_options_normalize_option(options.delete(:sprint))
+    release_ids = self.__find_options_normalize_option(options.delete(:release))
+    tracker_ids = self.__find_options_normalize_option(options.delete(:trackers) || self.trackers)
+    print 'xxxx find options', tracker_ids
+    if sprint_ids
+      Backlogs::ActiveRecord.add_condition(options, self.__find_options_sprint_condition(project_id, sprint_ids, tracker_ids))
+    elsif release_ids
+      Backlogs::ActiveRecord.add_condition(options, self.__find_options_release_condition(project_id, release_ids, tracker_ids))
+    else #product backlog
+      Backlogs::ActiveRecord.add_condition(options, self.__find_options_pbl_condition(project_id, tracker_ids))
+      options[:joins] ||= []
+      options[:joins] [options[:joins]] unless options[:joins].is_a?(Array)
+      options[:joins] << :status
+      options[:joins] << :project
+    end
+
+    options
+  end
+
+  scope :backlog_scope, lambda{|opts| RbGeneric.find_options(opts) }
+
+
   def self.trackers(options = {})
+    self.get_trackers(:story_trackers, options)
+  end
+
+  def self.story_trackers(options = {})
     self.get_trackers(:story_trackers, options)
   end
 
@@ -17,6 +109,17 @@ class RbGeneric < Issue
 
   def self.feature_trackers(options = {})
     self.get_trackers(:feature_trackers, options)
+  end
+
+  def self.all_trackers(tracker_id)
+    if self.epic_trackers(:type=>:array).include?(tracker_id)
+      return self.epic_trackers
+    elsif self.feature_trackers(:type=>:array).include?(tracker_id)
+      return self.feature_trackers
+    elsif self.story_trackers(:type=>:array).include?(tracker_id)
+      return self.story_trackers
+    end
+
   end
 
   def self.get_trackers(trackersettings, options = {})

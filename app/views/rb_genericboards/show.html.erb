@@ -1,4 +1,21 @@
 <!-- Generic board view -->
 <%- content_for :main do %>
 <div>SHOW Generic board</div>
+<div>rows id: <%= @rb_genericboard.rows %></div>
+<div>rows: <%= @rb_genericboard.get_rows(@project) %></div>
+<% @rb_genericboard.get_rows(@project).each do |row| %>
+  <div><%= row %></div>
+<% end %>
+<hr>
+<div>cols id: <%= @rb_genericboard.cols %></div>
+<% @rb_genericboard.get_columns(@project).each do |row| %>
+  <div><%= row %></div>
+<% end %>
+<hr>
+<div>elements id: <%= @rb_genericboard.elements %></div>
+<% @rb_genericboard.get_elements(@project).each do |row| %>
+  <div><%= row %></div>
+<% end %>
+
+
 <%- end %>

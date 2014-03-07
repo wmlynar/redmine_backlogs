@@ -1,4 +1,5 @@
 include RbCommonHelper
+include RbGenericboardsHelper
 
 class RbGenericboardsController < ApplicationController
   unloadable
@@ -55,6 +56,11 @@ class RbGenericboardsController < ApplicationController
   end
 
   def show
+    @project =  if params[:project_id]
+                  Project.find(params[:project_id])
+                else
+                  nil
+                end
     respond_to do |format|
       format.html { render :layout => "rb" }
     end
