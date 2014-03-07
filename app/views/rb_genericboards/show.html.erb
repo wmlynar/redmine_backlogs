@@ -1,23 +1,52 @@
 <!-- Generic board view -->
-<%- content_for :main do %>
-<div>SHOW Generic board</div>
-<div>rows id: <%= @rb_genericboard.row_type %></div>
-<div>rows: <%= @rb_genericboard.rows(@project) %></div>
-<% @rb_genericboard.rows(@project).each do |row| %>
-  <div><%= row %></div>
-<% end %>
-<hr>
-<div>cols id: <%= @rb_genericboard.col_type %></div>
-<% @rb_genericboard.columns(@project).each do |row| %>
-  <div><%= row %></div>
-<% end %>
-<hr>
-<div>elements id: <%= @rb_genericboard.element_type %></div>
-<% @rb_genericboard.elements(@project).each do |row| %>
-  <div><%= row.position %> <%= row %> (<%= row.parent %>)</div>
-<% end %>
+<!-- MASTER BACKLOG VIEW -->
+<%# early javascript before common.hs %>
+<%- controller.rb_jquery_plugins = capture do %>
+  <%= javascript_include_tag(
+    'jquery/jquery.qtip.pack.js',
+    'jquery/jquery.qtip.setup.js',
+    'jquery/jquery.multiselect.js',
+    :plugin => 'redmine_backlogs') %>
+<%- end %>
+<%- content_for :head_tags do %>
+  <script type="text/javascript"
+          src="<%= url_for(:controller => 'rb_server_variables',
+                           :action => 'project',
+                           :project_id => @project.identifier,
+                           :context => 'backlogs',
+                           :format => 'js') %>">
+  </script>
 
-<%= @elements_by_cell %>
+  <%= javascript_include_tag(
+    'master_backlog',
+    'backlog',
+    'backlog_options',
+    'model',
+    'editable_inplace',
+    'sprint',
+    'release',
+    'issue',
+    'story',
+    'board_updater',
+    'master_backlog_updater',
+    :plugin => 'redmine_backlogs') %>
+  <%= stylesheet_link_tag 'jquery/jquery.qtip.css', :plugin => 'redmine_backlogs' %>
+  <%= stylesheet_link_tag 'jquery/jquery.multiselect.css', :plugin => 'redmine_backlogs' %>
+  <%= stylesheet_link_tag 'master_backlog.css', :plugin => 'redmine_backlogs', :media => 'print,screen' %>
+  <%= stylesheet_link_tag 'master_backlog_print.css', :plugin => 'redmine_backlogs', :media => 'print' %>
+<%- end %>
+
+<%- content_for :breadcrumbs do %>
+  <%= @rb_genericboard.name %>
+<%- end %>
+
+<%- content_for :view_specific_links do %>
+  <a id="disable_autorefresh">Disable Auto-refresh</a>
+  <a id="refresh">Refresh</a>
+<%- end %>
+
+<%- content_for :main do %>
+  <div id="genericboard_container">
 <hr>
 THE TABLE
 <hr>
@@ -44,4 +73,7 @@ THE TABLE
     </tr>
   <% end %>
 </table>
+  </div>
+
 <%- end %>
+

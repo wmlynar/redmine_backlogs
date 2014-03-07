@@ -1,11 +1,13 @@
 include RbCommonHelper
 include RbGenericboardsHelper
 
-class RbGenericboardsController < ApplicationController
+class RbGenericboardsController < RbApplicationController
   unloadable
 
-  before_filter :authorize_global
   before_filter :find_rb_genericboard, :except => [:index, :new, :create]
+  before_filter :authorize_global, :except => [:show, :data]
+  skip_before_filter :load_project, :except => [:show, :data]
+  skip_before_filter :authorize, :except => [:show, :data]
 
   def index
     @rb_genericboards = RbGenericboard.all
@@ -56,11 +58,6 @@ class RbGenericboardsController < ApplicationController
   end
 
   def show
-    @project =  if params[:project_id]
-                  Project.find(params[:project_id])
-                else
-                  nil
-                end
     @rows = @rb_genericboard.rows(@project).to_a
     @rows.append(RbFakeGeneric.new("No #{@rb_genericboard.row_type_name}"))
     @columns = @rb_genericboard.columns(@project).to_a
@@ -70,7 +67,18 @@ class RbGenericboardsController < ApplicationController
     end
   end
 
-
+  def data
+    data = {
+      :row_type_name => @rb_genericboard.row_type_name,
+      :col_type_name => @rb_genericboard.col_type_name,
+      :rows => @rb_genericboard.rows(@project).to_a,
+      :columns => @rb_genericboard.columns(@project).to_a,
+      :elements_by_cell => @rb_genericboard.elements_by_cell(@project)
+    }
+    respond_to do |format|
+      format.html { render :json => data }
+    end
+  end
 
   def find_rb_genericboard
     @rb_genericboard = RbGenericboard.find(params[:id])
