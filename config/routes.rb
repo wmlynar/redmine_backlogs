@@ -142,5 +142,7 @@ else
             :to => 'rb_taskboards#show'
     rb_match rb, 'projects/:project_id/taskboard',
             :to => 'rb_taskboards#current'
+    rb_match rb, 'projects/:project_id/genericboards/:id',
+            :to => 'rb_genericboards#show'
   end
 end
