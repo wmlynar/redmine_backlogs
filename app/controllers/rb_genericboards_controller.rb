@@ -8,7 +8,6 @@ class RbGenericboardsController < RbApplicationController
 
   def index
     board = RbGenericboard.all.first
-    puts board
     if board
       redirect_to :controller => 'rb_genericboards', :action => 'show', :id => board
       return
