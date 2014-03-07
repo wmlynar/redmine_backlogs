@@ -1,3 +1,10 @@
+class RbTeam < Group
+  unloadable
+  def position
+    0
+  end
+end
+
 class RbGenericboard < ActiveRecord::Base
   include Redmine::SafeAttributes
   attr_accessible :cols, :elements, :name, :prefilter, :rows
@@ -10,7 +17,7 @@ class RbGenericboard < ActiveRecord::Base
     elsif id == '__release'
       return project.open_releases_by_date
     elsif id == '__team'
-      return Group.all
+      return Group.order(:lastname).map {|g| g.becomes(RbTeam) }
     else
       return RbGeneric.visible.order("#{RbGeneric.table_name}.position").
       backlog_scope(
@@ -25,10 +32,6 @@ class RbGenericboard < ActiveRecord::Base
     if id.start_with?('__')
       return nil
     end
-    print 'finding tracker for id', id
-    print Tracker.find(id)
-    print RbGeneric.all_trackers(Tracker.find(id).id)
-    print '\n'
     RbGeneric.all_trackers(Tracker.find(id).id)
   end
 

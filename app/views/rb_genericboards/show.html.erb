@@ -14,7 +14,7 @@
 <hr>
 <div>elements id: <%= @rb_genericboard.elements %></div>
 <% @rb_genericboard.get_elements(@project).each do |row| %>
-  <div><%= row %></div>
+  <div><%= row.position %> <%= row %> (<%= row.parent %>)</div>
 <% end %>
 
 
