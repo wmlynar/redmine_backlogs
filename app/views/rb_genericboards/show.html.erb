@@ -2,20 +2,46 @@
 <%- content_for :main do %>
 <div>SHOW Generic board</div>
 <div>rows id: <%= @rb_genericboard.row_type %></div>
-<div>rows: <%= @rb_genericboard.get_rows(@project) %></div>
-<% @rb_genericboard.get_rows(@project).each do |row| %>
+<div>rows: <%= @rb_genericboard.rows(@project) %></div>
+<% @rb_genericboard.rows(@project).each do |row| %>
   <div><%= row %></div>
 <% end %>
 <hr>
 <div>cols id: <%= @rb_genericboard.col_type %></div>
-<% @rb_genericboard.get_columns(@project).each do |row| %>
+<% @rb_genericboard.columns(@project).each do |row| %>
   <div><%= row %></div>
 <% end %>
 <hr>
 <div>elements id: <%= @rb_genericboard.element_type %></div>
-<% @rb_genericboard.get_elements(@project).each do |row| %>
+<% @rb_genericboard.elements(@project).each do |row| %>
   <div><%= row.position %> <%= row %> (<%= row.parent %>)</div>
 <% end %>
 
-
+<%= @elements_by_cell %>
+<hr>
+THE TABLE
+<hr>
+<table>
+  <tr>
+    <td><%= @rb_genericboard.row_type_name %></td>
+    <% @columns.each do |column| %>
+    <td><%= column.name %></td>
+    <% end %>
+  </tr>
+  <% @rows.each do |row| %>
+    <tr>
+      <td><%= row %></td>
+      <% @rb_genericboard.columns(@project).each do |col| %>
+      <td>
+        <%= col.id %>
+        <% if (@elements_by_cell.include? row.id) && (@elements_by_cell[row.id].include? col.id) %>
+          <% @elements_by_cell[row.id][col.id].each do |element| %>
+          <%= element %>
+          <% end %>
+        <% end %>
+      </td>
+      <% end %>
+    </tr>
+  <% end %>
+</table>
 <%- end %>
