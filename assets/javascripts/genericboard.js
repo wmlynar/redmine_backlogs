@@ -1,0 +1,3 @@
+RB.$(function() {
+   // alert('x');
+});

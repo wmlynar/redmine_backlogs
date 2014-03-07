@@ -23,6 +23,7 @@ class RbGenericboardsController < RbApplicationController
     @rows.append(RbFakeGeneric.new("No #{@rb_genericboard.row_type_name}"))
     @columns = @rb_genericboard.columns(@project).to_a
     @elements_by_cell = @rb_genericboard.elements_by_cell(@project)
+    @all_boards = RbGenericboard.all
     respond_to do |format|
       format.html { render :layout => "rb" }
     end

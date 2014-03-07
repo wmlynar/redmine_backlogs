@@ -1,5 +1,4 @@
 <!-- Generic board view -->
-<!-- MASTER BACKLOG VIEW -->
 <%# early javascript before common.hs %>
 <%- controller.rb_jquery_plugins = capture do %>
   <%= javascript_include_tag(
@@ -18,22 +17,17 @@
   </script>
 
   <%= javascript_include_tag(
-    'master_backlog',
-    'backlog',
-    'backlog_options',
+    'genericboard',
     'model',
     'editable_inplace',
     'sprint',
     'release',
     'issue',
     'story',
-    'board_updater',
-    'master_backlog_updater',
     :plugin => 'redmine_backlogs') %>
   <%= stylesheet_link_tag 'jquery/jquery.qtip.css', :plugin => 'redmine_backlogs' %>
   <%= stylesheet_link_tag 'jquery/jquery.multiselect.css', :plugin => 'redmine_backlogs' %>
-  <%= stylesheet_link_tag 'master_backlog.css', :plugin => 'redmine_backlogs', :media => 'print,screen' %>
-  <%= stylesheet_link_tag 'master_backlog_print.css', :plugin => 'redmine_backlogs', :media => 'print' %>
+  <%= stylesheet_link_tag 'genericboard.css', :plugin => 'redmine_backlogs', :media => 'print,screen' %>
 <%- end %>
 
 <%- content_for :breadcrumbs do %>
@@ -41,6 +35,11 @@
 <%- end %>
 
 <%- content_for :view_specific_links do %>
+  <ul id="all_boards">
+    <% @all_boards.each do |board|  %>
+    <li><%= board.name %></li>
+    <% end %>
+  </ul>
   <a id="disable_autorefresh">Disable Auto-refresh</a>
   <a id="refresh">Refresh</a>
 <%- end %>
