@@ -90,6 +90,10 @@ Redmine::Plugin.register :redmine_backlogs do
                                         :rb_updated_items    => :show
                                       }
 
+    permission :manage_generic_boards, {
+                                        :rb_genericboards       => [ :index, :show, :new, :create, :edit, :update, :destroy ],
+                                      }
+
     permission :view_releases,        {
                                         :rb_releases         => [:index, :show],
                                         :rb_sprints          => [:index, :show, :download],
@@ -102,7 +106,6 @@ Redmine::Plugin.register :redmine_backlogs do
 
     permission :view_taskboards,      {
                                         :rb_taskboards       => [:current, :show],
-                                        :rb_genericboards       => [ :show, :index ],
                                         :rb_sprints          => :show,
                                         :rb_stories          => [:index, :show, :tooltip],
                                         :rb_tasks            => [:index, :show],

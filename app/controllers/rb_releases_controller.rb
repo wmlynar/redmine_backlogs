@@ -63,5 +63,4 @@ class RbReleasesController < RbApplicationController
     @release.destroy
     redirect_to :controller => 'rb_releases', :action => 'index', :project_id => @project
   end
-
 end

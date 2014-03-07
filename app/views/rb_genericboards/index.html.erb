@@ -1,4 +1,26 @@
 <!-- Generic board view -->
-<%- content_for :main do %>
-<div>INDEX Generic board</div>
-<%- end %>
+
+  <div class="contextual">
+  <%= link_to l(:label_rb_genericboard_new), new_rb_genericboard_path, :class => 'icon icon-add' %>
+  </div>
+
+  <h2><%= l(:label_rb_genericboard_plural) %></h2>
+
+  <% if @rb_genericboards.any? %>
+  <table class="list genericboards">
+    <thead><tr>
+    <th><%=l(:label_rb_genericboard)%></th>
+    <th></th>
+    </tr></thead>
+    <tbody>
+  <% @rb_genericboards.each do |genericboard| %>
+    <tr class="<%= cycle 'odd', 'even' %>">
+      <td><%= link_to h(genericboard.name), edit_rb_genericboard_path(genericboard) %></td>
+      <td class="buttons"><%= delete_link genericboard %></td>
+    </tr>
+  <% end %>
+  </table>
+  <% else %>
+  <p class="nodata"><%= l(:label_no_data) %></p>
+  <% end %>
+

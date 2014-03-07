@@ -1,0 +1,10 @@
+<h2><%= link_to l(:label_rb_genericboard_plural), rb_genericboards_path %> &#187; <%= h(@rb_genericboard) %></h2>
+
+<% html_title(l(:label_rb_genericboard), @rb_genericboard, l(:label_administration)) -%>
+
+<%= labelled_form_for @rb_genericboard do |f| %>
+<%= render :partial => 'form', :locals => { :f => f } %>
+<p>
+  <%= submit_tag l(:button_submit) %>
+</p>
+<% end %>
