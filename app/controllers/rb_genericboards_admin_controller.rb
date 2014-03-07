@@ -8,7 +8,7 @@ class RbGenericboardsAdminController < ApplicationController
   before_filter :authorize_global
 
   def index
-    @rb_genericboards = RbGenericboard.all
+    @rb_genericboards = RbGenericboard.order(:name)
   end
 
   def new
