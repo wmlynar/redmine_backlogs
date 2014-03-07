@@ -7,56 +7,59 @@ end
 
 class RbGenericboard < ActiveRecord::Base
   include Redmine::SafeAttributes
-  attr_accessible :cols, :elements, :name, :prefilter, :rows
+  attr_accessible :col_type, :element_type, :name, :prefilter, :colfilter, :rowfilter, :row_type
 
   private
 
-  def resolve_scope(id, project, options={})
-    if id == '__sprint'
+  def resolve_scope(object_type, project, options={})
+    if object_type == '__sprint'
       return project.open_shared_sprints
-    elsif id == '__release'
+    elsif object_type == '__release'
       return project.open_releases_by_date
-    elsif id == '__team'
+    elsif object_type == '__team'
       return Group.order(:lastname).map {|g| g.becomes(RbTeam) }
-    else
+    else #assume an id of tracker, see our options in helper
+      tracker_id = object_type
       return RbGeneric.visible.order("#{RbGeneric.table_name}.position").
-      backlog_scope(
-        options.dup.merge({
-          :project => project,
-          :trackers => resolve_trackers(id)
-      }))
+        backlog_scope(
+          options.dup.merge({
+            :project => project,
+            :trackers => resolve_trackers(tracker_id)
+        }))
     end
   end
 
-  def resolve_trackers(id)
-    if id.start_with?('__')
+  def resolve_trackers(object_type)
+    if object_type.start_with?('__')
       return nil
     end
-    RbGeneric.all_trackers(Tracker.find(id).id)
+    RbGeneric.all_trackers(Tracker.find(object_type).id)
   end
 
   public
 
   safe_attributes 'name',
-    'elements',
-    'rows',
-    'cols',
-    'prefilter'
+    'element_type',
+    'row_type',
+    'col_type',
+    'prefilter',
+    'rowfilter',
+    'colfilter'
 
   def to_s
     name
   end
 
   def get_columns(project, options={})
-    cls = resolve_scope(cols, project, options)
+    cls = resolve_scope(col_type, project, options)
   end
 
   def get_rows(project, options={})
-    cls = resolve_scope(rows, project, options)
+    cls = resolve_scope(row_type, project, options)
   end
 
   def get_elements(project, options={})
-    cls = resolve_scope(elements, project, options)
+    cls = resolve_scope(element_type, project, options)
   end
 
 end

@@ -1,18 +1,18 @@
 <!-- Generic board view -->
 <%- content_for :main do %>
 <div>SHOW Generic board</div>
-<div>rows id: <%= @rb_genericboard.rows %></div>
+<div>rows id: <%= @rb_genericboard.row_type %></div>
 <div>rows: <%= @rb_genericboard.get_rows(@project) %></div>
 <% @rb_genericboard.get_rows(@project).each do |row| %>
   <div><%= row %></div>
 <% end %>
 <hr>
-<div>cols id: <%= @rb_genericboard.cols %></div>
+<div>cols id: <%= @rb_genericboard.col_type %></div>
 <% @rb_genericboard.get_columns(@project).each do |row| %>
   <div><%= row %></div>
 <% end %>
 <hr>
-<div>elements id: <%= @rb_genericboard.elements %></div>
+<div>elements id: <%= @rb_genericboard.element_type %></div>
 <% @rb_genericboard.get_elements(@project).each do |row| %>
   <div><%= row.position %> <%= row %> (<%= row.parent %>)</div>
 <% end %>
