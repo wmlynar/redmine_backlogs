@@ -157,7 +157,7 @@ Redmine::Plugin.register :redmine_backlogs do
   menu :project_menu, :rb_taskboards, { :controller => :rb_taskboards, :action => :current }, :caption => :label_task_board, :after => :rb_master_backlogs, :param => :project_id, :if => Proc.new {|project| Backlogs.configured? && project && project.active_sprint }
   menu :project_menu, :rb_releases, { :controller => :rb_releases, :action => :index }, :caption => :label_release_plural, :after => :rb_taskboards, :param => :project_id, :if => Proc.new { Backlogs.configured? }
   menu :project_menu, :rb_genericboards, { :controller => :rb_genericboards, :action => :index },
-    :caption => :label_rb_genericboard_plural, :after => :rb_releases, #:param => :project_id,
+    :caption => :label_rb_genericboard_plural, :after => :rb_releases, :param => :project_id,
     :if => Proc.new { Backlogs.configured? && Backlogs.setting[:scaled_agile_enabled] }
 
   menu :top_menu, :rb_statistics, { :controller => :rb_all_projects, :action => :statistics}, :caption => :label_scrum_statistics,
