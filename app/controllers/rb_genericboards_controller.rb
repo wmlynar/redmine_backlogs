@@ -4,11 +4,23 @@ include RbGenericboardsHelper
 class RbGenericboardsController < RbApplicationController
   unloadable
 
-  before_filter :find_rb_genericboard, :except => [:index, :new, :create]
-  before_filter :authorize_global, :except => [:show, :data]
-  skip_before_filter :load_project, :except => [:show, :data]
-  skip_before_filter :authorize, :except => [:show, :data]
+  before_filter :find_rb_genericboard, :except => [:index, :new, :create, :show_first]
+  before_filter :authorize_global, :except => [:show, :data, :show_first]
+  skip_before_filter :load_project, :except => [:show, :data, :show_first]
+  skip_before_filter :authorize, :except => [:show, :data, :show_first]
 
+  def show_first
+    puts "XXXXXX"
+    board = RbGenericboard.all.first
+    puts board
+    if board
+      redirect_to :controller => 'rb_genericboards', :action => 'show', :id => board
+      return
+    end
+    respond_to do |format|
+      format.html { redirect_back_or_default(project_url(@project)) }
+    end
+  end
   def index
     @rb_genericboards = RbGenericboard.all
   end

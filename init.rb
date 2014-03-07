@@ -91,7 +91,7 @@ Redmine::Plugin.register :redmine_backlogs do
                                       }
 
     permission :manage_generic_boards, {
-                                        :rb_genericboards       => [ :index, :show, :new, :create, :edit, :update, :destroy ],
+                                        :rb_genericboards       => [ :index, :show, :show_first, :new, :create, :edit, :update, :destroy, :data ],
                                       }
 
     permission :view_releases,        {
@@ -105,6 +105,7 @@ Redmine::Plugin.register :redmine_backlogs do
                                       }
 
     permission :view_taskboards,      {
+                                        :rb_genericboards       => [ :show, :show_first, :data ],
                                         :rb_taskboards       => [:current, :show],
                                         :rb_sprints          => :show,
                                         :rb_stories          => [:index, :show, :tooltip],
@@ -155,6 +156,9 @@ Redmine::Plugin.register :redmine_backlogs do
   menu :project_menu, :rb_master_backlogs, { :controller => :rb_master_backlogs, :action => :show }, :caption => :label_backlogs, :after => :roadmap, :param => :project_id, :if => Proc.new { Backlogs.configured? }
   menu :project_menu, :rb_taskboards, { :controller => :rb_taskboards, :action => :current }, :caption => :label_task_board, :after => :rb_master_backlogs, :param => :project_id, :if => Proc.new {|project| Backlogs.configured? && project && project.active_sprint }
   menu :project_menu, :rb_releases, { :controller => :rb_releases, :action => :index }, :caption => :label_release_plural, :after => :rb_taskboards, :param => :project_id, :if => Proc.new { Backlogs.configured? }
+  menu :project_menu, :rb_genericboards, { :controller => :rb_genericboards, :action => :show_first },
+    :caption => :label_rb_genericboard_plural, :after => :rb_releases, #:param => :project_id,
+    :if => Proc.new { Backlogs.configured? && Backlogs.setting[:scaled_agile_enabled] }
 
   menu :top_menu, :rb_statistics, { :controller => :rb_all_projects, :action => :statistics}, :caption => :label_scrum_statistics,
     :if => Proc.new {

@@ -230,3 +230,6 @@ en:
          story/task properties
       * State will be set to the default issue state
   error_cannot_close_sprint_with_open_stories: "Cannot close a sprint while it still has open stories."
+  label_rb_genericboard: "Board"
+  label_rb_genericboard_plural: "Boards"
+  

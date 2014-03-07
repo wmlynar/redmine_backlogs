@@ -144,5 +144,7 @@ else
             :to => 'rb_taskboards#current'
     rb_match rb, 'projects/:project_id/genericboards/:id',
             :to => 'rb_genericboards#show'
+    rb_match rb, 'projects/:project_id/genericboard',
+            :to => 'rb_genericboards#show_first'
   end
 end
