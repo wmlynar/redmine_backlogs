@@ -29,7 +29,7 @@ class RbGenericboard < ActiveRecord::Base
       Group.order(:lastname).map {|g| g.becomes(RbTeam) }
     when '__state'
       tracker = Tracker.find(element_type) #FIXME multiple trackers, no tracker
-      tracker.issue_statuses if tracker
+      tracker.issue_statuses
     else #assume an id of tracker, see our options in helper
       tracker_id = object_type
       return RbGeneric.visible.order("#{RbGeneric.table_name}.position").
@@ -125,11 +125,14 @@ class RbGenericboard < ActiveRecord::Base
   end
 
   def columns(project, options={})
-    if col_type != element_type
-      columns = resolve_scope(col_type, project, options).to_a
-      columns.unshift(RbFakeGeneric.new("No #{col_type_name}"))
-    else #fake generic
-      [ RbFakeGeneric.new("#{col_type_name}") ]
+    if col_type != element_type #elements by col_type
+      c = resolve_scope(col_type, project, options).to_a
+      if col_type != '__state' #taskboard states have no automatic 'no state' column
+        c.unshift(RbFakeGeneric.new("No #{col_type_name}"))
+      end
+      return c
+    else #one column for the elements
+      return [ RbFakeGeneric.new("#{col_type_name}") ]
     end
   end
 
