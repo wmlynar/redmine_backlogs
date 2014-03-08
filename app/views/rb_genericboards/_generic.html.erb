@@ -1,46 +1,63 @@
 <% el = generic
 
-  editable = unless el.respond_to? :fakeelement
-      'editable'
-    else
-      ''
-  end
-
-  unless el.respond_to? :fakeelement
+  fakeelement = false
+  qtip_cls = ''
+  editable = ''
+  subject = ''
+  inline_style = ''
+  issue_link = ''
+  classes = ''
+  if el.respond_to? :fakeelement
+    fakeelement = true
+    subject = el.subject
+  elsif el.is_a? RbGeneric
+    editable = 'editable'
     qtip_cls = "story_tooltip"
     qtip_cls = "story_tooltip_ajax" unless defined?(render_tooltip)
-  else
-    qtip_cls = ''
-  end
+    subject = el.subject
+    begin
+      inline_style = build_inline_style(el).html_safe
+    rescue
+    end
+    issue_link = issue_link_or_empty(el)
+    classes = 'sortable '+ mark_if_closed(el) #sortable makes a move cursor
 
+  elsif el.is_a? RbSprint
+    subject = el.name
+    fakeelement = true
+  elsif el.is_a? Group
+    subject = el.name
+    fakeelement = true
+  else
+    fakeelement = true
+  end
 %>
-<div class="model issue <%= cls  %> <%= mark_if_closed(el) if el.status %>" id="issue_<%= el.id %>" <%#= build_inline_style(el).html_safe %>>
+<div class="model issue <%= cls  %> <%=  classes %>" id="issue_<%= el.id %>" <%#= inline_style %>>
   <div class="id <%= qtip_cls %>">
     <div class="tooltip_text"><%= render :partial => "rb_stories/tooltip", :object => el if defined?(render_tooltip) %></div>
-    <div class="t"><%= issue_link_or_empty(el) %></div>
+    <div class="t"><%= issue_link %></div>
     <div class="v"><%= id_or_empty(el) %></div>
   </div>
-  <div class="subject <%= editable %>" fieldtype="textarea" fieldname="subject" fieldlabel="<%=l(:field_subject)%>"><%= h el.subject %></div>
-  <% unless el.respond_to? :fakeelement %>
-  <div class="description editable" style="display: none" fieldtype="textarea" fieldname="description" fieldlabel="<%=l(:field_description)%>"><%= h el.description %></div>
-  <div class="assigned_to_id editable" fieldtype="select" fieldname="assigned_to_id" fieldlabel="<%=l(:field_assigned_to)%>">
-    <div class="t"><%= assignee_name_or_empty(el) %></div>
-    <div class="v"><%= assignee_id_or_empty(el) %></div>
-  </div>
+  <div class="subject <%= editable %>" fieldtype="textarea" fieldname="subject" fieldlabel="<%=l(:field_subject)%>"><%= h subject %></div>
+  <% if !fakeelement %>
+    <div class="description editable" style="display: none" fieldtype="textarea" fieldname="description" fieldlabel="<%=l(:field_description)%>"><%= h el.description %></div>
+    <div class="assigned_to_id editable" fieldtype="select" fieldname="assigned_to_id" fieldlabel="<%=l(:field_assigned_to)%>">
+      <div class="t"><%= assignee_name_or_empty(el) %></div>
+      <div class="v"><%= assignee_id_or_empty(el) %></div>
+    </div>
 
-  <div class="indicator"> </div>
-  <div class="meta">
-    <div class="story_id"><%= el.story ? el.story.id : '' %></div>
-    <div class="status_id"><%= el.status_id %></div>
-    <div class="project_id"><%= el.project_id %></div>
-    <div class="user_status"><%= el.author == User.current ? '+' : '-' %>c<%= el.assigned_to == User.current ? '+' : '-' %>a</div>
-    <div class="tracker_id"><%= tracker_id_or_empty(el) %></div>
-    <div class="previous"><%= el.right_sibling.blank? ? '' : el.right_sibling.id %></div>
-    <%= render :partial => "backlogs/model_errors", :object => el.errors unless el.errors.empty? %>
-  </div>
-  <% else %>
-  <div class="meta">
-    <div class="story_id"><%= '0' %></div>
-  </div>
-  <% end %>
+    <div class="indicator"> </div>
+    <div class="meta">
+      <div class="story_id"><%= el.story ? el.story.id : '' %></div>
+      <div class="status_id"><%= el.status_id %></div>
+      <div class="project_id"><%= el.project_id %></div>
+      <div class="user_status"><%= el.author == User.current ? '+' : '-' %>c<%= el.assigned_to == User.current ? '+' : '-' %>a</div>
+      <div class="tracker_id"><%= tracker_id_or_empty(el) %></div>
+      <%= render :partial => "backlogs/model_errors", :object => el.errors unless el.errors.empty? %>
+    </div>
+  <% else #fakeelement %>
+    <div class="meta">
+      <div class="story_id"><%= '0' %></div>
+    </div>
+  <% end #fakeelement %>
 </div>

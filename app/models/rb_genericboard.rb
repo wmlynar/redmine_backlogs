@@ -3,6 +3,12 @@ class RbTeam < Group
   def position
     0
   end
+  def status
+    nil
+  end
+  def subject
+    lastname
+  end
 end
 
 

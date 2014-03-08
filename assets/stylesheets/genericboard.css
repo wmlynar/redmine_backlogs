@@ -28,6 +28,14 @@
   width:190px;
 }
 
-#taskboard .issue.rowelement .id{
+#taskboard .issue.rowelement .id,
+.issue.rowelement .subject.editable {
     width: 180px;
+}
+
+#taskboard .issue {
+    cursor: default;
+}
+#taskboard .issue.sortable {
+    cursor: move;
 }
