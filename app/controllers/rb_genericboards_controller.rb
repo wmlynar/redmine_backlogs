@@ -7,7 +7,7 @@ class RbGenericboardsController < RbApplicationController
   before_filter :find_rb_genericboard, :except => [ :index ]
 
   def index
-    board = RbGenericboard.all.first
+    board = RbGenericboard.order(:name).first
     if board
       redirect_to :controller => 'rb_genericboards', :action => 'show', :id => board
       return
