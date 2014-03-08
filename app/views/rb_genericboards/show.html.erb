@@ -53,18 +53,17 @@ THE TABLE
   <tr>
     <td><%= @rb_genericboard.row_type_name %></td>
     <% @columns.each do |column| %>
-    <td><%= column.name %></td>
+    <td _col_id="<%= column.id %>"><%= column.name %></td>
     <% end %>
   </tr>
   <% @rows.each do |row| %>
-    <tr>
+    <tr _row_id="<%= row.id %>">
       <td><%= row %></td>
       <% @rb_genericboard.columns(@project).each do |col| %>
-      <td>
-        <%= col.id %>
+      <td _col_id="<%= col.id %>">
         <% if (@elements_by_cell.include? row.id) && (@elements_by_cell[row.id].include? col.id) %>
           <% @elements_by_cell[row.id][col.id].each do |element| %>
-          <%= element %>
+          EL:<%= element %>
           <% end %>
         <% end %>
       </td>
@@ -75,4 +74,3 @@ THE TABLE
   </div>
 
 <%- end %>
-
