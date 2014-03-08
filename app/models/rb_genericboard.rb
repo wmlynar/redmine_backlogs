@@ -36,6 +36,9 @@ class RbGenericboard < ActiveRecord::Base
       project.open_releases_by_date
     when '__team'
       Group.order(:lastname).map {|g| g.becomes(RbTeam) }
+    when '__state'
+      tracker = Tracker.find(element_type) #FIXME multiple trackers, no tracker
+      tracker.issue_statuses if tracker
     else #assume an id of tracker, see our options in helper
       tracker_id = object_type
       return RbGeneric.visible.order("#{RbGeneric.table_name}.position").
@@ -61,7 +64,9 @@ class RbGenericboard < ActiveRecord::Base
     when '__release'
       :release
     when '__team'
-      :team
+      :rbteam
+    when '__state'
+      nil
     else
       :parent
     end

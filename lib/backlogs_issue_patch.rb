@@ -10,6 +10,7 @@ module Backlogs
         unloadable
 
         belongs_to :release, :class_name => 'RbRelease', :foreign_key => 'release_id'
+        belongs_to :rbteam, :class_name => 'User', :foreign_key => 'rbteam_id'
 
         acts_as_list_with_gaps :default => (Backlogs.setting[:new_story_position] == 'bottom' ? 'bottom' : 'top')
 
@@ -205,12 +206,16 @@ module Backlogs
         self.release = nil
         write_attribute(:release_id, rid)
       end
-#      def self.by_version(project)
-#        count_and_group_by(:project => project,
-#                           :field => 'release_id',
-#                           :joins => RbRelease.table_name)
-#      end
 
+      def rbteam
+        User.find(rbteam_id)
+      rescue
+        nil
+      end
+
+      def rbteam_id=(tid)
+        write_attribute(:rbteam_id, tid)
+      end
 
     end
   end

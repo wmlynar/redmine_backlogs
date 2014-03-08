@@ -177,5 +177,13 @@ class RbGeneric < Issue
     end
   end
 
+  def sprint
+    self.fixed_version.becomes(RbSprint) if self.fixed_version
+  end
+
+  #Alias to get generics into columns
+  #def name
+  #  subject
+  #end
 
 end
