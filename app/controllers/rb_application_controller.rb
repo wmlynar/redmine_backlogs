@@ -2,7 +2,7 @@
 class RbApplicationController < ApplicationController
   unloadable
 
-  before_filter :load_project, :authorize, :check_if_plugin_is_configured
+  before_filter :load_project, :authorize, :check_if_plugin_is_configured, :load_genericboard
 
   #provide list of javascript_include_tags which must be rendered before common.js
   def rb_jquery_plugins
@@ -52,5 +52,15 @@ class RbApplicationController < ApplicationController
 
   def load_release_multiview
     @release_multiview = RbReleaseMultiview.find(params[:release_multiview_id])
+  end
+
+  def load_genericboard
+    @genericboard = if Backlogs.setting[:scaled_agile_enabled] && params[:genericboard_id]
+    puts "LOADING GB #{params}"
+                      RbGenericboard.find(params[:genericboard_id])
+                    else
+                      nil
+                    end
+
   end
 end

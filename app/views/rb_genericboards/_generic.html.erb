@@ -1,4 +1,4 @@
-<% el = genericelement %>
+<% el = generic %>
 <div class="model issue task <%= mark_if_closed(el) %>" id="issue_<%= el.id %>" <%= build_inline_style(el).html_safe %>>
   <% qtip_cls = "story_tooltip"
      qtip_cls = "story_tooltip_ajax" unless defined?(render_tooltip)  %>

@@ -105,7 +105,7 @@ Redmine::Plugin.register :redmine_backlogs do
                                       }
 
     permission :view_taskboards,      {
-                                        :rb_genericboards       => [ :show, :index, :data ],
+                                        :rb_genericboards       => [ :show, :index, :update, :create ],
                                         :rb_taskboards       => [:current, :show],
                                         :rb_sprints          => :show,
                                         :rb_stories          => [:index, :show, :tooltip],
@@ -139,7 +139,7 @@ Redmine::Plugin.register :redmine_backlogs do
 
     # Task permissions
     # :show_tasks and :list_tasks are implicit in :view_sprints
-    permission :create_tasks,           { :rb_tasks => [:new, :create]  }
+    permission :create_tasks,           { :rb_tasks => [:new, :create] }
     permission :update_tasks,           { :rb_tasks => [:edit, :update] }
 
     permission :update_remaining_hours, { :rb_tasks => [:edit, :update] }

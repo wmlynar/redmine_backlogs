@@ -103,6 +103,16 @@ def rb_common_routes(rb)
           :to => 'rb_hooks_render#view_issues_sidebar'
 
   rb_match rb, 'project/:project_id/backlogs', :to => 'rb_project_settings#project_settings'
+
+  rb_match rb, 'projects/:project_id/genericboard',
+          :to => 'rb_genericboards#index'
+  rb_match rb, 'projects/:project_id/genericboards/:genericboard_id',
+          :to => 'rb_genericboards#show'
+  rb_match rb, 'projects/:project_id/genericboards/:genericboard_id/create',
+          :to => 'rb_genericboards#create'
+  rb_match rb, 'projects/:project_id/genericboards/:genericboard_id/update/:id',
+          :to => 'rb_genericboards#update'
+
 end
 
 if Rails::VERSION::MAJOR < 3
@@ -142,9 +152,5 @@ else
             :to => 'rb_taskboards#show'
     rb_match rb, 'projects/:project_id/taskboard',
             :to => 'rb_taskboards#current'
-    rb_match rb, 'projects/:project_id/genericboards/:id',
-            :to => 'rb_genericboards#show'
-    rb_match rb, 'projects/:project_id/genericboard',
-            :to => 'rb_genericboards#index'
   end
 end

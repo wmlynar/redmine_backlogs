@@ -67,10 +67,11 @@ RB.Generic = RB.Object.create(RB.Issue, {
     var nxt = this.$.next();
     var project = j.parents('tr').find('.story .project .v');
     var cellID = j.parents('td').first().attr('id').split("_");
-
+console.log('cell id',cellID);
     var data = j.find('.editor').serialize() +
-               "&parent_issue_id=" + cellID[0] +
-               "&status_id=" + cellID[1] +
+               "&genericboard_id=" + RB.constants.genericboard_id +
+               "&row_id=" + cellID[0] +
+               "&col_id=" + cellID[1] +
                "&next=" + (nxt.length==1 ? nxt.data('this').getID() : '') +
                (this.isNew() ? "" : "&id=" + j.children('.id').text());
 
@@ -79,9 +80,9 @@ RB.Generic = RB.Object.create(RB.Issue, {
     }
 
     if( this.isNew() ){
-      url = RB.urlFor( 'create_task' );
+      url = RB.urlFor( 'create_generic' );
     } else {
-      url = RB.urlFor( 'update_task', { id: this.getID() } );
+      url = RB.urlFor( 'update_generic', { id: this.getID() } );
       data += "&_method=put";
     }
 
