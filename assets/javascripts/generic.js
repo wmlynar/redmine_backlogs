@@ -4,11 +4,12 @@
 
 RB.Generic = RB.Object.create(RB.Issue, {
 
-  initialize: function(el){
+  initialize: function(el, config){
     var j;  // This ensures that we use a local 'j' variable, not a global one.
 
     this.$ = j = RB.$(el);
     this.el = el;
+    this.config = config || {};
 
     j.addClass("task"); // If node is based on #task_template, it doesn't have the task class yet
 
@@ -33,8 +34,8 @@ RB.Generic = RB.Object.create(RB.Issue, {
   },
 
   editorDisplayed: function(dialog){
-    dialog_bgcolor=this.$.css('background-color');
-    dialog_bg=this.$.css('background-image');
+    var dialog_bgcolor=this.$.css('background-color'),
+        dialog_bg=this.$.css('background-image');
     if(dialog_bgcolor=='initial'||dialog_bgcolor=='rgba(0, 0, 0, 0)'||dialog_bgcolor=='transparent'){
       // Chrome could not handling background-color css when use -webkit-gradient.
       if(dialog_bg){
@@ -50,7 +51,7 @@ RB.Generic = RB.Object.create(RB.Issue, {
   },
 
   getType: function(){
-    return "Task";
+    return this.config.type_name || "Task";
   },
 
   markIfClosed: function(){

@@ -55,7 +55,8 @@
 <%- end %>
 
 <%- content_for :main do %>
-  <div id="taskboard">
+  <div id="taskboard" _row_type_name="<%= @rb_genericboard.row_type_name %>" _element_type_name="<%= @rb_genericboard.element_type_name %>"
+      _row_type="<%= @rb_genericboard.row_type %>" _element_type="<%= @rb_genericboard.element_type %>">
     <table id="board_header" cellspacing="0">
       <tr>
         <td><%= @rb_genericboard.row_type_name %></td>
@@ -86,9 +87,14 @@
 <%- end %>
 
 <%- content_for :helpers do %>
-<div id="add_button_template">
-  <div class="addbutton">
-    <%= image_tag("add.png", :alt => "+") %>
+  <div id="add_button_template">
+    <div class="addbutton">
+      <%= image_tag("add.png", :alt => "+") %>
+    </div>
   </div>
-</div>
+
+  <div id="task_template">
+    <%= render :partial => "generic", :object => RbGeneric.new, :locals => { :cls => 'task' } %>
+  </div>
+
 <%- end %>

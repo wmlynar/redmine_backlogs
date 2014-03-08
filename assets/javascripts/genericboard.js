@@ -18,7 +18,7 @@ RB.$(function() {
 
 
 /***************************************
-  TASKBOARD
+  GENERICBOARD
 ***************************************/
 
 RB.Genericboard = RB.Object.create({
@@ -33,9 +33,14 @@ RB.Genericboard = RB.Object.create({
     // Associate this object with the element for later retrieval
     j.data('this', self);
 
+
+    // board configuration data
+    self.element_type = j.attr('_element_type');
+    self.row_type = j.attr('_row_type');
+    self.element_type_name = j.attr('_element_type_name');
+    self.row_type_name = j.attr('_row_type_name');
     // Initialize column widths
     self.colWidthUnit = RB.$(".swimlane").width();
-    console.log('cwunit', self.colWidthUnit);
     self.defaultColWidth = 2;
     self.loadColWidthPreference();
     self.updateColWidths();
@@ -72,28 +77,16 @@ RB.Genericboard = RB.Object.create({
 
     // Initialize each task in the board
     j.find('.task').each(function(index){
-      var task = RB.Factory.initialize(RB.Generic, this); // 'this' refers to an element with class="task"
+      var task = RB.Factory.initialize(RB.Generic, this, {type_name: self.element_type_name}); // 'this' refers to an element with class="task"
     });
     // Initialize each story in the board
     j.find('.rowelement').each(function(index){
-      var task = RB.Factory.initialize(RB.Generic, this); // 'this' refers to an element with class="task"
+      var task = RB.Factory.initialize(RB.Generic, this, {type_name: self.row_type_name}); // 'this' refers to an element with class="task"
     });
 
     // add new buttons
     j.find('#generics td').hover(function(e){self.showAddButton(this, e);}, function(e){self.hideAddButton(this, e);});
 
-  },
-
-  showAddButton: function(target, e)  {
-    var me = this;
-    var btn = RB.$('#add_button_template').children().first().clone();
-    RB.$(target).append(btn);
-    btn.click(function(e) { //this is the button, target is the cell
-        console.log('Adding something in', target, me);
-    })
-  },
-  hideAddButton: function(target, e)  {
-    RB.$(target).find('.addbutton').unbind().remove();
   },
 
   onMouseUp: function(e) {
@@ -181,16 +174,36 @@ RB.Genericboard = RB.Object.create({
     }
   },
 
-  handleAddNewImpedimentClick: function(event){
-    if (event.button > 1) return;
-    var row = RB.$(this).parents("tr").first();
-    RB.$('#taskboard').data('this').newImpediment(row);
+
+  showAddButton: function(target, e)  {
+    var me = this;
+    var btn = RB.$('#add_button_template').children().first().clone();
+    RB.$(target).append(btn);
+    btn.click( function(event) { //this is the button, target is the cell
+                    if (event.button > 1) return;
+                    var cell = RB.$(event.target).parents("td").first();
+                    var row = cell.parents("tr").first();
+                    me.newTask(row, cell);
+    });
   },
 
-  handleAddNewTaskClick: function(event){
-    if (event.button > 1) return;
-    var row = RB.$(this).parents("tr").first();
-    RB.$('#taskboard').data('this').newTask(row);
+  hideAddButton: function(target, e)  {
+    RB.$(target).find('.addbutton').unbind().remove();
+  },
+
+  newTask: function(row, cell){
+    var type_name, o,
+        task = RB.$('#task_template').children().first().clone();
+    if (typeof cell.attr('_col_id') == 'undefined') { //we add a row
+        type_name = this.row_type_name;
+    }
+    else { // we add an element
+        type_name = this.element_type_name;
+    }
+
+    cell.prepend(task);
+    o = RB.Factory.initialize(RB.Generic, task, {type_name:type_name});
+    o.edit();
   },
 
   loadColWidthPreference: function(){
@@ -200,20 +213,6 @@ RB.Genericboard = RB.Object.create({
       RB.UserPreferences.set('taskboardColWidth', w);
     }
     RB.$("#col_width input").val(w);
-  },
-
-  newImpediment: function(row){
-    var impediment = RB.$('#impediment_template').children().first().clone();
-    row.find(".list").first().prepend(impediment);
-    var o = RB.Factory.initialize(RB.Impediment, impediment);
-    o.edit();
-  },
-
-  newTask: function(row){
-    var task = RB.$('#task_template').children().first().clone();
-    row.find(".list").first().prepend(task);
-    var o = RB.Factory.initialize(RB.Task, task);
-    o.edit();
   },
 
   updateColWidths: function(){

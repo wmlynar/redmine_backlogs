@@ -18,6 +18,7 @@
     begin
       inline_style = build_inline_style(el).html_safe
     rescue
+      inline_style = 'background-color: white;'
     end
     issue_link = issue_link_or_empty(el)
     classes = 'sortable '+ mark_if_closed(el) #sortable makes a move cursor

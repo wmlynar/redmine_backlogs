@@ -29,19 +29,19 @@ RB.Object = {
       }
     }
     return obj;
-  }  
+  }
 };
 
 
 // Object factory for redmine_backlogs
 RB.Factory = RB.Object.create({
-  
-  initialize: function(objType, el){
+
+  initialize: function(objType, el, config){
     obj = RB.Object.create(objType);
-    obj.initialize(el);
+    obj.initialize(el, config);
     return obj;
-  }  
-  
+  }
+
 });
 
 // Utilities
@@ -54,7 +54,7 @@ RB.Dialog = RB.Object.create({
                     modal: true
                  });
   },
-  
+
   notice: function(msg){
     if(window.console && typeof console.log == "function") console.log(msg);
   }
@@ -76,7 +76,7 @@ RB.ajax = function(options){
   }
   if(RB.constants.protect_against_forgery){
     options.data += "&" + RB.constants.request_forgery_protection_token +
-                    "=" + encodeURIComponent(RB.constants.form_authenticity_token); 
+                    "=" + encodeURIComponent(RB.constants.form_authenticity_token);
   }
 
   RB.ajaxQueue.push(options);
@@ -93,7 +93,7 @@ RB.processAjaxQueue = function(){
       /**
        * callback: after success or fail.
        * maintain queue state and requeue next request.
-       * Beware: we do not use arguments here, 
+       * Beware: we do not use arguments here,
        * the signature depends on success/fail of the request. That is just braindead.
        */
         RB.ajaxOngoing = false;
@@ -112,7 +112,7 @@ RB.UserPreferences = RB.Object.create({
       return RB.$.cookie(key);
     } catch(e) { return null; }
   },
-  
+
   set: function(key, value, global){
     if (global) {
       var path = RB.urlFor('home')+'rb';
