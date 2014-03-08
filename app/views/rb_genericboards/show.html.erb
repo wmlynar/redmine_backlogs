@@ -51,29 +51,32 @@
 <% end #if false %>
 
 <%- content_for :main do %>
-  <div id="genericboard_container">
-<table>
-  <tr>
-    <td><%= @rb_genericboard.row_type_name %></td>
-    <% @columns.each do |column| %>
-    <td _col_id="<%= column.id %>"><%= column.name %></td>
-    <% end %>
-  </tr>
-  <% @rows.each do |row| %>
-    <tr _row_id="<%= row.id %>">
-      <td><%= row %></td>
-      <% @rb_genericboard.columns(@project).each do |col| %>
-      <td _col_id="<%= col.id %>">
-        <% if (@elements_by_cell.include? row.id) && (@elements_by_cell[row.id].include? col.id) %>
-          <% @elements_by_cell[row.id][col.id].each do |element| %>
-          <div><%= element.id %> <%= element.subject %></div>
-          <% end %>
+  <div id="genericboard">
+    <table id="board_header" cellspacing="0">
+      <tr>
+        <td class="swimlane"><%= @rb_genericboard.row_type_name %></td>
+        <% @columns.each do |column| %>
+        <td class="swimlane" _col_id="<%= column.id %>"><%= column.name %></td>
         <% end %>
-      </td>
+      </tr>
+    </table>
+
+    <table id="generics">
+      <% @rows.each do |row| %>
+        <tr _row_id="<%= row.id %>">
+          <td class="swimlane"><%= row %></td>
+          <% @rb_genericboard.columns(@project).each do |col| %>
+          <td class="swimlane" _col_id="<%= col.id %>">
+            <% if (@elements_by_cell.include? row.id) && (@elements_by_cell[row.id].include? col.id) %>
+              <% @elements_by_cell[row.id][col.id].each do |element| %>
+              <div><%= element.id %> <%= element.subject %></div>
+              <% end %>
+            <% end %>
+          </td>
+          <% end %>
+        </tr>
       <% end %>
-    </tr>
-  <% end %>
-</table>
+    </table>
   </div>
 
 <%- end %>
