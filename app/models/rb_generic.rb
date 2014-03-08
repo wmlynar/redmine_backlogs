@@ -56,9 +56,17 @@ class RbGeneric < Issue
       and is_closed = ?", tracker_ids, false]
   end
 
+  def self.__find_options_generic_condition(project_id, tracker_ids)
+    ["
+      project_id in (#{Project.find(project_id).projects_in_shared_product_backlog.map{|p| p.id}.join(',')})
+      and tracker_id in (?)
+      and is_closed = ?", tracker_ids, false
+    ]
+  end
+
   public
 
-  def self.find_options(options)
+  def self.find_options(options, generic_scope=false)
     options = options.dup
 
     project = options.delete(:project)
@@ -76,8 +84,13 @@ class RbGeneric < Issue
     sprint_ids = self.__find_options_normalize_option(options.delete(:sprint))
     release_ids = self.__find_options_normalize_option(options.delete(:release))
     tracker_ids = self.__find_options_normalize_option(options.delete(:trackers) || self.trackers)
-    print 'xxxx find options', tracker_ids
-    if sprint_ids
+    if generic_scope
+      Backlogs::ActiveRecord.add_condition(options, self.__find_options_generic_condition(project_id, tracker_ids))
+      options[:joins] ||= []
+      options[:joins] [options[:joins]] unless options[:joins].is_a?(Array)
+      options[:joins] << :status
+      options[:joins] << :project
+    elsif sprint_ids
       Backlogs::ActiveRecord.add_condition(options, self.__find_options_sprint_condition(project_id, sprint_ids, tracker_ids))
     elsif release_ids
       Backlogs::ActiveRecord.add_condition(options, self.__find_options_release_condition(project_id, release_ids, tracker_ids))
@@ -93,7 +106,7 @@ class RbGeneric < Issue
   end
 
   scope :backlog_scope, lambda{|opts| RbGeneric.find_options(opts) }
-
+  scope :generic_backlog_scope, lambda{|opts| RbGeneric.find_options(opts, true) }
 
   def self.trackers(options = {})
     self.get_trackers(:story_trackers, options)

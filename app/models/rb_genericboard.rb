@@ -42,7 +42,7 @@ class RbGenericboard < ActiveRecord::Base
     else #assume an id of tracker, see our options in helper
       tracker_id = object_type
       return RbGeneric.visible.order("#{RbGeneric.table_name}.position").
-        backlog_scope(
+        generic_backlog_scope(
           options.dup.merge({
             :project => project,
             :trackers => resolve_trackers(tracker_id)
@@ -135,7 +135,8 @@ class RbGenericboard < ActiveRecord::Base
 
   def columns(project, options={})
     if col_type != element_type
-      resolve_scope(col_type, project, options)
+      columns = resolve_scope(col_type, project, options).to_a
+      columns.unshift(RbFakeGeneric.new("No #{col_type_name}"))
     else #fake generic
       [ RbFakeGeneric.new("#{col_type_name}") ]
     end
