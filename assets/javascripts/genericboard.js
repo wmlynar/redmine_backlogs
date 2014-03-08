@@ -79,11 +79,21 @@ RB.Genericboard = RB.Object.create({
       var task = RB.Factory.initialize(RB.Generic, this); // 'this' refers to an element with class="task"
     });
 
-    // Add handler for .add_new click
-    if (RB.permissions.create_tasks) {
-      j.find('#tasks .add_new').bind('click', self.handleAddNewTaskClick);
-    }
+    // add new buttons
+    j.find('#generics td').hover(function(e){self.showAddButton(this, e);}, function(e){self.hideAddButton(this, e);});
 
+  },
+
+  showAddButton: function(target, e)  {
+    var me = this;
+    var btn = RB.$('#add_button_template').children().first().clone();
+    RB.$(target).append(btn);
+    btn.click(function(e) { //this is the button, target is the cell
+        console.log('Adding something in', target, me);
+    })
+  },
+  hideAddButton: function(target, e)  {
+    RB.$(target).find('.addbutton').unbind().remove();
   },
 
   onMouseUp: function(e) {

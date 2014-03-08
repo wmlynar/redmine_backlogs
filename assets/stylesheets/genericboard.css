@@ -39,3 +39,16 @@
 #taskboard .issue.sortable {
     cursor: move;
 }
+
+#generics td {
+    position: relative;
+}
+.addbutton {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 16px;
+    height: 16px;
+    /*border: 1px solid black;*/
+    cursor: pointer;
+}

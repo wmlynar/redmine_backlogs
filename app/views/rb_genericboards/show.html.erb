@@ -67,7 +67,7 @@
 
     <table id="generics" class="board" cellspacing="0">
       <% @rows.each do |row| %>
-        <tr id="swimlane-<%= row.id %>" class="story-swimlane">
+        <tr id="swimlane-<%= row.id %>" class="story-swimlane ui-sortable">
           <td id="<%= row.id %>_rowelement">
             <%= render :partial => "generic", :object => row, :locals => { :cls => 'rowelement' } %>
           </td>
@@ -83,4 +83,12 @@
     </table>
   </div>
 
+<%- end %>
+
+<%- content_for :helpers do %>
+<div id="add_button_template">
+  <div class="addbutton">
+    <%= image_tag("add.png", :alt => "+") %>
+  </div>
+</div>
 <%- end %>
