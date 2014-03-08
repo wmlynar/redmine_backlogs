@@ -112,7 +112,15 @@ class RbGenericboard < ActiveRecord::Base
   end
 
   def prefilter_name
-    case prefilter
+    if prefilter.nil?
+      return ''
+    end
+    filter = prefilter.split
+    filter.map { |f| filter_name(f, nil) }.compact.join(' and ')
+  end
+
+  def filter_name(f, default="")
+    case f
     when '__current_release'
       "Current Release"
     when '__current_sprint'
@@ -120,7 +128,7 @@ class RbGenericboard < ActiveRecord::Base
     when '__my_team'
       "my Team"
     else
-      ""
+      default
     end
   end
 

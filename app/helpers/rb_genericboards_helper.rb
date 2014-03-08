@@ -31,6 +31,11 @@ module RbGenericboardsHelper
     values.append(["Current Release", '__current_release'])
     values.append(["Current Sprint", '__current_sprint'])
     values.append(["My team", '__my_team'])
+
+    unless selected.nil?
+      selected = selected.split()
+    end
+
     options_for_select((values || []), selected)
   end
 
