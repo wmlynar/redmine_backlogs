@@ -34,5 +34,8 @@ module RbGenericboardsHelper
     options_for_select((values || []), selected)
   end
 
-
+  def genericboards_boardlist_options_for_select(selected=nil)
+    values = RbGenericboard.order(:name).map {|b| [b.name, b.id]}
+    options_for_select((values || []), selected)
+  end
 end

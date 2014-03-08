@@ -34,21 +34,24 @@
   <%= @rb_genericboard.name %>
 <%- end %>
 
+<%- content_for :view_specific_users do %>
+  <span>
+    <label for="select_board"><%= l(:label_rb_select_board) %></label>
+    <select name="select_board" id="select_board">
+      <%= genericboards_boardlist_options_for_select(@rb_genericboard.id) %>
+    </select>
+  </span>
+<%- end %>
+
+<% if false %>
 <%- content_for :view_specific_links do %>
-  <ul id="all_boards">
-    <% @all_boards.each do |board|  %>
-    <li><%= board.name %></li>
-    <% end %>
-  </ul>
   <a id="disable_autorefresh">Disable Auto-refresh</a>
   <a id="refresh">Refresh</a>
 <%- end %>
+<% end #if false %>
 
 <%- content_for :main do %>
   <div id="genericboard_container">
-<hr>
-THE TABLE
-<hr>
 <table>
   <tr>
     <td><%= @rb_genericboard.row_type_name %></td>

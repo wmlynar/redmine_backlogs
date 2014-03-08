@@ -21,7 +21,7 @@ if (!RB.constants) {
   RB.constants.locale = {
     _: function(s) {
       if (RB.constants.locale[s])
-        return RB.constants.locale[s]; 
+        return RB.constants.locale[s];
       return s;
     },
     'Filter tasks': "<%= l(:label_filter_tasks)%>",
@@ -54,9 +54,9 @@ if (!RB.constants) {
   };
 
   RB.urlFor = function(route_name, options) {
-    route = RB.routes[route_name];
-    if(options != null && options['id'] != null){
-      route = route.replace(':id', options['id']);
+    var route = RB.routes[route_name];
+    if(route && options && options.id){
+      route = route.replace(':id', options.id);
     }
     return route;
   };
@@ -92,7 +92,7 @@ if (!RB.constants) {
  project_versions maps all projects to those versions which can receive the projects issues.
  project_versions are used by the js user interface to determine to which backlogs a dragged story can be dropped to.
  It uses the project_id attached to the story and checks all visible sprints if it is in the array hashed to the project_id here.
- We need to provide maps to at lest all projects which we find in visible versions AND all self_and_descendants for the product backlog. 
+ We need to provide maps to at lest all projects which we find in visible versions AND all self_and_descendants for the product backlog.
  An approximation would be all projects which all visible sprints are shared in plus self_and_descendants.
  Most simple way: use all projects the user can see, trading some bytes of bandwidth against many server cycles of comparison and filtering.
 =end
@@ -123,4 +123,8 @@ if (!RB.constants) {
   RB.constants.story_states = <%= workflow_transitions(RbStory).to_json.html_safe %>;
   RB.routes.backlog_menu = <%= url_for(:controller => 'rb_master_backlogs', :action => 'menu', :project_id => @project.identifier, :only_path => true).to_json.html_safe %>;
   RB.routes.closed_sprints = <%= url_for(:controller => 'rb_master_backlogs', :action => 'closed_sprints', :project_id => @project.identifier, :only_path => true).to_json.html_safe %>;
+<% end %>
+
+<% if @project && Backlogs.setting[:scaled_agile_enabled] %>
+  RB.routes.genericboards = <%= url_for(:controller => 'rb_genericboards', :action => 'show', :project_id => @project, :id => ':id').to_json.html_safe %>;
 <% end %>
