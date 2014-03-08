@@ -63,7 +63,7 @@ THE TABLE
       <td _col_id="<%= col.id %>">
         <% if (@elements_by_cell.include? row.id) && (@elements_by_cell[row.id].include? col.id) %>
           <% @elements_by_cell[row.id][col.id].each do |element| %>
-          EL:<%= element %>
+          <div><%= element.id %> <%= element.subject %></div>
           <% end %>
         <% end %>
       </td>
