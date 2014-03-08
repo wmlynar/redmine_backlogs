@@ -75,7 +75,7 @@ module BacklogsPlugin
 
           project = context[:project]
 
-          if issue.is_story?
+          if issue.is_rbgeneric?
             snippet += "<tr><th>#{l(:field_story_points)}</th><td>#{RbStory.find(issue.id).points_display}</td>"
             unless issue.remaining_hours.nil?
               snippet += "<th>#{l(:field_remaining_hours)}</th><td>#{l_hours(issue.remaining_hours)}</td>"
@@ -116,7 +116,7 @@ module BacklogsPlugin
           #developers = select_tag("time_entry[user_id]", options_from_collection_for_select(developers, :id, :name, User.current.id))
           #developers = developers.gsub(/\n/, '')
 
-          if issue.is_story?
+          if issue.is_rbgeneric?
             snippet += '<p>'
             #snippet += context[:form].label(:story_points)
             if Backlogs.setting[:story_points].blank?
@@ -136,7 +136,9 @@ module BacklogsPlugin
 
               snippet += '</p></div>'
             end
+          end
 
+          if issue.is_story?
             if issue.descendants.length != 0 && !issue.new_record?
               snippet += <<-generatedscript
 
