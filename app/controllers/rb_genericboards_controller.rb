@@ -9,7 +9,7 @@ class RbGenericboardsController < RbApplicationController
   def index
     board = RbGenericboard.order(:name).first
     if board
-      redirect_to :controller => 'rb_genericboards', :action => 'show', :id => board
+      redirect_to :controller => 'rb_genericboards', :action => 'show', :genericboard_id => board, :project_id => @project
       return
     end
     respond_to do |format|
