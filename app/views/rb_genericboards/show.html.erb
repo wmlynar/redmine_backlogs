@@ -23,10 +23,12 @@
     'sprint',
     'release',
     'issue',
-    'story',
+    #'story',
+    'generic',
     :plugin => 'redmine_backlogs') %>
   <%= stylesheet_link_tag 'jquery/jquery.qtip.css', :plugin => 'redmine_backlogs' %>
   <%= stylesheet_link_tag 'jquery/jquery.multiselect.css', :plugin => 'redmine_backlogs' %>
+  <%= stylesheet_link_tag 'taskboard.css', :plugin => 'redmine_backlogs', :media => 'print,screen' %>
   <%= stylesheet_link_tag 'genericboard.css', :plugin => 'redmine_backlogs', :media => 'print,screen' %>
 <%- end %>
 
@@ -43,34 +45,35 @@
   </span>
 <%- end %>
 
-<% if false %>
 <%- content_for :view_specific_links do %>
+  <span id="col_width"><%= l(:label_column_width) %>: <input name="col_width"/></span>
+<% if false %>
   <a id="disable_autorefresh">Disable Auto-refresh</a>
   <a id="refresh">Refresh</a>
-<%- end %>
 <% end #if false %>
+<%- end %>
 
 <%- content_for :main do %>
-  <div id="genericboard">
+  <div id="taskboard">
     <table id="board_header" cellspacing="0">
       <tr>
-        <td class="swimlane"><%= @rb_genericboard.row_type_name %></td>
+        <td><%= @rb_genericboard.row_type_name %></td>
         <% @columns.each do |column| %>
         <td class="swimlane" _col_id="<%= column.id %>"><%= column.name %></td>
         <% end %>
       </tr>
     </table>
 
-    <table id="generics">
+    <table id="generics" class="board" cellspacing="0">
       <% @rows.each do |row| %>
-        <tr _row_id="<%= row.id %>">
-          <td class="swimlane"><%= row %></td>
+        <tr id="swimlane-<%= row.id %>" class="story-swimlane">
+          <td id="<%= row.id %>_rowelement">
+            <%= render :partial => "rowelement", :object => row %>
+          </td>
           <% @rb_genericboard.columns(@project).each do |col| %>
-          <td class="swimlane" _col_id="<%= col.id %>">
+          <td class="swimlane list" id="<%= row.id %>_<%= col.id %>" _col_id="<%= col.id %>">
             <% if (@elements_by_cell.include? row.id) && (@elements_by_cell[row.id].include? col.id) %>
-              <% @elements_by_cell[row.id][col.id].each do |element| %>
-              <div><%= element.id %> <%= element.subject %></div>
-              <% end %>
+              <%= render :partial => "genericelement", :collection => @elements_by_cell[row.id][col.id] %>
             <% end %>
           </td>
           <% end %>

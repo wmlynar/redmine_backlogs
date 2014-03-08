@@ -1,33 +1,6 @@
-#genericboard {
-    position: relative; /*required to position the board_header*/
-    padding-top: 24px; /* move down first cell so floating header fits */
-}
-#genericboard table {
-    border-collapse: collapse;
-}
-#genericboard td {
-    border: 1px solid #dddddd;
-}
 
-
-#board_header{
-  background-color:#EEEEEE;
-  border:1px solid #CCCCCC;
-  margin-bottom:0;
-  margin-right:10px;
-  position: absolute;
-  z-index: 200;
-}
-#board_header td{
-  background-color:#EEEEEE;
-  border-right:1px dotted #CFCFCF;
-  color:#4E4E4E;
-  font-size:10px;
-  font-weight:bold;
-  height:20px;
-  text-align:center;
-  vertical-align:middle;
-}
-#board_header td:last-child{
-  border-right:none;
+#board_header td {
+    font-size:10px;
+    height:20px;
+    max-height:20px;
 }
