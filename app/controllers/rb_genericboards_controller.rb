@@ -37,6 +37,7 @@ class RbGenericboardsController < RbApplicationController
     story = RbGeneric.find(params[:id])
     row_id = params[:row_id]
     col_id = params[:col_id]
+    #FIXME interpret rows and cols to assign parent/sprint/release/team
     puts "Genericboard update #{story} #{row_id} #{col_id} #{params} #{@rb_genericboard}"
     begin
       result = story.update_and_position!(params)
@@ -46,7 +47,6 @@ class RbGenericboardsController < RbApplicationController
     end
 
     status = (result ? 200 : 400)
-    puts "rendering updated story #{story}"
     respond_to do |format|
       format.html { render :partial => "generic", :object => story, :status => status, :locals => {:cls =>'task'} }
     end

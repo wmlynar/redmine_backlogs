@@ -145,21 +145,17 @@ class RbGenericboard < ActiveRecord::Base
   end
 
   def elements_by_cell(project)
-    puts ""
-    puts "types: #{col_type} #{element_type}"
     parent_attribute = resolve_parent_attribute(row_type)
     if col_type != element_type
       column_attribute = resolve_parent_attribute(col_type)
-      puts "types differ, have attribute #{column_attribute}"
     else
-      puts "types equal, no columns"
       column_attribute = nil
       col_id = 0
     end
 
+    #aggregate all elements in scope into a matrix indexed by row/column object ids
     map = {}
     elements(project).each {|element|
-      puts "Checkint element", element
       row_id = element.send(parent_attribute)
       unless row_id.nil?
         row_id = row_id.id
@@ -175,7 +171,6 @@ class RbGenericboard < ActiveRecord::Base
           col_id = 0
         end
       end
-      puts "r/c #{row_id} #{col_id}"
       unless map.include? row_id
         map[row_id] = {}
       end
