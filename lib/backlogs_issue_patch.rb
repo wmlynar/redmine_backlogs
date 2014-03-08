@@ -208,7 +208,7 @@ module Backlogs
       end
 
       def rbteam
-        User.find(rbteam_id)
+        Group.find(rbteam_id)
       rescue
         nil
       end
