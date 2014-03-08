@@ -74,6 +74,10 @@ RB.Genericboard = RB.Object.create({
     j.find('.task').each(function(index){
       var task = RB.Factory.initialize(RB.Generic, this); // 'this' refers to an element with class="task"
     });
+    // Initialize each story in the board
+    j.find('.rowelement').each(function(index){
+      var task = RB.Factory.initialize(RB.Generic, this); // 'this' refers to an element with class="task"
+    });
 
     // Add handler for .add_new click
     if (RB.permissions.create_tasks) {
@@ -124,12 +128,14 @@ RB.Genericboard = RB.Object.create({
       // if one tries drag into another story but same status.
       if (new_status_id == status_id) { return; }
 
-      var states = RB.constants.task_states['transitions'][tracker_id][user_status][status_id];
-      if (!states) { states = RB.constants.task_states['transitions'][tracker_id][user_status][RB.constants.task_states['transitions'][tracker_id][user_status]['default']]; }
-      if (RB.$.inArray(String(new_status_id), states) < 0) {
-        //workflow does not allow this user to put the issue into this new state.
-        RB.$(this).sortable('disable');
-        return;
+      if (RB.constants.task_states) {
+        var states = RB.constants.task_states['transitions'][tracker_id][user_status][status_id];
+        if (!states) { states = RB.constants.task_states['transitions'][tracker_id][user_status][RB.constants.task_states['transitions'][tracker_id][user_status]['default']]; }
+        if (RB.$.inArray(String(new_status_id), states) < 0) {
+          //workflow does not allow this user to put the issue into this new state.
+          RB.$(this).sortable('disable');
+          return;
+        }
       }
 
     }); //each
@@ -210,4 +216,3 @@ RB.Genericboard = RB.Object.create({
     RB.$(".swimlane").width(this.colWidthUnit * w).css('min-width', this.colWidthUnit * w);
   }
 });
-

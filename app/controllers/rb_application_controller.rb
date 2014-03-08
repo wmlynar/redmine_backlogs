@@ -56,7 +56,6 @@ class RbApplicationController < ApplicationController
 
   def load_genericboard
     @genericboard = if Backlogs.setting[:scaled_agile_enabled] && params[:genericboard_id]
-    puts "LOADING GB #{params}"
                       RbGenericboard.find(params[:genericboard_id])
                     else
                       nil

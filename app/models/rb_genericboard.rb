@@ -5,21 +5,6 @@ class RbTeam < Group
   end
 end
 
-class RbFakeGeneric
-  attr_accessor :subject
-  def initialize(subject)
-    @subject = subject
-  end
-  def name
-    subject
-  end
-  def to_s
-    subject
-  end
-  def id
-    0
-  end
-end
 
 
 class RbGenericboard < ActiveRecord::Base

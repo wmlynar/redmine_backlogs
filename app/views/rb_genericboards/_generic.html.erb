@@ -1,14 +1,27 @@
-<% el = generic %>
-<div class="model issue task <%= mark_if_closed(el) %>" id="issue_<%= el.id %>" <%= build_inline_style(el).html_safe %>>
-  <% qtip_cls = "story_tooltip"
-     qtip_cls = "story_tooltip_ajax" unless defined?(render_tooltip)  %>
+<% el = generic
+
+  editable = unless el.respond_to? :fakeelement
+      'editable'
+    else
+      ''
+  end
+
+  unless el.respond_to? :fakeelement
+    qtip_cls = "story_tooltip"
+    qtip_cls = "story_tooltip_ajax" unless defined?(render_tooltip)
+  else
+    qtip_cls = ''
+  end
+
+%>
+<div class="model issue <%= cls  %> <%= mark_if_closed(el) if el.status %>" id="issue_<%= el.id %>" <%#= build_inline_style(el).html_safe %>>
   <div class="id <%= qtip_cls %>">
     <div class="tooltip_text"><%= render :partial => "rb_stories/tooltip", :object => el if defined?(render_tooltip) %></div>
     <div class="t"><%= issue_link_or_empty(el) %></div>
     <div class="v"><%= id_or_empty(el) %></div>
   </div>
-
-  <div class="subject editable" fieldtype="textarea" fieldname="subject" fieldlabel="<%=l(:field_subject)%>"><%= h el.subject %></div>
+  <div class="subject <%= editable %>" fieldtype="textarea" fieldname="subject" fieldlabel="<%=l(:field_subject)%>"><%= h el.subject %></div>
+  <% unless el.respond_to? :fakeelement %>
   <div class="description editable" style="display: none" fieldtype="textarea" fieldname="description" fieldlabel="<%=l(:field_description)%>"><%= h el.description %></div>
   <div class="assigned_to_id editable" fieldtype="select" fieldname="assigned_to_id" fieldlabel="<%=l(:field_assigned_to)%>">
     <div class="t"><%= assignee_name_or_empty(el) %></div>
@@ -25,4 +38,9 @@
     <div class="previous"><%= el.right_sibling.blank? ? '' : el.right_sibling.id %></div>
     <%= render :partial => "backlogs/model_errors", :object => el.errors unless el.errors.empty? %>
   </div>
+  <% else %>
+  <div class="meta">
+    <div class="story_id"><%= '0' %></div>
+  </div>
+  <% end %>
 </div>

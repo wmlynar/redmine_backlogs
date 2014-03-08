@@ -48,7 +48,7 @@ class RbGenericboardsController < RbApplicationController
     status = (result ? 200 : 400)
     puts "rendering updated story #{story}"
     respond_to do |format|
-      format.html { render :partial => "generic", :object => story, :status => status }
+      format.html { render :partial => "generic", :object => story, :status => status, :locals => {:cls =>'task'} }
     end
   end
 
