@@ -78,6 +78,37 @@ class RbGenericboard < ActiveRecord::Base
     name
   end
 
+  def resolve_class(object_type)
+    case object_type
+    when '__sprint'
+      RbSprint
+    when '__release'
+      RbRelease
+    when '__team'
+      Group
+    when '__state'
+      Tracker
+    else #assume an id of tracker, see our options in helper
+      RbGeneric
+    end
+  end
+
+  def row_object(id)
+    unless id > 0
+      return nil
+    end
+    cls = resolve_class(row_type)
+    cls.find(id)
+  end
+
+  def col_object(id)
+    unless id > 0
+      return nil
+    end
+    cls = resolve_class(col_type)
+    cls.find(id)
+  end
+
   def type_name(object_type)
     case object_type
     when '__sprint'
