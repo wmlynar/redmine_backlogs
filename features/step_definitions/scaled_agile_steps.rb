@@ -17,19 +17,83 @@ Given(/^scaled agile features are enabled and configured$/) do
 end
 
 Given(/^some default generic boards are configured$/) do
+  epic = Tracker.find_by_name('Epic').id
+  feature = Tracker.find_by_name('Feature').id
+  story = Tracker.find_by_name('Story').id
+  task = Tracker.find_by_name('Task').id
+  release = '__release'
+  sprint = '__sprint'
+  team = '__team'
+  state = '__state'
+
+  #1.2
   board = RbGenericboard.new
-  board.name = "Establish epics and Features"
-  board.col_type = Tracker.find_by_name('Feature').id
-  board.element_type = Tracker.find_by_name('Feature').id
+  board.name = "1.2 Establish epics and features"
+  board.col_type = feature
+  board.element_type = feature
+  board.row_type = epic
+  board.save!
+
+  #1.3
+  board = RbGenericboard.new
+  board.name = "1.3 Put features in release"
+  board.col_type = release
+  board.element_type = feature
   board.row_type = Tracker.find_by_name('Epic').id
   board.save!
-  #puts board
 
+  #2.1
   board = RbGenericboard.new
-  board.name = "Plan Features into Releases"
-  board.col_type = '__release'
-  board.element_type = Tracker.find_by_name('Feature').id
-  board.row_type = Tracker.find_by_name('Epic').id
+  board.name = "2.1 Establish stories for features"
+  board.col_type = story
+  board.element_type = story
+  board.row_type = feature
+  board.prefilter = '__current_release'
+  board.save!
+
+  #2.2
+  board = RbGenericboard.new
+  board.name = "2.2 Assign stories to teams"
+  board.col_type = team
+  board.element_type = story
+  board.row_type = feature
+  board.prefilter = '__current_release'
+  board.save!
+
+  #2.3
+  board = RbGenericboard.new
+  board.name = "2.3 Plan release sprints"
+  board.col_type = sprint
+  board.element_type = story
+  board.row_type = team
+  board.prefilter = '__current_release __my_team'
+  board.save!
+
+  #2.4
+  board = RbGenericboard.new
+  board.name = "2.4 View release plan by Ffature"
+  board.col_type = sprint
+  board.element_type = story
+  board.row_type = feature
+  board.prefilter = '__current_release'
+  board.save!
+
+  #3.1
+  board = RbGenericboard.new
+  board.name = "3.1 View selected product backlog"
+  board.col_type = story
+  board.element_type = story
+  board.row_type = sprint
+  board.prefilter = '__current_sprint __my_team'
+  board.save!
+
+  #3.2
+  board = RbGenericboard.new
+  board.name = "3.2 Manage sprint backlog"
+  board.col_type = state
+  board.element_type = task
+  board.row_type = story
+  board.prefilter = '__current_sprint __my_team'
   board.save!
 
 end

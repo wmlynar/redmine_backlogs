@@ -46,9 +46,9 @@ Feature: Scaled agile
     Given some default generic boards are configured
       And I am viewing the boards page
      Then I should see "Select board"
-      And I should see "Establish epics and Features" within "#header"
-     When I select "Plan Features into Releases" from "select_board"
-     Then I should see "Plan Features into Releases" within "#header"
+      And I should see "1.2 Establish epics and features" within "#header"
+     When I select "1.3 Put features in release" from "select_board"
+     Then I should see "1.3 Put features in release" within "#header"
 
 #  Scenario: Configure a board
 #    Given I am have the rights to configure generic boards
