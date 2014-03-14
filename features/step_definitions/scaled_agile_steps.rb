@@ -14,6 +14,14 @@ Given(/^scaled agile features are enabled and configured$/) do
   Backlogs.setting[:default_feature_tracker] = feature_trackers[0]
   #enable the trackers in project
   @project.update_attribute :tracker_ids, (@project.tracker_ids + epic_trackers + feature_trackers)
+
+end
+Given (/^I am member of some teams$/) do
+  #define some teams
+  team = Group.new
+  team.name = 'Team 1'
+  team.save!
+  team.users << [@user]
 end
 
 Given(/^some default generic boards are configured$/) do
@@ -95,7 +103,6 @@ Given(/^some default generic boards are configured$/) do
   board.row_type = story
   board.prefilter = '__current_sprint __my_team'
   board.save!
-
 end
 
 Given(/^I am viewing the boards page$/) do
@@ -119,4 +126,60 @@ Then(/^the scaled agile tracker fields should be set to their correct trackers$/
 
     field = find_field('settings[default_feature_tracker]')
     field.value.should == "#{Tracker.find_by_name('Feature').id}"
+end
+
+Then(/^the boards should provide correct data for rows, columns and elements$/) do
+  boards = RbGenericboard.all
+  boards.length.should == 8
+  n = 0
+  puts "Checking board #{boards[n]}"
+  b = boards[n]
+  b.element_type_name.should == 'Feature'
+  b.row_type_name.should == 'Epic'
+  b.col_type_name.should == 'Feature'
+  #puts "prefilter name #{b.prefilter_name}"
+  b.prefilter_name.should == ''
+  #puts b.col_object(id)
+  #puts b.row_object(id)
+  columns = b.columns(@project)
+  #puts "columns #{columns}"
+  columns.length.should == 1
+  columns[0].is_a?(RbGeneric).should be_true
+  #puts "rows #{b.rows(@project).to_a}"
+  #puts b.elements(@project).to_a
+  #puts "elements by cell #{b.elements_by_cell(@project)}"
+  puts b.elements_by_cell(@project).length
+  #puts "prefilter objects #{b.prefilter_objects(@project)}"
+  b.prefilter_objects(@project).length.should == 0
+  #puts "FIXME Todo..."
+
+  n = 2
+  puts "Checking board #{boards[n]}"
+  b = boards[n]
+  b.name.should == "2.1 Establish stories for features"
+  #puts "prefilter objects #{b.prefilter_objects(@project)}"
+  f = b.prefilter_objects(@project)
+  f.length.should == 1
+  f['__current_release'].is_a?(RbRelease).should be_true
+  f['__current_release'].name.should == 'Rel 1'
+
+  n = 4
+  puts "Checking board #{boards[n]}"
+  b = boards[n]
+  b.name.should == "2.3 Plan release sprints"
+  f = b.prefilter_objects(@project)
+  puts "prefilter objects #{f}"
+  f.length.should == 2
+  f['__current_release'].is_a?(RbRelease).should be_true
+  f['__current_release'].name.should == 'Rel 1'
+  f['__my_team'].is_a?(Group).should be_true
+  f['__my_team'].lastname.should == 'Team 1'
+
+  columns = b.columns(@project)
+  puts "columns #{columns}"
+  columns.length.should == 3
+  columns[0].is_a?(RbFakeGeneric).should be_true
+  columns[1].is_a?(RbSprint).should be_true
+  columns[2].is_a?(RbSprint).should be_true
+
 end

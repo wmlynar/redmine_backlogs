@@ -19,17 +19,56 @@ class RbGenericboard < ActiveRecord::Base
 
   private
 
+  def __sprints_condition(project, options={})
+    options[:conditions] ||= []
+    pf = prefilter_objects(project)
+    r = pf['__current_release']
+    if r
+      condition = ["#{RbSprint.table_name}.sprint_start_date >= ? and #{RbSprint.table_name}.effective_date <= ? ", r.release_start_date, r.release_end_date]
+      Backlogs::ActiveRecord.add_condition(options, condition) if condition
+    end
+    options
+  end
+
+  def __release_condition(project, options={})
+    options[:conditions] ||= []
+    pf = prefilter_objects(project)
+    r = pf['__current_release']
+    if r
+      condition = ["#{RbRelease.table_name}.id = ? ", r.id]
+      Backlogs::ActiveRecord.add_condition(options, condition) if condition
+    end
+    options
+  end
+  def __team_condition(project, options={})
+    options[:conditions] ||= []
+    pf = prefilter_objects(project)
+    r = pf['__my_team']
+    if r
+      condition = ["#{Group.table_name}.id = ? ", r.id]
+      Backlogs::ActiveRecord.add_condition(options, condition) if condition
+    end
+    options
+  end
+
   def resolve_scope(object_type, project, options={})
     case object_type
     when '__sprint'
-      project.open_shared_sprints
+      options = __sprints_condition(project, options)
+      project.open_shared_sprints.scoped(options)
+
     when '__release'
-      project.open_releases_by_date
+      options = __release_condition(project, options)
+      project.open_releases_by_date.scoped(options)
+
     when '__team'
-      Group.order(:lastname).map {|g| g.becomes(RbTeam) }
+      options = __team_condition(project, options)
+      Group.order(:lastname).scoped(options).map {|g| g.becomes(RbTeam) }
+
     when '__state'
       tracker = Tracker.find(element_type) #FIXME multiple trackers, no tracker
       tracker.issue_statuses
+
     else #assume an id of tracker, see our options in helper
       tracker_id = object_type
       return RbGeneric.visible.order("#{RbGeneric.table_name}.position").
@@ -61,7 +100,25 @@ class RbGenericboard < ActiveRecord::Base
     else
       :parent
     end
+  end
 
+  def find_filter_object(project, f)
+    return nil if project.nil?
+    case f
+    when '__current_release'
+      #"Current Release"
+      project.active_release
+      #project.open_releases_by_date
+    when '__current_sprint'
+      #"Current Sprint"
+      project.active_sprint
+      #project.open_shared_sprints
+    when '__my_team'
+      #"my Team"
+      User.current.groups.order(:lastname).first
+    else
+      nil
+    end
   end
 
   public
@@ -161,6 +218,20 @@ class RbGenericboard < ActiveRecord::Base
     else
       default
     end
+  end
+
+  def prefilter_objects(project)
+    if prefilter.nil?
+      return {}
+    end
+    filter = prefilter.split
+    #filters = {}
+    #prefilter.split.each {|f|
+    #  obj = find_filter_object(project, f)
+    #  filters[f] = obj unless obj.nil?
+    #}
+
+    Hash[filter.zip(filter.map{|f| find_filter_object(project, f)})]
   end
 
   def columns(project, options={})

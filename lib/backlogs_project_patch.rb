@@ -241,6 +241,12 @@ module Backlogs
         ])
       end
 
+      def active_release
+        time = (Time.zone ? Time.zone : Time).now
+        open_releases_by_date.where("#{RbRelease.table_name}.release_start_date <= ? and #{RbRelease.table_name}.release_end_date >= ?",
+                                    time.end_of_day, time.beginning_of_day).first
+      end
+
       def open_releases_by_date
         order = Backlogs.setting[:sprint_sort_order] == 'desc' ? 'DESC' : 'ASC'
         (Backlogs.setting[:sharing_enabled] ? shared_releases : releases).
