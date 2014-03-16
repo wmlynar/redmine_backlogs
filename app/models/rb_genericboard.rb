@@ -172,6 +172,25 @@ class RbGenericboard < ActiveRecord::Base
     end
   end
 
+  def find_filter_alternative_options(project, f)
+    return nil if project.nil?
+    case f
+    when '__current_or_no_sprint'
+      open_shared_versions(project)
+    when '__current_sprint'
+      open_shared_versions(project)
+    when '__current_or_no_release'
+      project.open_releases_by_date
+    when '__current_release'
+      project.open_releases_by_date
+    when '__my_team'
+      User.current.groups.order(:lastname)
+    else
+      nil
+    end
+  end
+
+
   public
 
   safe_attributes 'name',
@@ -284,6 +303,26 @@ class RbGenericboard < ActiveRecord::Base
     filter = [filter] if filter && !filter.is_a?(Array)
 
     Hash[filter.zip(filter.collect{|f| find_filter_object(project, f)})]
+  end
+
+  def prefilter_alternative_options(project)
+    puts "Prefilter alternative options #{prefilter}"
+    filter = prefilter
+    filter = [filter] if filter && !filter.is_a?(Array)
+    # assemble objects into __filter => list
+    opts = Hash[filter.collect{|f|
+      [f, {:values=>find_filter_alternative_options(project, f)}] unless f.blank?
+    }.compact()]
+    # convert onbjects in lists to [id, name] tuples
+    opts.each {|key, optionlist|
+      unless optionlist.blank?
+        optionlist[:values].collect!{|o| [o.name, o.id] unless o.blank?}.compact()
+        fo = find_filter_object(project, key)
+        optionlist[:selected] = fo.id unless fo.blank?
+        optionlist[:label] = filter_name(key)
+      end
+    }
+    opts
   end
 
   def columns(project, options={})

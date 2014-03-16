@@ -46,10 +46,12 @@
   </span>
 
   <span>
-    Prefilter name <%= @rb_genericboard.prefilter_name %>
-  </span>
-  <span>
-    Prefilter objects <%= @rb_genericboard.prefilter_objects(@project).each.collect {|f, o| o.name unless o.nil?} %>
+    <% @rb_genericboard.prefilter_alternative_options(@project).each do |key, filteroptions| %>
+    <%= filteroptions[:label] %>
+    <select name="select_xx">
+      <%= options_for_select((filteroptions[:values] || []), filteroptions[:selected]) %>
+    </select>
+    <% end %>
   </span>
 <%- end %>
 
