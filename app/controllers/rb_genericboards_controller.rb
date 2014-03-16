@@ -60,6 +60,8 @@ class RbGenericboardsController < RbApplicationController
       if row_object.is_a? RbGeneric
         parent_id = row_object.id
         project_id = row_object.project.id
+        release_id = row_object.release_id
+        sprint_id = row_object.fixed_version_id
         #FIXME determine release/sprint/project from row parent unless specified by column
       elsif row_object.is_a? RbSprint
         sprint_id = row_object.id
@@ -75,6 +77,8 @@ class RbGenericboardsController < RbApplicationController
       if col_object.is_a? RbGeneric
         parent_id = col_object.id
         project_id = col_object.project.id
+        release_id = col_object.release_id
+        sprint_id = col_object.fixed_version_id
       elsif col_object.is_a? RbSprint
         sprint_id = col_object.id
       elsif col_object.is_a? RbRelease
@@ -91,7 +95,7 @@ class RbGenericboardsController < RbApplicationController
     params[:rbteam_id] = rbteam_id if rbteam_id
     params[:project_id] = project_id
 
-    return params
+    return params, cls_hint
   end
 
   public
@@ -121,7 +125,7 @@ class RbGenericboardsController < RbApplicationController
 
   def create
     params['author_id'] = User.current.id
-    attrs = process_params(params)
+    attrs, cls_hint = process_params(params)
 
     puts "Creating generic with attrs #{attrs}"
     begin
@@ -146,9 +150,9 @@ class RbGenericboardsController < RbApplicationController
 
   def update
     story = RbGeneric.find(params[:id])
-    attrs = process_params(params)
+    attrs, cls_hint = process_params(params)
 
-    puts "Genericboard update #{story} #{attrs} #{@rb_genericboard}"
+    puts "Genericboard update #{story} #{attrs} #{cls_hint} #{@rb_genericboard}"
     begin
       result = story.update_and_position!(attrs)
     rescue => e
