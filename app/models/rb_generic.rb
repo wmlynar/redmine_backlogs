@@ -131,6 +131,8 @@ class RbGeneric < Issue
       return self.feature_trackers
     elsif self.story_trackers(:type=>:array).include?(tracker_id)
       return self.story_trackers
+    elsif tracker_id == RbTask.tracker
+      return [RbTask.tracker]
     end
 
   end

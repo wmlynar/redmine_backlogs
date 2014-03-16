@@ -23,7 +23,7 @@ class RbGenericboard < ActiveRecord::Base
   def open_shared_versions(project)
     #similar to project.open_shared_sprints but we not become(RbSprint) and return scopable query
     if Backlogs.setting[:sharing_enabled]
-      order = Backlogs.setting[:sprint_sort_order] == 'desc' ? 'DESC' : 'ASC'
+      order = 'ASC'
       project.shared_versions.visible.scoped(:conditions => {:status => ['open', 'locked']}, :order => "sprint_start_date #{order}, effective_date #{order}")
     else #no backlog sharing
       RbSprint.open_sprints(project)
@@ -146,7 +146,7 @@ class RbGenericboard < ActiveRecord::Base
     when '__team'
       :rbteam
     when '__state'
-      nil
+      :status
     else
       :parent
     end
@@ -288,9 +288,9 @@ class RbGenericboard < ActiveRecord::Base
 
   def columns(project, options={})
     if col_type != element_type #elements by col_type
-      c = resolve_scope(col_type, project, options).to_a
+      c = resolve_scope(col_type, project, options)
       if col_type != '__state' #taskboard states have no automatic 'no state' column
-        c.unshift(RbFakeGeneric.new("No #{col_type_name}"))
+        c = c.to_a.unshift(RbFakeGeneric.new("No #{col_type_name}"))
       end
       return c
     else #one column for the elements
