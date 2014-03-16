@@ -52,3 +52,58 @@
     /*border: 1px solid black;*/
     cursor: pointer;
 }
+
+#detail_slider {
+    width: 60px;
+    margin-right: 8px;
+    display: inline-block;
+}
+
+#taskboard.detaillevel-1 .issue.rowelement,
+#taskboard.detaillevel-1 .issue,
+#taskboard.detaillevel-1 .placeholder {
+    position: relative;
+    height: 30px;
+    min-height: 30px;
+    overflow: hidden;
+}
+#taskboard.detaillevel-1 .issue .subject {
+    height: 24px;
+    position: relative;
+    z-index: 100;
+    top: -1.5em;
+}
+#taskboard.detaillevel-1 .issue .id,
+#taskboard.detaillevel-1 .placeholder .id,
+#taskboard.detaillevel-1 .issue.rowelement .id {
+    z-index: 110;
+    position: relative;
+    width: 32px;
+    float: right;
+}
+
+#taskboard.detaillevel-0 .issue.rowelement,
+#taskboard.detaillevel-0 .issue,
+#taskboard.detaillevel-0 .placeholder {
+    position: relative;
+    height: 14px;
+    min-height: 14px;
+    overflow: hidden;
+}
+#taskboard.detaillevel-0 .issue,
+#taskboard.detaillevel-0 .placeholder {
+    width: 32px;
+}
+#taskboard.detaillevel-0 .issue.rowelement {
+    width: 190px;
+}
+#taskboard.detaillevel-0 .issue .subject {
+    height: 12px;
+    overflow: hidden;
+    position: relative;
+}
+#taskboard.detaillevel-0 .issue .id,
+#taskboard.detaillevel-0 .placeholder .id,
+#taskboard.detaillevel-0 .issue.rowelement .id {
+    display: none;
+}

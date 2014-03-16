@@ -107,6 +107,13 @@ RB.Genericboard = RB.Object.create({
     });
 
     this.init_add_buttons();
+
+    RB.$('#detail_slider').slider({
+        min: 0, max: 2, value: 2,
+        change: function(event, ui) {
+            self.setDetailLevel(ui.value);
+        }
+    });
   },
 
   init_add_buttons: function() {
@@ -263,6 +270,13 @@ RB.Genericboard = RB.Object.create({
         w = Math.floor(available / (num_cols * this.colWidthUnit));
     }
     self.$(".swimlane").width(this.colWidthUnit * w).css('min-width', this.colWidthUnit * w);
+  },
 
+  setDetailLevel: function(level) {
+    console.log('setting detail level to', level);
+    for (var i=0;i<3;i++) {
+        this.el.removeClass('detaillevel-'+i);
+    }
+    this.el.addClass('detaillevel-'+level);
   }
 });
