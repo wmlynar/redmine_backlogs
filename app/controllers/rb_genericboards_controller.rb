@@ -14,11 +14,13 @@ class RbGenericboardsController < RbApplicationController
 
     #determine issue tracker to use
     if col_id == 'rowelement'
-      cls_hint = 'story'
+      cls_hint = 'rowelement'
       object_type = @rb_genericboard.row_type
+      rowelement = true
     else
       cls_hint = 'task'
       object_type = @rb_genericboard.element_type
+      rowelement = false
     end
     if object_type.start_with? '__'
       render :text => e.message.blank? ? e.to_s : e.message, :status => 400
@@ -56,7 +58,7 @@ class RbGenericboardsController < RbApplicationController
     sprint_id = nil
     release_id = nil
     rbteam_id = nil
-    if row_object
+    if (row_object && !rowelement)
       if row_object.is_a? RbGeneric
         parent_id = row_object.id
         project_id = row_object.project.id
@@ -73,7 +75,7 @@ class RbGenericboardsController < RbApplicationController
         puts "Set rbteam_id from row #{rbteam_id}"
       end
     end
-    if col_object
+    if (col_object && !rowelement)
       if col_object.is_a? RbGeneric
         parent_id = col_object.id
         project_id = col_object.project.id
@@ -89,9 +91,9 @@ class RbGenericboardsController < RbApplicationController
       end
     end
     puts "Determined parent #{parent_id}, sprint #{sprint_id}, release #{release_id}, team #{rbteam_id}, project #{project_id}"
+    params[:parent_issue_id] = parent_id if parent_id
     params[:fixed_version_id] = sprint_id if sprint_id
     params[:release_id] = release_id if release_id
-    params[:parent_issue_id] = parent_id if parent_id
     params[:rbteam_id] = rbteam_id if rbteam_id
     params[:project_id] = project_id
 
@@ -166,7 +168,7 @@ class RbGenericboardsController < RbApplicationController
 
     status = (result ? 200 : 400)
     respond_to do |format|
-      format.html { render :partial => "generic", :object => story, :status => status, :locals => {:cls =>'task'} }
+      format.html { render :partial => "generic", :object => story, :status => status, :locals => {:cls => cls_hint} }
     end
   end
 

@@ -11,7 +11,7 @@ RB.Generic = RB.Object.create(RB.Issue, {
     this.el = el;
     this.config = config || {};
 
-    j.addClass("task"); // If node is based on #task_template, it doesn't have the task class yet
+    //j.addClass("task"); // If node is based on #task_template, it doesn't have the task class yet
 
     // Associate this object with the element for later retrieval
     j.data('this', this);
@@ -65,10 +65,15 @@ RB.Generic = RB.Object.create(RB.Issue, {
   saveDirectives: function(){
     var j = this.$;
     var url;
-    var nxt = this.$.next();
+    var nxt
+    if (this.$.hasClass('rowelement')) {
+        nxt = this.$.parent().parent().next().find('.model.rowelement');
+    }
+    else {
+        nxt = this.$.next();
+    }
     var project = j.parents('tr').find('.story .project .v');
     var cellID = j.parents('td').first().attr('id').split("_");
-console.log('cell id',cellID);
     var data = j.find('.editor').serialize() +
                "&genericboard_id=" + RB.constants.genericboard_id +
                "&row_id=" + cellID[0] +
@@ -91,6 +96,32 @@ console.log('cell id',cellID);
       url: url,
       data: data
     };
+  },
+
+  afterCreate: function(data, textStatus, xhr){
+    //fixup new row ids
+    if (this.$.hasClass('rowelement')) {
+        var id = this.$.attr('id').split('_')[1];
+        var row = this.$.parents('tr');
+        row.attr('id', 'swimlane-'+id);
+        row.children('td').attr('id', function(index, oldval){
+            console.log(index, oldval);
+            return id+'_'+oldval.split('_')[1];
+        });
+        RB.$('#taskboard').data('this').init_add_buttons();
+    }
+  },
+
+  cancelEdit: function(obj){
+    this.endEdit();
+    if (typeof obj == 'undefined') {
+        obj = this;
+    }
+    obj.$.find('.editors').remove();
+    if(this.isNew()){
+      this.$.parents('tr').remove();
+      this.$.remove();
+    }
   },
 
   beforeSaveDragResult: function(){

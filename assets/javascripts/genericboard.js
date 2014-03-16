@@ -1,5 +1,5 @@
 RB.$(function() {
-    var board = RB.Factory.initialize(RB.Genericboard, RB.$('#taskboard'));
+    RB.Factory.initialize(RB.Genericboard, RB.$('#taskboard'));
 
     /**
      * bind the "Select board" select box
@@ -75,6 +75,20 @@ RB.Genericboard = RB.Object.create({
         }, sortableOpts));
     }
 
+    sortableOpts = {
+      placeholder: 'placeholder',
+      distance: 3,
+      helper: 'clone', //workaround firefox15+ bug where drag-stop triggers click
+      start: function(e, ui){console.log('row drag start');return true;},
+      stop: function(e, ui) {console.log('row drop');return true;},
+      update: self.dragRowComplete
+    };
+    //initialize the rows (tr) as sortable
+    if (RB.permissions.update_stories) {
+      j.find('tbody.row-list').sortable(RB.$.extend({
+        }, sortableOpts));
+    }
+
     // Initialize each task in the board
     j.find('.task').each(function(index){
       var task = RB.Factory.initialize(RB.Generic, this, {type_name: self.element_type_name}); // 'this' refers to an element with class="task"
@@ -84,9 +98,13 @@ RB.Genericboard = RB.Object.create({
       var task = RB.Factory.initialize(RB.Generic, this, {type_name: self.row_type_name}); // 'this' refers to an element with class="task"
     });
 
-    // add new buttons
-    j.find('#generics td').hover(function(e){self.showAddButton(this, e);}, function(e){self.hideAddButton(this, e);});
+    this.init_add_buttons();
+  },
 
+  init_add_buttons: function() {
+    // add new buttons
+    var self = this;
+    this.$.find('#generics td').hover(function(e){self.showAddButton(this, e);}, function(e){self.hideAddButton(this, e);});
   },
 
   onMouseUp: function(e) {
@@ -174,6 +192,11 @@ RB.Genericboard = RB.Object.create({
     }
   },
 
+  dragRowComplete: function(event, ui) {
+    if (!ui.sender) { // Handler is triggered for source and target. Thus the need to check.
+      ui.item.find('.model.rowelement').first().data('this').saveDragResult();
+    }
+  },
 
   showAddButton: function(target, e)  {
     var me = this;
@@ -196,12 +219,15 @@ RB.Genericboard = RB.Object.create({
         task = RB.$('#task_template').children().first().clone();
     if (typeof cell.attr('_col_id') == 'undefined') { //we add a row
         type_name = this.row_type_name;
+        row.before( RB.$('#row_template').find('tr').first().clone() );
+        var new_row = row.prev();
+        task = new_row.find('.model.rowelement').first()
     }
     else { // we add an element
         type_name = this.element_type_name;
+        cell.prepend(task);
     }
 
-    cell.prepend(task);
     o = RB.Factory.initialize(RB.Generic, task, {type_name:type_name});
     o.edit();
   },

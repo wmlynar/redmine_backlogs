@@ -33,7 +33,7 @@
     fakeelement = true
   end
 %>
-<div class="model issue <%= cls  %> <%=  classes %>" id="issue_<%= el.id %>" <%#= inline_style %>>
+<div class="model issue <%= cls %> <%= classes %>" id="issue_<%= el.id %>" <%#= inline_style %>>
   <div class="id <%= qtip_cls %>">
     <div class="tooltip_text"><%= render :partial => "rb_stories/tooltip", :object => el if defined?(render_tooltip) %></div>
     <div class="t"><%= issue_link %></div>
