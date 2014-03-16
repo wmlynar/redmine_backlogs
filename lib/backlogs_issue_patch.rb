@@ -120,6 +120,13 @@ module Backlogs
 
       def backlogs_before_save
         if Backlogs.configured?(project)
+
+          #story follow feature release
+          if Backlogs.setting[:scaled_agile_enabled] && self.is_story?
+            parent = self.parent
+            self.release = self.parent.release if (parent && parent.is_feature?)
+          end
+
           if (self.is_task? || self.story)
             self.remaining_hours = self.estimated_hours if self.remaining_hours.blank?
             self.estimated_hours = self.remaining_hours if self.estimated_hours.blank?
@@ -174,6 +181,20 @@ module Backlogs
         }
 
         return unless Backlogs.configured?(self.project)
+
+        # stories follow feature release
+        if Backlogs.setting[:scaled_agile_enabled] && self.is_feature?
+          storylist = RbStory.find(:all, :conditions => [
+            "parent_id = ? and tracker_id in (?)", self.id, RbStory.trackers
+          ])
+          if storylist.size > 0
+            story_ids = '(' +storylist.collect{|story| connection.quote(story.id)}.join(',') + ')'
+            connection.execute("update issues set
+                                updated_on = #{connection.quote(self.updated_on)},
+                                release_id = #{connection.quote(self.release_id)}
+                                where id in #{story_ids}")
+          end
+        end
 
         if self.is_story?
           # raw sql and manual journal here because not
