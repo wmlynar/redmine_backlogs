@@ -16,8 +16,19 @@ end
 class RbGenericboard < ActiveRecord::Base
   include Redmine::SafeAttributes
   attr_accessible :col_type, :element_type, :name, :prefilter, :colfilter, :rowfilter, :row_type
+  serialize :prefilter, Array
 
   private
+
+  def open_shared_versions(project)
+    #similar to project.open_shared_sprints but we not become(RbSprint) and return scopable query
+    if Backlogs.setting[:sharing_enabled]
+      order = Backlogs.setting[:sprint_sort_order] == 'desc' ? 'DESC' : 'ASC'
+      project.shared_versions.visible.scoped(:conditions => {:status => ['open', 'locked']}, :order => "sprint_start_date #{order}, effective_date #{order}")
+    else #no backlog sharing
+      RbSprint.open_sprints(project)
+    end
+  end
 
   def __sprints_condition(project, options={})
     options[:conditions] ||= []
@@ -38,8 +49,14 @@ class RbGenericboard < ActiveRecord::Base
       condition = ["#{RbRelease.table_name}.id = ? ", r.id]
       Backlogs::ActiveRecord.add_condition(options, condition) if condition
     end
+    r = pf['__current_or_no_release']
+    if r
+      condition = ["#{RbRelease.table_name}.id = ? ", r.id]
+      Backlogs::ActiveRecord.add_condition(options, condition) if condition
+    end
     options
   end
+
   def __team_condition(project, options={})
     options[:conditions] ||= []
     pf = prefilter_objects(project)
@@ -51,11 +68,43 @@ class RbGenericboard < ActiveRecord::Base
     options
   end
 
+  def __element_condition(project, options={})
+    options[:conditions] ||= []
+    pf = prefilter_objects(project)
+    r = pf['__current_or_no_release']
+    if r
+      condition = ["(#{RbGeneric.table_name}.release_id is null or #{RbGeneric.table_name}.release_id in (?)) ", r.id]
+      Backlogs::ActiveRecord.add_condition(options, condition) if condition
+    end
+    r = pf['__current_release']
+    if r
+      condition = ["#{RbGeneric.table_name}.release_id in (?) ", r.id]
+      Backlogs::ActiveRecord.add_condition(options, condition) if condition
+    end
+    r = pf['__current_or_no_sprint']
+    if r
+      condition = ["(#{RbGeneric.table_name}.fixed_version_id is null or #{RbGeneric.table_name}.fixed_version_id in (?)) ", r.id]
+      Backlogs::ActiveRecord.add_condition(options, condition) if condition
+    end
+    r = pf['__current_sprint']
+    if r
+      condition = ["#{RbGeneric.table_name}.fixed_version_id in (?) ", r.id]
+      Backlogs::ActiveRecord.add_condition(options, condition) if condition
+    end
+    r = pf['__my_team']
+    if r
+      condition = ["(#{RbGeneric.table_name}.rbteam_id is null or #{RbGeneric.table_name}.rbteam_id in (?)) ", r.id]
+      Backlogs::ActiveRecord.add_condition(options, condition) if condition
+    end
+    options
+  end
+
+
   def resolve_scope(object_type, project, options={})
     case object_type
     when '__sprint'
       options = __sprints_condition(project, options)
-      project.open_shared_sprints.scoped(options)
+      open_shared_versions(project).scoped(options).collect{|v| v.becomes(RbSprint)}
 
     when '__release'
       options = __release_condition(project, options)
@@ -63,7 +112,7 @@ class RbGenericboard < ActiveRecord::Base
 
     when '__team'
       options = __team_condition(project, options)
-      Group.order(:lastname).scoped(options).map {|g| g.becomes(RbTeam) }
+      Group.order(:lastname).scoped(options).collect{|g| g.becomes(RbTeam) }
 
     when '__state'
       tracker = Tracker.find(element_type) #FIXME multiple trackers, no tracker
@@ -71,6 +120,7 @@ class RbGenericboard < ActiveRecord::Base
 
     else #assume an id of tracker, see our options in helper
       tracker_id = object_type
+      options = __element_condition(project, options)
       return RbGeneric.visible.order("#{RbGeneric.table_name}.position").
         generic_backlog_scope(
           options.dup.merge({
@@ -108,11 +158,12 @@ class RbGenericboard < ActiveRecord::Base
     when '__current_release'
       #"Current Release"
       project.active_release
-      #project.open_releases_by_date
+    when '__current_or_no_release'
+      project.active_release
     when '__current_sprint'
-      #"Current Sprint"
       project.active_sprint
-      #project.open_shared_sprints
+    when '__current_or_no_sprint'
+      project.active_sprint
     when '__my_team'
       #"my Team"
       User.current.groups.order(:lastname).first
@@ -200,19 +251,24 @@ class RbGenericboard < ActiveRecord::Base
   end
 
   def prefilter_name
-    if prefilter.nil?
+    if prefilter.blank?
       return ''
     end
-    filter = prefilter.split
-    filter.map { |f| filter_name(f, nil) }.compact.join(' and ')
+    filter = prefilter
+    filter = [filter] if filter && !filter.is_a?(Array)
+    filter.collect { |f| filter_name(f, nil) }.compact.join(' and ')
   end
 
   def filter_name(f, default="")
     case f
     when '__current_release'
       "Current Release"
+    when '__current_or_no_release'
+      "Current or no Release"
     when '__current_sprint'
       "Current Sprint"
+    when '__current_or_no_sprint'
+      "Current or no Sprint"
     when '__my_team'
       "my Team"
     else
@@ -224,14 +280,10 @@ class RbGenericboard < ActiveRecord::Base
     if prefilter.nil?
       return {}
     end
-    filter = prefilter.split
-    #filters = {}
-    #prefilter.split.each {|f|
-    #  obj = find_filter_object(project, f)
-    #  filters[f] = obj unless obj.nil?
-    #}
+    filter = prefilter
+    filter = [filter] if filter && !filter.is_a?(Array)
 
-    Hash[filter.zip(filter.map{|f| find_filter_object(project, f)})]
+    Hash[filter.zip(filter.collect{|f| find_filter_object(project, f)})]
   end
 
   def columns(project, options={})

@@ -34,7 +34,7 @@
 <%- end %>
 
 <%- content_for :breadcrumbs do %>
-  <%= @rb_genericboard.name %>
+  <%= @rb_genericboard.name %> <% unless @rb_genericboard.prefilter_name.blank? %>(<%= @rb_genericboard.prefilter_name %>)<% end %>
 <%- end %>
 
 <%- content_for :view_specific_users do %>
@@ -43,6 +43,13 @@
     <select name="select_board" id="select_board">
       <%= genericboards_boardlist_options_for_select(@rb_genericboard.id) %>
     </select>
+  </span>
+
+  <span>
+    Prefilter name <%= @rb_genericboard.prefilter_name %>
+  </span>
+  <span>
+    Prefilter objects <%= @rb_genericboard.prefilter_objects(@project).each.collect {|f, o| o.name unless o.nil?} %>
   </span>
 <%- end %>
 

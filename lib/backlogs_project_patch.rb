@@ -217,6 +217,7 @@ module Backlogs
       def open_shared_sprints
         if Backlogs.setting[:sharing_enabled]
           order = Backlogs.setting[:sprint_sort_order] == 'desc' ? 'DESC' : 'ASC'
+          #beware - this returns an array, not an activerecord query
           shared_versions.visible.scoped(:conditions => {:status => ['open', 'locked']}, :order => "sprint_start_date #{order}, effective_date #{order}").collect{|v| v.becomes(RbSprint) }
         else #no backlog sharing
           RbSprint.open_sprints(self)

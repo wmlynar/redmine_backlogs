@@ -162,6 +162,8 @@ Then(/^the boards should provide correct data for rows, columns and elements$/) 
   f.length.should == 1
   f['__current_release'].is_a?(RbRelease).should be_true
   f['__current_release'].name.should == 'Rel 1'
+  puts b.elements(@project).to_a
+
 
   n = 4
   puts "Checking board #{boards[n]}"
@@ -181,5 +183,7 @@ Then(/^the boards should provide correct data for rows, columns and elements$/) 
   columns[0].is_a?(RbFakeGeneric).should be_true
   columns[1].is_a?(RbSprint).should be_true
   columns[2].is_a?(RbSprint).should be_true
+
+  puts b.elements(@project).to_a
 
 end
