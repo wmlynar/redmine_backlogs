@@ -41,11 +41,19 @@ RB.Genericboard = RB.Object.create({
     self.row_type_name = j.attr('_row_type_name');
     // Initialize column widths
     self.colWidthUnit = RB.$(".swimlane").width();
-    self.defaultColWidth = 2;
+    self.defaultColWidth = 0;
     self.loadColWidthPreference();
     self.updateColWidths();
-    RB.$("#col_width input").bind('keyup', function(e){ if(e.which==13) self.updateColWidths(); });
-
+    RB.$("#col_width input").bind('keyup', function(e){if(e.which==13) self.updateColWidths(); });
+    RB.$(window).resize(function() {
+        if (self.windowresize_update_task) {
+            window.clearTimeout(self.windowresize_update_task);
+        }
+        self.windowresize_update_task = window.setTimeout(function() {
+            self.updateColWidths();
+            self.windowresize_update_task = null;
+        }, 100);
+    });
     //initialize mouse handling for drop handling
     j.bind('mousedown.taskboard', function(e) { return self.onMouseDown(e); });
     j.bind('mouseup.taskboard', function(e) { return self.onMouseUp(e); });
@@ -248,6 +256,13 @@ RB.Genericboard = RB.Object.create({
     }
     RB.$("#col_width input").val(w);
     RB.UserPreferences.set('taskboardColWidth', w);
-    RB.$(".swimlane").width(this.colWidthUnit * w).css('min-width', this.colWidthUnit * w);
+    if (!w) { //auto width
+        var available = RB.$(window).width() -
+            self.$('#generics td').first().width(),
+            num_cols = self.$('#generics tr').first().children().length - 1;
+        w = Math.floor(available / (num_cols * this.colWidthUnit));
+    }
+    self.$(".swimlane").width(this.colWidthUnit * w).css('min-width', this.colWidthUnit * w);
+
   }
 });
