@@ -128,6 +128,9 @@ module Backlogs
           end
 
           if (self.is_task? || self.story)
+            if Backlogs.setting[:scaled_agile_enabled]
+              self.rbteam_id = parent.rbteam_id if parent
+            end
             self.remaining_hours = self.estimated_hours if self.remaining_hours.blank?
             self.estimated_hours = self.remaining_hours if self.estimated_hours.blank?
 
@@ -217,7 +220,10 @@ module Backlogs
           if tasklist.size > 0
             task_ids = '(' + tasklist.collect{|task| connection.quote(task.id)}.join(',') + ')'
             connection.execute("update issues set
-                                updated_on = #{connection.quote(self.updated_on)}, fixed_version_id = #{connection.quote(self.fixed_version_id)}, tracker_id = #{RbTask.tracker}
+                                updated_on = #{connection.quote(self.updated_on)},
+                                fixed_version_id = #{connection.quote(self.fixed_version_id)},
+                                rbteam_id = #{connection.quote(self.rbteam_id)},
+                                tracker_id = #{RbTask.tracker}
                                 where id in #{task_ids}")
           end
         end
