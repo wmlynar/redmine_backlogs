@@ -104,7 +104,7 @@ namespace :redmine do
         end
 
          #2.4
-        name = "2.4 View release plan by Ffature"
+        name = "2.4 View release plan by Feature"
         unless RbGenericboard.find_by_name(name)
           board = RbGenericboard.new
           board.name = name
