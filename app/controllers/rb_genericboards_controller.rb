@@ -115,10 +115,11 @@ class RbGenericboardsController < RbApplicationController
 
 
   def show
-    @rows = @rb_genericboard.rows(@project).to_a
+    @filteroptions = params.select{|k,v| k.starts_with?('__')}
+    @rows = @rb_genericboard.rows(@project, @filteroptions).to_a
     @rows.append(RbFakeGeneric.new("No #{@rb_genericboard.row_type_name}"))
-    @columns = @rb_genericboard.columns(@project).to_a
-    @elements_by_cell = @rb_genericboard.elements_by_cell(@project)
+    @columns = @rb_genericboard.columns(@project, @filteroptions).to_a
+    @elements_by_cell = @rb_genericboard.elements_by_cell(@project, @filteroptions)
     @all_boards = RbGenericboard.all
     respond_to do |format|
       format.html { render :layout => "rb" }

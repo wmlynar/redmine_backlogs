@@ -114,6 +114,11 @@ RB.Genericboard = RB.Object.create({
             self.setDetailLevel(ui.value);
         }
     });
+
+    RB.$('.prefilter-overrides select').change(function(event) {
+        console.log('prefilter change', this.value, this.id);
+        RB.$(this).parent('form').submit();
+    });
   },
 
   init_add_buttons: function() {

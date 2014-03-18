@@ -18,6 +18,8 @@ class RbGenericboard < ActiveRecord::Base
   attr_accessible :col_type, :element_type, :name, :prefilter, :colfilter, :rowfilter, :row_type
   serialize :prefilter, Array
 
+  attr_accessor :filteroptions
+
   private
 
   def open_shared_versions(project)
@@ -30,36 +32,48 @@ class RbGenericboard < ActiveRecord::Base
     end
   end
 
-  def __sprints_condition(project, options={})
+  def open_releases_by_date(project)
+    #similar to project.open_releases_by_date but we want to order ascending
+    order = 'ASC'
+    (Backlogs.setting[:sharing_enabled] ? project.shared_releases : project.releases).
+      visible.open.
+      reorder("#{RbRelease.table_name}.release_end_date ASC, #{RbRelease.table_name}.release_start_date ASC")
+  end
+
+
+  def __sprints_condition(project, filteroptions={})
+    options = {}
     options[:conditions] ||= []
-    pf = prefilter_objects(project)
-    r = pf['__current_release']
+    pf = prefilter_objects(project, filteroptions)
+    r = pf['__current_or_no_release'] || pf['__current_release']
     if r
       condition = ["#{RbSprint.table_name}.sprint_start_date >= ? and #{RbSprint.table_name}.effective_date <= ? ", r.release_start_date, r.release_end_date]
       Backlogs::ActiveRecord.add_condition(options, condition) if condition
     end
-    options
-  end
-
-  def __release_condition(project, options={})
-    options[:conditions] ||= []
-    pf = prefilter_objects(project)
-    r = pf['__current_release']
+    r = pf['__current_or_no_sprint'] || pf['__current_sprint']
     if r
-      condition = ["#{RbRelease.table_name}.id = ? ", r.id]
-      Backlogs::ActiveRecord.add_condition(options, condition) if condition
-    end
-    r = pf['__current_or_no_release']
-    if r
-      condition = ["#{RbRelease.table_name}.id = ? ", r.id]
+      condition = ["#{RbSprint.table_name}.id = ?", r.id]
       Backlogs::ActiveRecord.add_condition(options, condition) if condition
     end
     options
   end
 
-  def __team_condition(project, options={})
+  def __release_condition(project, filteroptions={})
+    options = {}
     options[:conditions] ||= []
-    pf = prefilter_objects(project)
+    pf = prefilter_objects(project, filteroptions)
+    r = pf['__current_release'] || pf['__current_or_no_release']
+    if r
+      condition = ["#{RbRelease.table_name}.id = ? ", r.id]
+      Backlogs::ActiveRecord.add_condition(options, condition) if condition
+    end
+    options
+  end
+
+  def __team_condition(project, filteroptions={})
+    options = {}
+    options[:conditions] ||= []
+    pf = prefilter_objects(project, filteroptions)
     r = pf['__my_team']
     if r
       condition = ["#{Group.table_name}.id = ? ", r.id]
@@ -68,9 +82,11 @@ class RbGenericboard < ActiveRecord::Base
     options
   end
 
-  def __element_condition(project, options={})
+  def __element_condition(project, filteroptions={})
+    options = {}
     options[:conditions] ||= []
-    pf = prefilter_objects(project)
+    pf = prefilter_objects(project, filteroptions)
+    puts "Element condition for prefilter #{pf}"
     r = pf['__current_or_no_release']
     if r
       condition = ["(#{RbGeneric.table_name}.release_id is null or #{RbGeneric.table_name}.release_id in (?)) ", r.id]
@@ -101,18 +117,19 @@ class RbGenericboard < ActiveRecord::Base
 
 
   def resolve_scope(object_type, project, options={})
+    puts "SCOPE OPTIONS #{options}"
     case object_type
     when '__sprint'
-      options = __sprints_condition(project, options)
-      open_shared_versions(project).scoped(options).collect{|v| v.becomes(RbSprint)}
+      conditions = __sprints_condition(project, options)
+      open_shared_versions(project).scoped(conditions).collect{|v| v.becomes(RbSprint)}
 
     when '__release'
-      options = __release_condition(project, options)
-      project.open_releases_by_date.scoped(options)
+      conditions = __release_condition(project, options)
+      open_releases_by_date(project).scoped(conditions)
 
     when '__team'
-      options = __team_condition(project, options)
-      Group.order(:lastname).scoped(options).collect{|g| g.becomes(RbTeam) }
+      conditions = __team_condition(project, options)
+      Group.order(:lastname).scoped(conditions).collect{|g| g.becomes(RbTeam) }
 
     when '__state'
       tracker = Tracker.find(element_type) #FIXME multiple trackers, no tracker
@@ -120,13 +137,13 @@ class RbGenericboard < ActiveRecord::Base
 
     else #assume an id of tracker, see our options in helper
       tracker_id = object_type
-      options = __element_condition(project, options)
+      conditions = __element_condition(project, options)
       return RbGeneric.visible.order("#{RbGeneric.table_name}.position").
-        generic_backlog_scope(
-          options.dup.merge({
+        scoped(conditions).
+        generic_backlog_scope({
             :project => project,
             :trackers => resolve_trackers(tracker_id)
-        }))
+        })
     end
   end
 
@@ -152,44 +169,73 @@ class RbGenericboard < ActiveRecord::Base
     end
   end
 
-  def find_filter_object(project, f)
+  def find_filter_object(project, f, filteroptions)
     return nil if project.nil?
-    case f
-    when '__current_release'
-      #"Current Release"
-      project.active_release
-    when '__current_or_no_release'
-      project.active_release
-    when '__current_sprint'
-      project.active_sprint
-    when '__current_or_no_sprint'
-      project.active_sprint
+    object = case f
+    when '__current_release', '__current_or_no_release'
+      fo = filteroptions['__release']
+      if fo.blank?
+        project.active_release
+      else
+        if fo.to_i > 0
+          RbRelease.find(filteroptions['__release'])
+        end
+      end
+    when '__current_sprint', '__current_or_no_sprint'
+      if filteroptions['__sprint'].to_i > 0
+        RbSprint.find(filteroptions['__sprint'])
+      elsif filteroptions['__sprint'].to_i == 0
+        return nil
+      else
+        project.active_sprint
+      end
     when '__my_team'
-      #"my Team"
-      User.current.groups.order(:lastname).first
+      if filteroptions['__team'].to_i > 0
+        Group.find(filteroptions['__team'])
+      elsif filteroptions['__team'].to_i == 0
+        return nil
+      else
+        User.current.groups.order(:lastname).first
+      end
     else
-      nil
+      return nil
     end
+    puts "GOT FILTER OBJECT #{object}"
+    #unless object
+    #  object = find_filter_alternative_options(project, f).first()
+    #end
+    #puts "RETURN FILTER OBJECT #{object}"
+
+    object
   end
 
   def find_filter_alternative_options(project, f)
     return nil if project.nil?
     case f
-    when '__current_or_no_sprint'
-      open_shared_versions(project)
-    when '__current_sprint'
-      open_shared_versions(project)
-    when '__current_or_no_release'
-      project.open_releases_by_date
-    when '__current_release'
-      project.open_releases_by_date
+    when '__current_sprint', '__current_or_no_sprint'
+      open_shared_versions(project).to_a
+    when '__current_release', '__current_or_no_release'
+      open_releases_by_date(project).to_a
     when '__my_team'
-      User.current.groups.order(:lastname)
+      #User.current.groups.order(:lastname).to_a
+      Group.order(:lastname).to_a
     else
       nil
     end
   end
 
+  def find_filter_option_key(f)
+    case f
+    when '__current_sprint', '__current_or_no_sprint'
+      '__sprint'
+    when '__current_release', '__current_or_no_release'
+      '__release'
+    when '__my_team'
+      '__team'
+    else
+      nil
+    end
+  end
 
   public
 
@@ -295,17 +341,17 @@ class RbGenericboard < ActiveRecord::Base
     end
   end
 
-  def prefilter_objects(project)
+  def prefilter_objects(project, filteroptions)
     if prefilter.nil?
       return {}
     end
     filter = prefilter
     filter = [filter] if filter && !filter.is_a?(Array)
 
-    Hash[filter.zip(filter.collect{|f| find_filter_object(project, f)})]
+    Hash[filter.zip(filter.collect{|f| find_filter_object(project, f, filteroptions)})]
   end
 
-  def prefilter_alternative_options(project)
+  def prefilter_alternative_options(project, filteroptions)
     puts "Prefilter alternative options #{prefilter}"
     filter = prefilter
     filter = [filter] if filter && !filter.is_a?(Array)
@@ -317,9 +363,11 @@ class RbGenericboard < ActiveRecord::Base
     opts.each {|key, optionlist|
       unless optionlist.blank?
         optionlist[:values].collect!{|o| [o.name, o.id] unless o.blank?}.compact()
-        fo = find_filter_object(project, key)
-        optionlist[:selected] = fo.id unless fo.blank?
+        optionlist[:values] << [ 'Any', 0]
+        fo = find_filter_object(project, key, filteroptions)
+        optionlist[:selected] = (fo && fo.id) || 0
         optionlist[:label] = filter_name(key)
+        optionlist[:key] = find_filter_option_key(key)
       end
     }
     opts
@@ -331,6 +379,7 @@ class RbGenericboard < ActiveRecord::Base
       if col_type != '__state' #taskboard states have no automatic 'no state' column
         c = c.to_a.unshift(RbFakeGeneric.new("No #{col_type_name}"))
       end
+      puts "COLUMNS #{c.to_a}"
       return c
     else #one column for the elements
       return [ RbFakeGeneric.new("#{col_type_name}") ]
@@ -345,7 +394,7 @@ class RbGenericboard < ActiveRecord::Base
     resolve_scope(element_type, project, options)
   end
 
-  def elements_by_cell(project)
+  def elements_by_cell(project, options={})
     parent_attribute = resolve_parent_attribute(row_type)
     if col_type != element_type
       column_attribute = resolve_parent_attribute(col_type)
@@ -356,7 +405,7 @@ class RbGenericboard < ActiveRecord::Base
 
     #aggregate all elements in scope into a matrix indexed by row/column object ids
     map = {}
-    elements(project).each {|element|
+    elements(project, options).each {|element|
       row_id = element.send(parent_attribute)
       unless row_id.nil?
         row_id = row_id.id

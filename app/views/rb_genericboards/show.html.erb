@@ -45,13 +45,15 @@
     </select>
   </span>
 
-  <span>
-    <% @rb_genericboard.prefilter_alternative_options(@project).each do |key, filteroptions| %>
-    <%= filteroptions[:label] %>
-    <select name="select_xx">
-      <%= options_for_select((filteroptions[:values] || []), filteroptions[:selected]) %>
-    </select>
-    <% end %>
+  <span class="prefilter-overrides">
+    <form action='' method='GET' name="prefilter-overrides" id="prefilter-overrides">
+      <% @rb_genericboard.prefilter_alternative_options(@project, @filteroptions).each do |key, filteroptions| %>
+      <%= filteroptions[:label] %>
+      <select name="<%=filteroptions[:key]%>" id="filter<%=filteroptions[:key]%>">
+        <%= options_for_select((filteroptions[:values] || []), filteroptions[:selected]) %>
+      </select>
+      <% end %>
+    </form>
   </span>
 <%- end %>
 
