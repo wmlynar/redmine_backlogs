@@ -13,7 +13,7 @@
                            :action => 'project',
                            :project_id => @project.identifier,
                            :genericboard_id => @rb_genericboard.id,
-                           :context => 'backlogs',
+                           :context => 'genericboard',
                            :format => 'js') %>">
   </script>
 
@@ -68,7 +68,8 @@
 
 <%- content_for :main do %>
   <div id="taskboard" _row_type_name="<%= @rb_genericboard.row_type_name %>" _element_type_name="<%= @rb_genericboard.element_type_name %>"
-      _row_type="<%= @rb_genericboard.row_type %>" _element_type="<%= @rb_genericboard.element_type %>">
+      _row_type="<%= @rb_genericboard.row_type %>" _element_type="<%= @rb_genericboard.element_type %>"
+      _col_type="<%= @rb_genericboard.col_type %>">
     <table id="board_header" cellspacing="0">
       <tr>
         <td><%= @rb_genericboard.row_type_name %></td>

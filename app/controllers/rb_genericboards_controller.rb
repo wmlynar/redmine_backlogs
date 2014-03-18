@@ -58,6 +58,7 @@ class RbGenericboardsController < RbApplicationController
     sprint_id = nil
     release_id = nil
     rbteam_id = nil
+    status_id = nil
     if (row_object && !rowelement)
       if row_object.is_a? RbGeneric
         parent_id = row_object.id
@@ -88,6 +89,8 @@ class RbGenericboardsController < RbApplicationController
       elsif col_object.is_a? Group
         rbteam_id = col_object.id
         puts "Set rbteam_id from col #{rbteam_id}"
+      elsif col_object.is_a? IssueStatus
+        status_id = col_object.id
       end
     end
     puts "Determined parent #{parent_id}, sprint #{sprint_id}, release #{release_id}, team #{rbteam_id}, project #{project_id}"
@@ -95,6 +98,7 @@ class RbGenericboardsController < RbApplicationController
     params[:fixed_version_id] = sprint_id if sprint_id
     params[:release_id] = release_id if release_id
     params[:rbteam_id] = rbteam_id if rbteam_id
+    params[:status_id] = status_id if status_id
     params[:project_id] = project_id
 
     return params, cls_hint
@@ -113,7 +117,6 @@ class RbGenericboardsController < RbApplicationController
     end
   end
 
-
   def show
     @filteroptions = params.select{|k,v| k.starts_with?('__')}
     @rows = @rb_genericboard.rows(@project, @filteroptions).to_a
@@ -121,6 +124,7 @@ class RbGenericboardsController < RbApplicationController
     @columns = @rb_genericboard.columns(@project, @filteroptions).to_a
     @elements_by_cell = @rb_genericboard.elements_by_cell(@project, @filteroptions)
     @all_boards = RbGenericboard.all
+
     respond_to do |format|
       format.html { render :layout => "rb" }
     end

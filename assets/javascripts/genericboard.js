@@ -146,6 +146,9 @@ RB.Genericboard = RB.Object.create({
     var el = RB.$(e.target).parents('.model.issue'); // .task or .impediment
     if (!el.length) return; //click elsewhere
 
+    var board = RB.$('#taskboard');
+    var col_type = board.attr('_col_type');
+
     var status_id = el.find('.meta .status_id').text();
     var user_status = el.find('.meta .user_status').text();
     var tracker_id = el.find('.meta .tracker_id').text();
@@ -153,33 +156,28 @@ RB.Genericboard = RB.Object.create({
     var old_story_id = el.find('.meta .story_id').text();
 
     //disable non-droppable cells
-    RB.$('.ui-sortable').each(function() {
-      var new_project_id = this.getAttribute('-rb-project-id');
-      var new_story_id = $(this).closest('tr').find('div.story a').text();
-      // check for project
-      //sharing, restrictive case: only allow same-project story-task relationship
-      if (new_project_id != old_project_id && old_story_id != new_story_id) {
-        RB.$(this).sortable('disable');
-        return;
-      }
+    if (col_type == '__state') {
+        RB.$('td.ui-sortable').each(function() {
+          //sharing, NON-restrictive case: only allow any-project relationship
 
-      // check for status
-      var new_status_id = this.getAttribute('-rb-status-id');
-      // allow dragging to same status to prevent weird behavior
-      // if one tries drag into another story but same status.
-      if (new_status_id == status_id) { return; }
+          // check for status
+          var new_status_id = this.getAttribute('_col_id');
+          // allow dragging to same status to prevent weird behavior
+          // if one tries drag into another story but same status.
+          if (new_status_id == status_id) { return; }
 
-      if (RB.constants.task_states) {
-        var states = RB.constants.task_states['transitions'][tracker_id][user_status][status_id];
-        if (!states) { states = RB.constants.task_states['transitions'][tracker_id][user_status][RB.constants.task_states['transitions'][tracker_id][user_status]['default']]; }
-        if (RB.$.inArray(String(new_status_id), states) < 0) {
-          //workflow does not allow this user to put the issue into this new state.
-          RB.$(this).sortable('disable');
-          return;
-        }
-      }
+          if (RB.constants.task_states) {
+            var states = RB.constants.task_states['transitions'][tracker_id][user_status][status_id];
+            if (!states) { states = RB.constants.task_states['transitions'][tracker_id][user_status][RB.constants.task_states['transitions'][tracker_id][user_status]['default']]; }
+            if (RB.$.inArray(String(new_status_id), states) < 0) {
+              //workflow does not allow this user to put the issue into this new state.
+              RB.$(this).sortable('disable');
+              return;
+            }
+          }
 
-    }); //each
+        }); //each
+    }
 
     el = RB.$(e.target).parents('.list'); // .task or .impediment
     if (el && el.length) el.sortable('refresh');

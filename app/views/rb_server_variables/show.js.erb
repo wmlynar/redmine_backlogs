@@ -81,13 +81,13 @@ if (!RB.constants) {
 <% if @sprint %>
   RB.constants.sprint_id = <%= @sprint.id %>;
   RB.constants.project_id = <%= @sprint.project_id %>;
-  <% if @context == 'taskboard' %>
-  RB.constants.task_states = <%= workflow_transitions(RbTask).to_json.html_safe %>;
-  <% end %>
+<% end %>
+<% if @context == 'taskboard' || @context == 'genericboard' %>
+RB.constants.task_states = <%= workflow_transitions(RbTask).to_json.html_safe %>;
 <% end %>
 
 <%
-  if @context == 'backlogs'
+  if @context == 'backlogs' || @context == 'genericboard'
 =begin
  project_versions maps all projects to those versions which can receive the projects issues.
  project_versions are used by the js user interface to determine to which backlogs a dragged story can be dropped to.

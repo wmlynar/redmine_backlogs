@@ -272,7 +272,7 @@ class RbGenericboard < ActiveRecord::Base
     when '__team'
       Group
     when '__state'
-      Tracker
+      IssueStatus
     else #assume an id of tracker, see our options in helper
       RbGeneric
     end
