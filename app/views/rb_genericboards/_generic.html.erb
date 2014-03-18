@@ -42,10 +42,12 @@
   <div class="subject <%= editable %>" fieldtype="textarea" fieldname="subject" fieldlabel="<%=l(:field_subject)%>"><%= h subject %></div>
   <% if !fakeelement %>
     <div class="description editable" style="display: none" fieldtype="textarea" fieldname="description" fieldlabel="<%=l(:field_description)%>"><%= h el.description %></div>
+    <% if el.is_task? %>
     <div class="assigned_to_id editable" fieldtype="select" fieldname="assigned_to_id" fieldlabel="<%=l(:field_assigned_to)%>">
       <div class="t"><%= assignee_name_or_empty(el) %></div>
       <div class="v"><%= assignee_id_or_empty(el) %></div>
     </div>
+    <% end #task %>
 
     <div class="indicator"> </div>
     <div class="meta">
