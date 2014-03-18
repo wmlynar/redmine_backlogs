@@ -172,4 +172,7 @@ Redmine::Plugin.register :redmine_backlogs do
       User.current.allowed_to?({:controller => :rb_all_projects, :action => :statistics}, nil, :global => true) &&
       Backlogs.setting[:scrum_stats_menu_position] == 'application'
     }
+
+  menu :admin_menu, :rb_genericboards_admin, { :controller => :rb_genericboards_admin, :action => :index },
+    :caption => :label_configure_genericboards, :if => Proc.new { Backlogs.configured? }
 end
