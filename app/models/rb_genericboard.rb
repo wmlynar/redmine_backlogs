@@ -92,19 +92,28 @@ class RbGenericboard < ActiveRecord::Base
       condition = ["(#{RbGeneric.table_name}.release_id is null or #{RbGeneric.table_name}.release_id in (?)) ", r.id]
       Backlogs::ActiveRecord.add_condition(options, condition) if condition
     end
-    r = pf['__current_release']
+        r = pf['__current_release']
     if r
       condition = ["#{RbGeneric.table_name}.release_id in (?) ", r.id]
       Backlogs::ActiveRecord.add_condition(options, condition) if condition
     end
-    r = pf['__current_or_no_sprint']
-    if r
-      condition = ["(#{RbGeneric.table_name}.fixed_version_id is null or #{RbGeneric.table_name}.fixed_version_id in (?)) ", r.id]
+
+    if pf.include? '__current_sprint'
+      r = pf['__current_sprint']
+      if r
+        condition = ["#{RbGeneric.table_name}.fixed_version_id in (?) ", r.id]
+      else
+        condition = ["#{RbGeneric.table_name}.fixed_version_id = 0 "]
+      end
       Backlogs::ActiveRecord.add_condition(options, condition) if condition
     end
-    r = pf['__current_sprint']
-    if r
-      condition = ["#{RbGeneric.table_name}.fixed_version_id in (?) ", r.id]
+    if pf.include? '__current_or_no_sprint'
+      r = pf['__current_or_no_sprint']
+      if r
+        condition = ["(#{RbGeneric.table_name}.fixed_version_id is null or #{RbGeneric.table_name}.fixed_version_id in (?)) ", r.id]
+      else
+        condition = ["#{RbGeneric.table_name}.fixed_version_id is null "]
+      end
       Backlogs::ActiveRecord.add_condition(options, condition) if condition
     end
     r = pf['__my_team']
@@ -184,11 +193,13 @@ class RbGenericboard < ActiveRecord::Base
       end
     when '__current_sprint', '__current_or_no_sprint'
       if filteroptions['__sprint'].to_i > 0
-        RbSprint.find(filteroptions['__sprint'])
-      elsif filteroptions['__sprint'].to_i == 0
+        RbSprint.find(filteroptions['__sprint']) || -1
+      elsif filteroptions['__sprint'].to_i == 0 #any
         return nil
+      elsif filteroptions['__sprint'].to_i == -1 #none
+        return -1
       else
-        project.active_sprint
+        project.active_sprint || -1
       end
     when '__my_team'
       if filteroptions['__team'].to_i > 0
@@ -364,7 +375,9 @@ class RbGenericboard < ActiveRecord::Base
     opts.each {|key, optionlist|
       unless optionlist.blank?
         optionlist[:values].collect!{|o| [o.name, o.id] unless o.blank?}.compact()
+        optionlist[:values] << [ 'None', -1]
         optionlist[:values] << [ 'Any', 0]
+
         fo = find_filter_object(project, key, filteroptions)
         optionlist[:selected] = (fo && fo.id) || 0
         optionlist[:label] = filter_name(key)
