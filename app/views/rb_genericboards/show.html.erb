@@ -85,7 +85,7 @@
           <td id="<%= row.id %>_rowelement">
             <%= render :partial => "generic", :object => row, :locals => { :cls => 'rowelement' } %>
           </td>
-          <% @rb_genericboard.columns(@project).each do |col| %>
+          <% @columns.each do |col| %>
           <td class="swimlane list" id="<%= row.id %>_<%= col.id %>" _col_id="<%= col.id %>">
             <% if (@elements_by_cell.include? row.id) && (@elements_by_cell[row.id].include? col.id) %>
               <%= render :partial => "generic", :collection => @elements_by_cell[row.id][col.id], :locals => { :cls => 'task' }%>

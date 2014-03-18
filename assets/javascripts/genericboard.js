@@ -273,6 +273,7 @@ RB.Genericboard = RB.Object.create({
             self.$('#generics td').first().width(),
             num_cols = self.$('#generics tr').first().children().length - 1;
         w = Math.floor(available / (num_cols * this.colWidthUnit));
+        w = Math.max(w, 1);
     }
     self.$(".swimlane").width(this.colWidthUnit * w).css('min-width', this.colWidthUnit * w);
   },

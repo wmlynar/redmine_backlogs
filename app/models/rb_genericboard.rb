@@ -138,12 +138,13 @@ class RbGenericboard < ActiveRecord::Base
     else #assume an id of tracker, see our options in helper
       tracker_id = object_type
       conditions = __element_condition(project, options)
-      return RbGeneric.visible.order("#{RbGeneric.table_name}.position").
+      return RbGeneric.visible.
         scoped(conditions).
         generic_backlog_scope({
             :project => project,
             :trackers => resolve_trackers(tracker_id)
-        })
+        }).
+        order("#{RbGeneric.table_name}.position")
     end
   end
 
