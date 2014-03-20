@@ -86,7 +86,6 @@ class RbGenericboard < ActiveRecord::Base
     options = {}
     options[:conditions] ||= []
     pf = prefilter_objects(project, filteroptions)
-    puts "Element condition for prefilter #{pf}"
     r = pf['__current_or_no_release']
     if r
       condition = ["(#{RbGeneric.table_name}.release_id is null or #{RbGeneric.table_name}.release_id in (?)) ", r.id]
@@ -118,7 +117,8 @@ class RbGenericboard < ActiveRecord::Base
     end
     r = pf['__my_team']
     if r
-      condition = ["(#{RbGeneric.table_name}.rbteam_id is null or #{RbGeneric.table_name}.rbteam_id in (?)) ", r.id]
+      condition = ["(#{RbGeneric.table_name}.rbteam_id in (?)) ", r.id]
+#      condition = ["(#{RbGeneric.table_name}.rbteam_id is null or #{RbGeneric.table_name}.rbteam_id in (?)) ", r.id]
       Backlogs::ActiveRecord.add_condition(options, condition) if condition
     end
     options
@@ -126,7 +126,6 @@ class RbGenericboard < ActiveRecord::Base
 
 
   def resolve_scope(object_type, project, options={})
-    puts "SCOPE OPTIONS #{options}"
     case object_type
     when '__sprint'
       conditions = __sprints_condition(project, options)
@@ -191,28 +190,34 @@ class RbGenericboard < ActiveRecord::Base
           RbRelease.find(filteroptions['__release'])
         end
       end
+
     when '__current_sprint', '__current_or_no_sprint'
-      if filteroptions['__sprint'].to_i > 0
-        RbSprint.find(filteroptions['__sprint']) || -1
-      elsif filteroptions['__sprint'].to_i == 0 #any
-        return nil
-      elsif filteroptions['__sprint'].to_i == -1 #none
-        return -1
+      if filteroptions.include? '__sprint'
+        if filteroptions['__sprint'].to_i > 0
+          RbSprint.find(filteroptions['__sprint']) || -1
+        elsif filteroptions['__sprint'].to_i == -1 #none
+          return -1
+        else #if filteroptions['__sprint'].to_i == 0 #any
+          return nil
+        end
       else
-        project.active_sprint || -1
+        project.active_sprint || nil
       end
+
     when '__my_team'
-      if filteroptions['__team'].to_i > 0
-        Group.find(filteroptions['__team'])
-      elsif filteroptions['__team'].to_i == 0
-        return nil
+      if filteroptions.include? '__team'
+        if filteroptions['__team'].to_i > 0
+          Group.find(filteroptions['__team'])
+        else #if filteroptions['__team'].to_i == 0
+          nil
+        end
       else
         User.current.groups.order(:lastname).first
       end
+
     else
       return nil
     end
-    puts "GOT FILTER OBJECT #{object}"
     #unless object
     #  object = find_filter_alternative_options(project, f).first()
     #end
@@ -364,7 +369,6 @@ class RbGenericboard < ActiveRecord::Base
   end
 
   def prefilter_alternative_options(project, filteroptions)
-    puts "Prefilter alternative options #{prefilter}"
     filter = prefilter
     filter = [filter] if filter && !filter.is_a?(Array)
     # assemble objects into __filter => list
@@ -375,7 +379,7 @@ class RbGenericboard < ActiveRecord::Base
     opts.each {|key, optionlist|
       unless optionlist.blank?
         optionlist[:values].collect!{|o| [o.name, o.id] unless o.blank?}.compact()
-        optionlist[:values] << [ 'None', -1]
+        optionlist[:values] << [ 'None', -1] unless key == '__my_team'
         optionlist[:values] << [ 'Any', 0]
 
         fo = find_filter_object(project, key, filteroptions)
@@ -393,7 +397,6 @@ class RbGenericboard < ActiveRecord::Base
       if col_type != '__state' #taskboard states have no automatic 'no state' column
         c = c.to_a.unshift(RbFakeGeneric.new("No #{col_type_name}"))
       end
-      puts "COLUMNS #{c.to_a}"
       return c
     else #one column for the elements
       return [ RbFakeGeneric.new("#{col_type_name}") ]
