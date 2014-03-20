@@ -45,13 +45,14 @@ class RbGenericboard < ActiveRecord::Base
     options = {}
     options[:conditions] ||= []
     pf = prefilter_objects(project, filteroptions)
+    #FIXME
     r = pf['__current_or_no_release'] || pf['__current_release']
-    if r
+    if !r.is_a?(Integer) && r
       condition = ["#{RbSprint.table_name}.sprint_start_date >= ? and #{RbSprint.table_name}.effective_date <= ? ", r.release_start_date, r.release_end_date]
       Backlogs::ActiveRecord.add_condition(options, condition) if condition
     end
     r = pf['__current_or_no_sprint'] || pf['__current_sprint']
-    if r
+    if !r.is_a?(Integer) &&  r
       condition = ["#{RbSprint.table_name}.id = ?", r.id]
       Backlogs::ActiveRecord.add_condition(options, condition) if condition
     end
@@ -61,10 +62,11 @@ class RbGenericboard < ActiveRecord::Base
   def __release_condition(project, filteroptions={})
     options = {}
     options[:conditions] ||= []
-    pf = prefilter_objects(project, filteroptions)
+    #FIXME
+    pf = prefilter_object_ids(project, filteroptions)
     r = pf['__current_release'] || pf['__current_or_no_release']
-    if r
-      condition = ["#{RbRelease.table_name}.id = ? ", r.id]
+    if r > 0
+      condition = ["#{RbRelease.table_name}.id = ? ", r]
       Backlogs::ActiveRecord.add_condition(options, condition) if condition
     end
     options
@@ -73,54 +75,81 @@ class RbGenericboard < ActiveRecord::Base
   def __team_condition(project, filteroptions={})
     options = {}
     options[:conditions] ||= []
-    pf = prefilter_objects(project, filteroptions)
+    pf = prefilter_object_ids(project, filteroptions)
+    #FIXME
     r = pf['__my_team']
-    if r
-      condition = ["#{Group.table_name}.id = ? ", r.id]
+    if r > 0
+      condition = ["#{Group.table_name}.id = ? ", r]
       Backlogs::ActiveRecord.add_condition(options, condition) if condition
     end
     options
   end
 
-  def __element_condition(project, filteroptions={})
+  def __element_condition(project, filteroptions={}) #FIXME codesmell
     options = {}
     options[:conditions] ||= []
-    pf = prefilter_objects(project, filteroptions)
-    r = pf['__current_or_no_release']
-    if r
-      condition = ["(#{RbGeneric.table_name}.release_id is null or #{RbGeneric.table_name}.release_id in (?)) ", r.id]
+    pf = prefilter_object_ids(project, filteroptions)
+
+    if pf.include? '__current_release'
+      id = pf['__current_release']
+      if id < 0 # None
+        condition = ["#{RbGeneric.table_name}.release_id is null "]
+      elsif id > 0
+        condition = ["#{RbGeneric.table_name}.release_id = ? ", id]
+      else
+        condition = nil
+      end
       Backlogs::ActiveRecord.add_condition(options, condition) if condition
     end
-        r = pf['__current_release']
-    if r
-      condition = ["#{RbGeneric.table_name}.release_id in (?) ", r.id]
+
+    if pf.include? '__current_or_no_release'
+      id = pf['__current_release']
+      if id < 0 # None
+        condition = ["#{RbGeneric.table_name}.release_id is null "]
+      elsif id > 0
+        condition = ["(#{RbGeneric.table_name}.release_id is null or #{RbGeneric.table_name}.release_id = ?) ", id]
+      else
+        condition = nil
+      end
       Backlogs::ActiveRecord.add_condition(options, condition) if condition
     end
 
     if pf.include? '__current_sprint'
-      r = pf['__current_sprint']
-      if r
-        condition = ["#{RbGeneric.table_name}.fixed_version_id in (?) ", r.id]
-      else
-        condition = ["#{RbGeneric.table_name}.fixed_version_id = 0 "]
-      end
-      Backlogs::ActiveRecord.add_condition(options, condition) if condition
-    end
-    if pf.include? '__current_or_no_sprint'
-      r = pf['__current_or_no_sprint']
-      if r
-        condition = ["(#{RbGeneric.table_name}.fixed_version_id is null or #{RbGeneric.table_name}.fixed_version_id in (?)) ", r.id]
-      else
+      id = pf['__current_sprint']
+      if id < 0 # None
         condition = ["#{RbGeneric.table_name}.fixed_version_id is null "]
+      elsif id > 0
+        condition = ["#{RbGeneric.table_name}.fixed_version_id = ? ", id]
+      else
+        condition = nil
       end
       Backlogs::ActiveRecord.add_condition(options, condition) if condition
     end
-    r = pf['__my_team']
-    if r
-      condition = ["(#{RbGeneric.table_name}.rbteam_id in (?)) ", r.id]
-#      condition = ["(#{RbGeneric.table_name}.rbteam_id is null or #{RbGeneric.table_name}.rbteam_id in (?)) ", r.id]
+
+    if pf.include? '__current_or_no_sprint'
+      id = pf['__current_sprint']
+      if id < 0 # None
+        condition = ["#{RbGeneric.table_name}.fixed_version_id is null "]
+      elsif id > 0
+        condition = ["(#{RbGeneric.table_name}.fixed_version_id is null or #{RbGeneric.table_name}.fixed_version_id = ?) ", id]
+      else
+        condition = nil
+      end
       Backlogs::ActiveRecord.add_condition(options, condition) if condition
     end
+
+    if pf.include? '__my_team'
+      id = pf['__my_team']
+      if id < 0 # None
+        condition = ["#{RbGeneric.table_name}.rbteam_id is null "]
+      elsif id > 0
+        condition = ["(#{RbGeneric.table_name}.rbteam_id = ?) ", id]
+      else
+        condition = nil
+      end
+      Backlogs::ActiveRecord.add_condition(options, condition) if condition
+    end
+
     options
   end
 
@@ -178,52 +207,54 @@ class RbGenericboard < ActiveRecord::Base
     end
   end
 
+  def find_filter_object_id(project, f, filteroptions)
+    obj = find_filter_object(project, f, filteroptions)
+    if obj.is_a? Integer
+      return obj
+    else
+      return obj.id
+    end
+  end
+
   def find_filter_object(project, f, filteroptions)
     return nil if project.nil?
-    object = case f
+    case f
     when '__current_release', '__current_or_no_release'
-      fo = filteroptions['__release']
-      if fo.blank?
-        project.active_release
-      else
-        if fo.to_i > 0
-          RbRelease.find(filteroptions['__release'])
+      if filteroptions.include? '__release'
+        if filteroptions['__release'].to_i > 0
+          RbRelease.find(filteroptions['__release']) || project.active_release || nil
+        else
+          filteroptions['__release'].to_i
         end
+      else
+        project.active_release || 0
       end
 
     when '__current_sprint', '__current_or_no_sprint'
       if filteroptions.include? '__sprint'
         if filteroptions['__sprint'].to_i > 0
-          RbSprint.find(filteroptions['__sprint']) || -1
-        elsif filteroptions['__sprint'].to_i == -1 #none
-          return -1
-        else #if filteroptions['__sprint'].to_i == 0 #any
-          return nil
+          RbSprint.find(filteroptions['__sprint']) || project.active_sprint || nil
+        else
+          filteroptions['__sprint'].to_i
         end
       else
-        project.active_sprint || nil
+        project.active_sprint || 0
       end
 
     when '__my_team'
       if filteroptions.include? '__team'
         if filteroptions['__team'].to_i > 0
-          Group.find(filteroptions['__team'])
-        else #if filteroptions['__team'].to_i == 0
-          nil
+          Group.find(filteroptions['__team']) || User.current.groups.order(:lastname).first || nil
+        else
+          filteroptions['__team'].to_i
         end
       else
-        User.current.groups.order(:lastname).first
+        User.current.groups.order(:lastname).first || 0
       end
 
     else
-      return nil
+      0
     end
-    #unless object
-    #  object = find_filter_alternative_options(project, f).first()
-    #end
-    #puts "RETURN FILTER OBJECT #{object}"
-
-    object
   end
 
   def find_filter_alternative_options(project, f)
@@ -368,6 +399,16 @@ class RbGenericboard < ActiveRecord::Base
     Hash[filter.zip(filter.collect{|f| find_filter_object(project, f, filteroptions)})]
   end
 
+  def prefilter_object_ids(project, filteroptions)
+    if prefilter.nil?
+      return {}
+    end
+    filter = prefilter
+    filter = [filter] if filter && !filter.is_a?(Array)
+
+    Hash[filter.zip(filter.collect{|f| find_filter_object_id(project, f, filteroptions)})]
+  end
+
   def prefilter_alternative_options(project, filteroptions)
     filter = prefilter
     filter = [filter] if filter && !filter.is_a?(Array)
@@ -379,11 +420,17 @@ class RbGenericboard < ActiveRecord::Base
     opts.each {|key, optionlist|
       unless optionlist.blank?
         optionlist[:values].collect!{|o| [o.name, o.id] unless o.blank?}.compact()
-        optionlist[:values] << [ 'None', -1] unless key == '__my_team'
+        optionlist[:values] << [ 'None', -1]
         optionlist[:values] << [ 'Any', 0]
 
         fo = find_filter_object(project, key, filteroptions)
-        optionlist[:selected] = (fo && fo.id) || 0
+        if fo
+          if fo.is_a? Integer
+            optionlist[:selected] = fo
+          else
+            optionlist[:selected] = (fo && fo.id) || 0
+          end
+        end
         optionlist[:label] = filter_name(key)
         optionlist[:key] = find_filter_option_key(key)
       end
