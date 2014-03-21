@@ -65,7 +65,7 @@ class RbGenericboard < ActiveRecord::Base
     #FIXME
     pf = prefilter_object_ids(project, filteroptions)
     r = pf['__current_release'] || pf['__current_or_no_release']
-    if r > 0
+    if !r.blank? && r > 0
       condition = ["#{RbRelease.table_name}.id = ? ", r]
       Backlogs::ActiveRecord.add_condition(options, condition) if condition
     end
@@ -78,7 +78,7 @@ class RbGenericboard < ActiveRecord::Base
     pf = prefilter_object_ids(project, filteroptions)
     #FIXME
     r = pf['__my_team']
-    if r > 0
+    if !r.blank? && r > 0
       condition = ["#{Group.table_name}.id = ? ", r]
       Backlogs::ActiveRecord.add_condition(options, condition) if condition
     end
