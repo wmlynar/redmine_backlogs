@@ -22,6 +22,7 @@
     end
     issue_link = issue_link_or_empty(el)
     classes = 'sortable '+ mark_if_closed(el) #sortable makes a move cursor
+    classes += " tracker_color_#{el.tracker.id}" if el.respond_to?(:tracker) && ! el.tracker.blank?
 
   elsif el.is_a? RbSprint
     subject = el.name
@@ -32,6 +33,7 @@
   else
     fakeelement = true
   end
+
 %>
 <div class="model issue <%= cls %> <%= classes %>" id="issue_<%= el.id %>" <%#= inline_style %>>
   <div class="id <%= qtip_cls %>">

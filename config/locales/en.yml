@@ -239,3 +239,6 @@ en:
   label_rb_genericbord_prefilter: "Filter"
   label_rb_select_board: "Select board"
   label_configure_genericboards: "Generic boards"
+  backlogs_board_colors: "Backlog board colors (generic boards)"
+  backlogs_board_colors_by_type: "Color board issues by type"
+  backlogs_board_colors_explanation: "Check to mark board issues with color by their tracker type. If unchecked, colors are determined by assignee."

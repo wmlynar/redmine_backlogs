@@ -31,6 +31,19 @@
   <%= stylesheet_link_tag 'jquery/jquery.multiselect.css', :plugin => 'redmine_backlogs' %>
   <%= stylesheet_link_tag 'taskboard.css', :plugin => 'redmine_backlogs', :media => 'print,screen' %>
   <%= stylesheet_link_tag 'genericboard.css', :plugin => 'redmine_backlogs', :media => 'print,screen' %>
+  <% if Backlogs.setting[:board_colors_by_type] %>
+    <style type="text/css">
+      <% Tracker.order(:id).each do |tracker|
+        color = Backlogs.setting["tracker_color_#{tracker.id}"].strip() %>
+        <% if color && !color.empty? %>
+          #taskboard .issue.tracker_color_<%= tracker.id %> {
+            background: none;
+            background-color: <%= color %>;
+          }
+        <% end %>
+      <% end %>
+    </style>
+  <% end %>
 <%- end %>
 
 <%- content_for :breadcrumbs do %>

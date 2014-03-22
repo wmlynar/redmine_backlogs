@@ -330,3 +330,20 @@
     <%= select_tag("settings[default_feature_tracker]", options_from_collection_for_select(Tracker.all, :id, :name, Backlogs.setting[:default_feature_tracker])) %>
   </p>
 </fieldset>
+
+<fieldset>
+  <legend><%= l(:backlogs_board_colors) %></legend>
+  <p>
+    <%= content_tag(:label, l(:backlogs_board_colors_by_type)) %>
+    <%= check_box_tag("settings[board_colors_by_type]", 'enabled',
+        Backlogs.setting[:board_colors_by_type]) %>
+        <span style="margin-left: 12px;"><%= l(:backlogs_board_colors_explanation) %></span>
+  </p>
+  <% Tracker.order(:name).each do |tracker| %>
+  <p>
+    <%= content_tag(:label, tracker.name) %>
+    <%= text_field_tag("settings[tracker_color_#{tracker.id}]", Backlogs.setting["tracker_color_#{tracker.id}"]) %>
+  </p>
+  <% end %>
+
+</fieldset>
