@@ -107,3 +107,7 @@
 #taskboard.detaillevel-0 .issue.rowelement .id {
     display: none;
 }
+
+.issue .project {
+    text-align: left;
+}

@@ -13,6 +13,9 @@ module RbCommonHelper
   def assignee_name_or_empty(story)
     story.blank? || story.assigned_to.blank? ? "" : "#{story.assigned_to.name}"
   end
+  def rbteam_name_or_empty(story)
+    story.blank? || story.rbteam.blank? ? "" : "#{story.rbteam.name}"
+  end
 
   def blocked_ids(blocked)
     blocked.map{|b| b.id }.join(',')
