@@ -40,17 +40,22 @@
     cursor: move;
 }
 
-#generics td {
+#generics .generic_table_cell {
     position: relative;
 }
 .addbutton {
     position: absolute;
+    z-index: 10000;
     top: 10px;
     left: 10px;
     width: 16px;
     height: 16px;
     /*border: 1px solid black;*/
     cursor: pointer;
+}
+.addbutton img {
+    width: 16px;
+    height: 16px;
 }
 
 #detail_slider {
