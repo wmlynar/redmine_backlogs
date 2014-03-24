@@ -150,6 +150,10 @@ class RbGenericboard < ActiveRecord::Base
       Backlogs::ActiveRecord.add_condition(options, condition) if condition
     end
 
+    unless col_type == '__state' #FIXME make this configurable by board/row/element
+      Backlogs::ActiveRecord.add_condition(options, ["is_closed = ?", false])
+    end
+
     options
   end
 

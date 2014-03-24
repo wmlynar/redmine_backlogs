@@ -59,8 +59,7 @@ class RbGeneric < Issue
   def self.__find_options_generic_condition(project_id, tracker_ids)
     ["
       project_id in (#{Project.find(project_id).projects_in_shared_product_backlog.map{|p| p.id}.join(',')})
-      and tracker_id in (?)
-      and is_closed = ?", tracker_ids, false
+      and tracker_id in (?)", tracker_ids
     ]
   end
 
