@@ -9,6 +9,7 @@ class RbGenericboardsController < RbApplicationController
   private
 
   def process_params(params, create=false)
+    filteroptions ||= []
     row_id = params.delete(:row_id)
     col_id = params.delete(:col_id)
 
@@ -23,32 +24,32 @@ class RbGenericboardsController < RbApplicationController
       rowelement = false
     end
     if object_type.start_with? '__'
-      render :text => e.message.blank? ? e.to_s : e.message, :status => 400
+      raise "Cannot process type #{object_type}"
     end
-    puts "Object type is #{object_type}"
+    Rails.logger.info "Object type is #{object_type}"
 
     #determine project
     # 1. take project of parent (the row element)
     row_id = row_id.to_i
     row_object = @rb_genericboard.row_object(row_id)
-    puts "Row object #{row_object}"
+    Rails.logger.info "Row object #{row_object}"
     col_id = col_id.to_i
     col_object = @rb_genericboard.col_object(col_id)
-    puts "Col object #{col_object}"
+    Rails.logger.info "Col object #{col_object}"
 
     if (row_id > 0 && row_object.respond_to?(:project))
       project_id = row_object.project.id
-      puts "Using row for project"
+      Rails.logger.info "Using row for project"
     elsif (col_id > 0 && col_object.respond_to?(:project))
       # 2. take project or column if applicable
       project_id = col_object.project.id
-      puts "Using col for project"
+      Rails.logger.info "Using col for project"
     else
       # 3. fall back to current project
       project_id = @project.id
-      puts "Using default project"
+      Rails.logger.info "Using default project"
     end
-    puts "Determined project to be #{project_id}"
+    Rails.logger.info "Determined project to be #{project_id}"
 
     if create
       params[:tracker_id] = object_type.to_i if create#for create
@@ -71,14 +72,27 @@ class RbGenericboardsController < RbApplicationController
           params[:fixed_version_id] = parent.fixed_version_id unless parent.fixed_version_id.blank?
         end
       end
+
+      filteroptions = params.select{|k,v| k.starts_with?('__')}
+      prefilter_objects = @rb_genericboard.prefilter_objects(@project, filteroptions).each {|k, v|
+        case k
+        when '__current_release', '__current_or_no_release'
+          params[:release_id] = v.id unless (v.blank? && params.include?(:release_id))
+        when '__current_sprint', '__current_or_no_sprint'
+          params[:fixed_version_id] = v.id unless (v.blank? && params.include?(:fixed_version_id))
+        when '__my_team'
+          params[:rbteam_id] = v.id unless (v.blank? && params.include?(:rbteam_id))
+        end
+      }
+      Rails.logger.info("Create: got prefilter_objects #{prefilter_objects}")
     end
 
 
 
 
-    puts "Dealing with rowelement? #{rowelement}"
+    Rails.logger.info "Dealing with rowelement? #{rowelement}"
     if !rowelement
-      puts "Dealing with rowelement? No."
+      Rails.logger.info "Dealing with rowelement? No."
       row_type = @rb_genericboard.row_type
       col_type = @rb_genericboard.col_type
       if row_type == '__sprint'
@@ -126,7 +140,7 @@ class RbGenericboardsController < RbApplicationController
 
       #override by col
       if (col_object)
-        puts "We use col object for stuff #{col_object}"
+        Rails.logger.info "We use col object for stuff #{col_object}"
         parent = col_object
         if parent.is_a? RbGeneric
           params[:parent_issue_id] = parent.id
@@ -137,7 +151,7 @@ class RbGenericboardsController < RbApplicationController
           params[:fixed_version_id] = parent.id
           #FIXME it seems that sharing scope is not obeyed, we might drag stories from non-shared project into sprints resulting in an error
         elsif parent.is_a? RbRelease
-          puts "We use col object for release #{col_object}"
+          Rails.logger.info "We use col object for release #{col_object}"
           params[:release_id] = parent.id
         elsif parent.is_a? Group
           params[:rbteam_id] = parent.id
@@ -161,7 +175,7 @@ class RbGenericboardsController < RbApplicationController
     end #if !rowelement
 
 
-    puts "Determined #{params} parent #{params[:parent_issue_id]}, sprint #{params[:fixed_version_id]}, release #{params[:release_id]}, team #{params[:rbteam_id]}, project #{params[:project_id]}, status #{params[:status_id]}"
+    Rails.logger.info "Determined #{params} parent #{params[:parent_issue_id]}, sprint #{params[:fixed_version_id]}, release #{params[:release_id]}, team #{params[:rbteam_id]}, project #{params[:project_id]}, status #{params[:status_id]}"
 
     return params, cls_hint
   end
@@ -194,10 +208,9 @@ class RbGenericboardsController < RbApplicationController
 
   def create
     params['author_id'] = User.current.id
-    attrs, cls_hint = process_params(params, true)
-
-    puts "Creating generic with attrs #{attrs}"
     begin
+      attrs, cls_hint = process_params(params, true)
+      Rails.logger.info "Creating generic with attrs #{attrs}"
       story = RbGeneric.create_and_position(attrs)
     rescue => e
       render :text => e.message.blank? ? e.to_s : e.message, :status => 400
@@ -219,10 +232,9 @@ class RbGenericboardsController < RbApplicationController
 
   def update
     story = RbGeneric.find(params[:id])
-    attrs, cls_hint = process_params(params)
-
-    puts "Genericboard update #{story} #{attrs} #{cls_hint} #{@rb_genericboard}"
     begin
+      attrs, cls_hint = process_params(params)
+      Rails.logger.info "Genericboard update #{story} #{attrs} #{cls_hint} #{@rb_genericboard}"
       result = story.update_and_position!(attrs)
     rescue => e
       render :text => e.message.blank? ? e.to_s : e.message, :status => 400
