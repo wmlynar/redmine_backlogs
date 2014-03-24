@@ -8,7 +8,7 @@ class RbGenericboardsController < RbApplicationController
 
   private
 
-  def process_params(params)
+  def process_params(params, create=false)
     row_id = params.delete(:row_id)
     col_id = params.delete(:col_id)
 
@@ -25,10 +25,7 @@ class RbGenericboardsController < RbApplicationController
     if object_type.start_with? '__'
       render :text => e.message.blank? ? e.to_s : e.message, :status => 400
     end
-    params[:tracker_id] = object_type.to_i
-    #puts "Determined tracker to #{params[:tracker_id]}"
-    #puts "Which is #{Tracker.find(params[:tracker_id])}"
-
+    puts "Object type is #{object_type}"
 
     #determine project
     # 1. take project of parent (the row element)
@@ -53,53 +50,115 @@ class RbGenericboardsController < RbApplicationController
     end
     puts "Determined project to be #{project_id}"
 
-    #determine parent, release and sprint
-    parent_id = nil
-    sprint_id = nil
-    release_id = nil
-    rbteam_id = nil
-    status_id = nil
-    if (row_object && !rowelement)
-      if row_object.is_a? RbGeneric
-        parent_id = row_object.id
-        project_id = row_object.project.id
-        release_id = row_object.release_id
-        sprint_id = row_object.fixed_version_id
-        #FIXME determine release/sprint/project from row parent unless specified by column
-      elsif row_object.is_a? RbSprint
-        sprint_id = row_object.id
-        #FIXME it seems that sharing scope is not obeyed, we might drag stories from non-shared project into sprints resulting in an error
-      elsif row_object.is_a? RbRelease
-        release_id = row_object.id
-      elsif row_object.is_a? Group
-        rbteam_id = row_object.id
-        puts "Set rbteam_id from row #{rbteam_id}"
+    if create
+      params[:tracker_id] = object_type.to_i if create#for create
+      params[:project_id] = project_id
+      if (row_object)
+        parent = row_object
+        if parent.is_a? RbGeneric
+          params[:parent_issue_id] = parent.id
+          params[:rbteam_id] = parent.rbteam_id unless parent.rbteam_id.blank?
+          params[:release_id] = parent.release_id unless parent.release_id.blank?
+          params[:fixed_version_id] = parent.fixed_version_id unless parent.fixed_version_id.blank?
+        end
+      end
+      if (col_object)
+        parent = col_object
+        if parent.is_a? RbGeneric
+          params[:parent_issue_id] = parent.id
+          params[:rbteam_id] = parent.rbteam_id unless parent.rbteam_id.blank?
+          params[:release_id] = parent.release_id unless parent.release_id.blank?
+          params[:fixed_version_id] = parent.fixed_version_id unless parent.fixed_version_id.blank?
+        end
       end
     end
-    if (col_object && !rowelement)
-      if col_object.is_a? RbGeneric
-        parent_id = col_object.id
-        project_id = col_object.project.id
-        release_id = col_object.release_id
-        sprint_id = col_object.fixed_version_id
-      elsif col_object.is_a? RbSprint
-        sprint_id = col_object.id
-      elsif col_object.is_a? RbRelease
-        release_id = col_object.id
-      elsif col_object.is_a? Group
-        rbteam_id = col_object.id
-        puts "Set rbteam_id from col #{rbteam_id}"
-      elsif col_object.is_a? IssueStatus
-        status_id = col_object.id
+
+
+
+
+    puts "Dealing with rowelement? #{rowelement}"
+    if !rowelement
+      puts "Dealing with rowelement? No."
+      row_type = @rb_genericboard.row_type
+      col_type = @rb_genericboard.col_type
+      if row_type == '__sprint'
+        params[:fixed_version_id] = row_id
+      elsif col_type == '__sprint'
+        params[:fixed_version_id] = col_id
       end
-    end
-    puts "Determined parent #{parent_id}, sprint #{sprint_id}, release #{release_id}, team #{rbteam_id}, project #{project_id}"
-    params[:parent_issue_id] = parent_id if parent_id
-    params[:fixed_version_id] = sprint_id if sprint_id
-    params[:release_id] = release_id if release_id
-    params[:rbteam_id] = rbteam_id if rbteam_id
-    params[:status_id] = status_id if status_id
-    params[:project_id] = project_id
+
+      if row_type == '__release'
+        params[:release_id] = row_id
+      elsif col_type == '__release'
+        params[:release_id] = col_id
+      end
+
+      if row_type == '__team'
+        params[:rbteam_id] = row_id
+      elsif col_type == '__team'
+        params[:rbteam_id] = col_id
+      end
+
+      if row_type == '__state'
+        params[:status_id] = row_id
+      elsif col_type == '__state'
+        params[:status_id] = col_id
+      end
+
+      if (row_object)
+        parent = row_object
+        if parent.is_a? RbGeneric
+          params[:parent_issue_id] = parent.id
+          params[:project_id] = parent.project.id
+          #params[:release_id] = parent.release_id unless parent.release_id.blank?
+          #params[:fixed_version_id] = parent.fixed_version_id unless parent.fixed_version_id.blank?
+        elsif parent.is_a? RbSprint
+          params[:fixed_version_id] = parent.id
+          #FIXME it seems that sharing scope is not obeyed, we might drag stories from non-shared project into sprints resulting in an error
+        elsif parent.is_a? RbRelease
+          params[:release_id] = parent.id
+        elsif parent.is_a? Group
+          params[:rbteam_id] = parent.id
+        elsif col_object.is_a? IssueStatus
+          params[:status_id] = col_object.id
+        end
+      end
+
+      #override by col
+      if (col_object)
+        puts "We use col object for stuff #{col_object}"
+        parent = col_object
+        if parent.is_a? RbGeneric
+          params[:parent_issue_id] = parent.id
+          params[:project_id] = parent.project.id
+          #params[:release_id] = parent.release_id unless parent.release_id.blank?
+          #params[:fixed_version_id] = parent.fixed_version_id unless parent.fixed_version_id.blank?
+        elsif parent.is_a? RbSprint
+          params[:fixed_version_id] = parent.id
+          #FIXME it seems that sharing scope is not obeyed, we might drag stories from non-shared project into sprints resulting in an error
+        elsif parent.is_a? RbRelease
+          puts "We use col object for release #{col_object}"
+          params[:release_id] = parent.id
+        elsif parent.is_a? Group
+          params[:rbteam_id] = parent.id
+        elsif col_object.is_a? IssueStatus
+          params[:status_id] = col_object.id
+        end
+      end
+
+      if (!row_object && !row_type.start_with?('__')) #row is RbGeneric, but no object
+        params[:parent_issue_id] = nil
+      end
+      if col_type != object_type #not a single column board
+        if (!col_object && !col_type.start_with?('__')) #col is RbGeneric, but no object
+          params[:parent_issue_id] = nil
+        end
+      end
+
+    end #if !rowelement
+
+
+    puts "Determined #{params} parent #{params[:parent_issue_id]}, sprint #{params[:fixed_version_id]}, release #{params[:release_id]}, team #{params[:rbteam_id]}, project #{params[:project_id]}, status #{params[:status_id]}"
 
     return params, cls_hint
   end
@@ -132,7 +191,7 @@ class RbGenericboardsController < RbApplicationController
 
   def create
     params['author_id'] = User.current.id
-    attrs, cls_hint = process_params(params)
+    attrs, cls_hint = process_params(params, true)
 
     puts "Creating generic with attrs #{attrs}"
     begin
@@ -166,7 +225,7 @@ class RbGenericboardsController < RbApplicationController
       render :text => e.message.blank? ? e.to_s : e.message, :status => 400
       return
     end
-    if attrs[:parent_issue_id]
+    if attrs.include? :parent_issue_id
       story.parent_issue_id = attrs[:parent_issue_id]
       story.save!
     end

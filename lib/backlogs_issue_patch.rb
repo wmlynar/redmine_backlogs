@@ -123,13 +123,12 @@ module Backlogs
 
           #story follow feature release
           if Backlogs.setting[:scaled_agile_enabled] && self.is_story?
-            parent = self.parent
-            self.release = self.parent.release if (parent && parent.is_feature?)
+            self.release = self.parent.release if (self.parent && self.parent.is_feature?)
           end
 
           if (self.is_task? || self.story)
             if Backlogs.setting[:scaled_agile_enabled]
-              self.rbteam_id = parent.rbteam_id if parent
+              self.rbteam_id = self.parent.rbteam_id if self.parent
             end
             self.remaining_hours = self.estimated_hours if self.remaining_hours.blank?
             self.estimated_hours = self.remaining_hours if self.estimated_hours.blank?
