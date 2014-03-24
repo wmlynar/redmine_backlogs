@@ -155,6 +155,9 @@ class RbGenericboardsController < RbApplicationController
         end
       end
 
+      params[:fixed_version_id] = nil if (params.include?(:fixed_version_id) && params[:fixed_version_id] == 0)
+      params[:release_id] = nil if (params.include?(:release_id) && params[:release_id] == 0)
+      params[:rbteam_id] = nil if (params.include?(:rbteam_id) && params[:rbteam_id] == 0)
     end #if !rowelement
 
 
