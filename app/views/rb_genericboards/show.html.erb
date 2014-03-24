@@ -34,11 +34,16 @@
   <% if Backlogs.setting[:board_colors_by_type] %>
     <style type="text/css">
       <% Tracker.order(:id).each do |tracker|
-        color = Backlogs.setting["tracker_color_#{tracker.id}"].strip() %>
-        <% if color && !color.empty? %>
+        color = Backlogs.setting["tracker_color_#{tracker.id}"].strip()
+        if color && !color.empty?
+          color = Backlogs::Color.new(color).darken(0.1)
+          color_from = Backlogs::Color.new(color).lighten(0.8)
+          %>
           #taskboard .issue.tracker_color_<%= tracker.id %> {
-            background: none;
             background-color: <%= color %>;
+background: -webkit-gradient(linear, left top, left bottom, from(<%= color_from %>), to(<%= color %>));
+background: -moz-linear-gradient(top, <%= color_from %>, <%= color %>);
+filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,StartColorStr=<%= color_from %>,EndColorStr=<%= color %>);
           }
         <% end %>
       <% end %>

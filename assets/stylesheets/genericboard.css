@@ -13,9 +13,9 @@
   -moz-box-shadow: 2px 2px 2px #CCCCCC;
   -webkit-box-shadow: 2px 2px 2px #CCCCCC;;
   box-shadow: 2px 2px 2px #CCCCCC;;
-  background: -webkit-gradient(linear, left top, left bottom, from(#FEE), to(#FD2));
-  background: -moz-linear-gradient(top, #FEE, #FD2);
-  filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,StartColorStr=#FFEEEE,EndColorStr=#FFDD22);
+  background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#bbb));
+  background: -moz-linear-gradient(top, #fff, #bbb);
+  filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,StartColorStr=#fff,EndColorStr=#bbb);
   background-color:#F8F6A5;
   border:none;
   display:block;
