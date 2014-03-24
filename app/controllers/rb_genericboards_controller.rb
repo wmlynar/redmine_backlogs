@@ -73,7 +73,7 @@ class RbGenericboardsController < RbApplicationController
         end
       end
 
-      filteroptions = params.select{|k,v| k.starts_with?('__')}
+      filteroptions = params.select{|k,v| k.starts_with?('__')} #FIXME these params are not transported in create, yet
       prefilter_objects = @rb_genericboard.prefilter_objects(@project, filteroptions).each {|k, v|
         case k
         when '__current_release', '__current_or_no_release'
