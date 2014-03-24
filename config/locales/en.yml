@@ -108,6 +108,7 @@ en:
   field_release_relationship: "Release relationship"
   field_release_start_date: "Release start date"
   field_remaining_hours: "Remaining (hours)"
+  field_sprint: "Sprint"
   field_story_points: "Story points"
   field_subject: Subject
   field_task_color: "Task color"
