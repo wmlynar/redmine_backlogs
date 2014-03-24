@@ -128,7 +128,7 @@ module Backlogs
 
           if (self.is_task? || self.story)
             if Backlogs.setting[:scaled_agile_enabled]
-              self.rbteam_id = self.parent.rbteam_id if self.parent
+              self.rbteam_id = self.parent.rbteam_id unless self.parent.blank?
             end
             self.remaining_hours = self.estimated_hours if self.remaining_hours.blank?
             self.estimated_hours = self.remaining_hours if self.estimated_hours.blank?
@@ -184,18 +184,20 @@ module Backlogs
 
         return unless Backlogs.configured?(self.project)
 
-        # stories follow feature release
+        # stories (and their tasks) follow feature release
         if Backlogs.setting[:scaled_agile_enabled] && self.is_feature?
-          storylist = RbStory.find(:all, :conditions => [
-            "parent_id = ? and tracker_id in (?)", self.id, RbStory.trackers
-          ])
-          if storylist.size > 0
-            story_ids = '(' +storylist.collect{|story| connection.quote(story.id)}.join(',') + ')'
             connection.execute("update issues set
-                                updated_on = #{connection.quote(self.updated_on)},
-                                release_id = #{connection.quote(self.release_id)}
-                                where id in #{story_ids}")
-          end
+                               updated_on = #{connection.quote(self.updated_on)},
+                               release_id = #{connection.quote(self.release_id)}
+                               where root_id=#{connection.quote(self.root_id)} and
+                                  lft > #{connection.quote(self.left)} and
+                                  rgt < #{connection.quote(self.right)} and
+                                  (tracker_id in (#{connection.quote(RbTask.tracker)})
+                                   or
+                                   tracker_id in (#{RbGeneric.story_trackers({:type=>:array}).join(',')})
+                                  )
+                               ")
+
         end
 
         if self.is_story?
@@ -221,11 +223,22 @@ module Backlogs
             connection.execute("update issues set
                                 updated_on = #{connection.quote(self.updated_on)},
                                 fixed_version_id = #{connection.quote(self.fixed_version_id)},
-                                rbteam_id = #{connection.quote(self.rbteam_id)},
                                 tracker_id = #{RbTask.tracker}
                                 where id in #{task_ids}")
           end
-        end
+
+          if Backlogs.setting[:scaled_agile_enabled]
+            #force tasks to have same team as story
+            connection.execute("update issues set
+                               updated_on = #{connection.quote(self.updated_on)},
+                               rbteam_id = #{connection.quote(self.rbteam_id)}
+                               where root_id=#{connection.quote(self.root_id)} and
+                                  lft > #{connection.quote(self.left)} and
+                                  rgt < #{connection.quote(self.right)} and
+                                  tracker_id in (#{connection.quote(RbTask.tracker)})
+                               ")
+          end
+        end #is_story?
       end
 
       def assignable_releases
