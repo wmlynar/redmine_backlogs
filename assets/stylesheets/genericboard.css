@@ -81,6 +81,9 @@
     width: 32px;
     float: right;
 }
+#taskboard.detaillevel-1 .issue .remaining_hours {
+    display: none;
+}
 
 #taskboard.detaillevel-0 .issue.rowelement,
 #taskboard.detaillevel-0 .issue,
@@ -102,6 +105,7 @@
     overflow: hidden;
     position: relative;
 }
+#taskboard.detaillevel-0 .issue .remaining_hours,
 #taskboard.detaillevel-0 .issue .id,
 #taskboard.detaillevel-0 .placeholder .id,
 #taskboard.detaillevel-0 .issue.rowelement .id {
