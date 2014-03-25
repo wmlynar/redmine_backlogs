@@ -67,10 +67,10 @@ RB.Generic = RB.Object.create(RB.Issue, {
     var url;
     var nxt
     if (this.$.hasClass('rowelement')) {
-        nxt = this.$.parent().parent().next().find('.model.rowelement');
+        nxt = j.parent().parent().next().find('.model.rowelement');
     }
     else {
-        nxt = this.$.next();
+        nxt = j.siblings('.model').first();
     }
     var project = j.parents('tr').find('.story .project .v');
     var cellID = j.parents('td').first().attr('id').split("_");
@@ -78,7 +78,7 @@ RB.Generic = RB.Object.create(RB.Issue, {
                "&genericboard_id=" + RB.constants.genericboard_id +
                "&row_id=" + cellID[0] +
                "&col_id=" + cellID[1] +
-               "&next=" + (nxt.length==1 ? nxt.data('this').getID() : '') +
+               "&next=" + ((nxt.length==1 && nxt.data('this')) ? nxt.data('this').getID() : '') +
                (this.isNew() ? "" : "&id=" + j.children('.id').text());
 
     if( project.length){

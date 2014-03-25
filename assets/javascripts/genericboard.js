@@ -219,7 +219,7 @@ RB.Genericboard = RB.Object.create({
   showAddButton: function(target, e)  {
     var me = this;
     var btn = RB.$('#add_button_template').children().first().clone();
-    RB.$(target).append(btn);
+    RB.$(target).find('.generic_addbtn').append(btn);
     btn.click( function(event) { //this is the button, target is the cell
                     if (event.button > 1) return;
                     var cell = RB.$(event.target).parents("td").first();
@@ -243,7 +243,7 @@ RB.Genericboard = RB.Object.create({
     }
     else { // we add an element
         type_name = this.element_type_name;
-        cell.prepend(task);
+        cell.find('.generic_addbtn').after(task);
     }
 
     o = RB.Factory.initialize(RB.Generic, task, {type_name:type_name});

@@ -43,8 +43,16 @@
 #generics td {
     position: relative;
 }
+
+
+.generic_addbtn {
+    position: relative;
+    width: 0px;
+    height: 0px;
+}
 .addbutton {
     position: absolute;
+    z-index: 10000;
     top: 10px;
     left: 10px;
     width: 16px;
