@@ -449,7 +449,7 @@ class RbGenericboard < ActiveRecord::Base
   def columns(project, options={})
     if col_type != element_type #elements by col_type
       c = resolve_scope(col_type, project, options)
-      if col_type != '__state' #taskboard states have no automatic 'no state' column
+      if include_none_in_cols?
         c = c.to_a.unshift(RbFakeGeneric.new("No #{col_type_name}"))
       end
       return c
@@ -459,7 +459,11 @@ class RbGenericboard < ActiveRecord::Base
   end
 
   def rows(project, options={})
-    resolve_scope(row_type, project, options)
+    c = resolve_scope(row_type, project, options)
+    if include_none_in_rows?
+      c.to_a.append(RbFakeGeneric.new("No #{row_type_name}"))
+    end
+    c
   end
 
   def elements(project, options={})
