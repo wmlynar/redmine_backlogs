@@ -15,8 +15,10 @@ end
 
 class RbGenericboard < ActiveRecord::Base
   include Redmine::SafeAttributes
-  attr_accessible :col_type, :element_type, :name, :prefilter, :colfilter, :rowfilter, :row_type
+  attr_accessible :col_type, :element_type, :name, :prefilter, :colfilter, :rowfilter, :row_type,
+    :include_none_in_rows, :include_none_in_cols
   serialize :prefilter, Array
+  serialize :boardoptions, Hash
 
   attr_accessor :filteroptions
 
@@ -297,7 +299,9 @@ class RbGenericboard < ActiveRecord::Base
     'col_type',
     'prefilter',
     'rowfilter',
-    'colfilter'
+    'colfilter',
+    'include_none_in_rows',
+    'include_none_in_cols'
 
   def to_s
     name
@@ -500,4 +504,23 @@ class RbGenericboard < ActiveRecord::Base
     map
   end
 
+  def include_none_in_rows?
+    self.boardoptions['include_none_in_rows'] == "1"
+  end
+  def include_none_in_rows
+    puts "Board options #{self.boardoptions}"
+    self.boardoptions['include_none_in_rows']
+  end
+  def include_none_in_rows=(val)
+    self.boardoptions['include_none_in_rows'] = val
+  end
+  def include_none_in_cols?
+    self.boardoptions['include_none_in_cols'] == "1"
+  end
+  def include_none_in_cols
+    self.boardoptions['include_none_in_cols']
+  end
+  def include_none_in_cols=(val)
+    self.boardoptions['include_none_in_cols'] = val
+  end
 end
