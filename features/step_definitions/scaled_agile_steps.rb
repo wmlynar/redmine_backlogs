@@ -56,7 +56,7 @@ Given(/^some default generic boards are configured$/) do
   board.col_type = story
   board.element_type = story
   board.row_type = feature
-  board.prefilter = '__current_release'
+  board.prefilter = ['__current_release']
   board.save!
 
   #2.2
@@ -65,7 +65,7 @@ Given(/^some default generic boards are configured$/) do
   board.col_type = team
   board.element_type = story
   board.row_type = feature
-  board.prefilter = '__current_release'
+  board.prefilter = ['__current_release']
   board.save!
 
   #2.3
@@ -74,7 +74,7 @@ Given(/^some default generic boards are configured$/) do
   board.col_type = sprint
   board.element_type = story
   board.row_type = team
-  board.prefilter = '__current_release __my_team'
+  board.prefilter = ['__current_release', '__my_team']
   board.save!
 
   #2.4
@@ -83,7 +83,7 @@ Given(/^some default generic boards are configured$/) do
   board.col_type = sprint
   board.element_type = story
   board.row_type = feature
-  board.prefilter = '__current_release'
+  board.prefilter = ['__current_release']
   board.save!
 
   #3.1
@@ -92,7 +92,7 @@ Given(/^some default generic boards are configured$/) do
   board.col_type = story
   board.element_type = story
   board.row_type = sprint
-  board.prefilter = '__current_sprint __my_team'
+  board.prefilter = ['__current_sprint', '__my_team']
   board.save!
 
   #3.2
@@ -101,7 +101,7 @@ Given(/^some default generic boards are configured$/) do
   board.col_type = state
   board.element_type = task
   board.row_type = story
-  board.prefilter = '__current_sprint __my_team'
+  board.prefilter = ['__current_sprint', '__my_team']
   board.save!
 end
 

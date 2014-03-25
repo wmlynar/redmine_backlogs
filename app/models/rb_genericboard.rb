@@ -393,7 +393,7 @@ class RbGenericboard < ActiveRecord::Base
     end
   end
 
-  def prefilter_objects(project, filteroptions)
+  def prefilter_objects(project, filteroptions={})
     if prefilter.nil?
       return {}
     end
