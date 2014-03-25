@@ -246,3 +246,5 @@ en:
   backlogs_board_colors_explanation: "Check to mark board issues with color by their tracker type. If unchecked, colors are determined by assignee."
   field_include_none_in_cols: "Include None in columns"
   field_include_none_in_rows: "Include None in rows"
+  field_include_closed_elements: "Include closed elements"
+  

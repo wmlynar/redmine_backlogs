@@ -9,4 +9,5 @@
   <p><%= f.check_box :include_none_in_rows %></p>
   <p><%= f.select :prefilter, genericboards_prefilter_options_for_select(@rb_genericboard.prefilter),
     {:label=>:label_rb_genericbord_prefilter}, {:multiple => true} %></p>
+  <p><%= f.check_box :include_closed_elements %></p>
 </div>
