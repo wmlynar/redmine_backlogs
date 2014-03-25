@@ -119,8 +119,10 @@ RB.Generic = RB.Object.create(RB.Issue, {
     }
     obj.$.find('.editors').remove();
     if(this.isNew()){
-      this.$.parents('tr').remove();
-      this.$.remove();
+        if (this.$.hasClass('rowelement')) {
+          this.$.parents('tr').remove();
+        }
+        this.$.remove();
     }
   },
 
