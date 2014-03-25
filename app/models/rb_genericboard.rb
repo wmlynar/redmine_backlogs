@@ -16,7 +16,7 @@ end
 class RbGenericboard < ActiveRecord::Base
   include Redmine::SafeAttributes
   attr_accessible :col_type, :element_type, :name, :prefilter, :colfilter, :rowfilter, :row_type,
-    :include_none_in_rows, :include_none_in_cols
+    :include_none_in_rows, :include_none_in_cols, :include_closed_elements
   serialize :prefilter, Array
   serialize :boardoptions, Hash
 
@@ -301,7 +301,8 @@ class RbGenericboard < ActiveRecord::Base
     'rowfilter',
     'colfilter',
     'include_none_in_rows',
-    'include_none_in_cols'
+    'include_none_in_cols',
+    'include_closed_elements'
 
   def to_s
     name
