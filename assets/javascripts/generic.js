@@ -70,7 +70,10 @@ RB.Generic = RB.Object.create(RB.Issue, {
         nxt = j.parent().parent().next().find('.model.rowelement');
     }
     else {
-        nxt = j.siblings('.model').first();
+        nxt = j.next();
+        while (nxt.length && !nxt.hasClass('model')) { //skip non-models
+            nxt = nxt.next();
+        }
     }
     var project = j.parents('tr').find('.story .project .v');
     var cellID = j.parents('td').first().attr('id').split("_");
