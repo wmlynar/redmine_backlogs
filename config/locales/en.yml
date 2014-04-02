@@ -247,4 +247,4 @@ en:
   field_include_none_in_cols: "Include None in columns"
   field_include_none_in_rows: "Include None in rows"
   field_include_closed_elements: "Include closed elements"
-  
+  field_immutable_positions: "Make position of elements immutable"

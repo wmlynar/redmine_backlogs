@@ -174,6 +174,11 @@ class RbGenericboardsController < RbApplicationController
       params[:rbteam_id] = nil if (params.include?(:rbteam_id) && params[:rbteam_id] == 0)
     end #if !rowelement
 
+    #for boards that have no meaning in element position or are otherwise orthogonal
+    if @rb_genericboard.immutable_positions?
+      params.delete(:prev)
+      params.delete(:next)
+    end
 
     Rails.logger.info "Determined #{params} parent #{params[:parent_issue_id]}, sprint #{params[:fixed_version_id]}, release #{params[:release_id]}, team #{params[:rbteam_id]}, project #{params[:project_id]}, status #{params[:status_id]}"
 

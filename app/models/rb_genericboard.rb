@@ -16,11 +16,25 @@ end
 class RbGenericboard < ActiveRecord::Base
   include Redmine::SafeAttributes
   attr_accessible :col_type, :element_type, :name, :prefilter, :colfilter, :rowfilter, :row_type,
-    :include_none_in_rows, :include_none_in_cols, :include_closed_elements
+    :include_none_in_rows, :include_none_in_cols, :include_closed_elements, :immutable_positions
   serialize :prefilter, Array
   serialize :boardoptions, Hash
 
   attr_accessor :filteroptions
+
+  public
+
+  safe_attributes 'name',
+    'element_type',
+    'row_type',
+    'col_type',
+    'prefilter',
+    'rowfilter',
+    'colfilter',
+    'include_none_in_rows',
+    'include_none_in_cols',
+    'include_closed_elements',
+    'immutable_positions'
 
   private
 
@@ -293,17 +307,6 @@ class RbGenericboard < ActiveRecord::Base
 
   public
 
-  safe_attributes 'name',
-    'element_type',
-    'row_type',
-    'col_type',
-    'prefilter',
-    'rowfilter',
-    'colfilter',
-    'include_none_in_rows',
-    'include_none_in_cols',
-    'include_closed_elements'
-
   def to_s
     name
   end
@@ -513,7 +516,6 @@ class RbGenericboard < ActiveRecord::Base
     self.boardoptions['include_none_in_rows'] == "1"
   end
   def include_none_in_rows
-    puts "Board options #{self.boardoptions}"
     self.boardoptions['include_none_in_rows']
   end
   def include_none_in_rows=(val)
@@ -537,4 +539,14 @@ class RbGenericboard < ActiveRecord::Base
   def include_closed_elements=(val)
     self.boardoptions['include_closed_elements'] = val
   end
+  def immutable_positions?
+    self.boardoptions['immutable_positions'] == "1"
+  end
+  def immutable_positions
+    self.boardoptions['immutable_positions']
+  end
+  def immutable_positions=(val)
+    self.boardoptions['immutable_positions'] = val
+  end
+
 end
