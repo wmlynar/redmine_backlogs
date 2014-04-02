@@ -3,12 +3,20 @@
 <div class="box tabular">
   <p><%= f.text_field :name %></p>
   <p><%= f.select :element_type, genericboards_elements_options_for_select(@rb_genericboard.element_type), :label=>:label_rb_genericbord_elements %></p>
-  <p><%= f.select :col_type, genericboards_columns_options_for_select(@rb_genericboard.col_type), :label=>:label_rb_genericbord_columns %></p>
-  <p><%= f.check_box :include_none_in_cols %></p>
-  <p><%= f.select :row_type, genericboards_rows_options_for_select(@rb_genericboard.row_type), :label=>:label_rb_genericbord_rows %></p>
-  <p><%= f.check_box :include_none_in_rows %></p>
   <p><%= f.select :prefilter, genericboards_prefilter_options_for_select(@rb_genericboard.prefilter),
     {:label=>:label_rb_genericbord_prefilter}, {:multiple => true} %></p>
   <p><%= f.check_box :include_closed_elements %></p>
   <p><%= f.check_box :immutable_positions %></p>
+</div>
+<div class="box tabular">
+  <p><%= f.select :col_type, genericboards_columns_options_for_select(@rb_genericboard.col_type), :label=>:label_rb_genericbord_columns %></p>
+  <p><%= f.select :colfilter, genericboards_colfilter_options_for_select(@rb_genericboard.colfilter),
+    {:label=>:label_rb_genericbord_colfilter}, {:multiple => true} %></p>
+  <p><%= f.check_box :include_none_in_cols %></p>
+</div>
+<div class="box tabular">
+  <p><%= f.select :row_type, genericboards_rows_options_for_select(@rb_genericboard.row_type), :label=>:label_rb_genericbord_rows %></p>
+  <p><%= f.select :rowfilter, genericboards_rowfilter_options_for_select(@rb_genericboard.rowfilter),
+    {:label=>:label_rb_genericbord_rowfilter}, {:multiple => true} %></p>
+  <p><%= f.check_box :include_none_in_rows %></p>
 </div>

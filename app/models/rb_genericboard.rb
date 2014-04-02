@@ -18,6 +18,8 @@ class RbGenericboard < ActiveRecord::Base
   attr_accessible :col_type, :element_type, :name, :prefilter, :colfilter, :rowfilter, :row_type,
     :include_none_in_rows, :include_none_in_cols, :include_closed_elements, :immutable_positions
   serialize :prefilter, Array
+  serialize :rowfilter, Array
+  serialize :colfilter, Array
   serialize :boardoptions, Hash
 
   attr_accessor :filteroptions
@@ -57,10 +59,10 @@ class RbGenericboard < ActiveRecord::Base
   end
 
 
-  def __sprints_condition(project, filteroptions={})
+  def __sprints_condition(project, filter, filteroptions={})
     options = {}
     options[:conditions] ||= []
-    pf = prefilter_objects(project, filteroptions)
+    pf = filter_objects(project, filter, filteroptions)
     #FIXME
     r = pf['__current_or_no_release'] || pf['__current_release']
     if !r.is_a?(Integer) && r
@@ -75,11 +77,11 @@ class RbGenericboard < ActiveRecord::Base
     options
   end
 
-  def __release_condition(project, filteroptions={})
+  def __release_condition(project, filter, filteroptions={})
     options = {}
     options[:conditions] ||= []
     #FIXME
-    pf = prefilter_object_ids(project, filteroptions)
+    pf = filter_object_ids(project, filter, filteroptions)
     r = pf['__current_release'] || pf['__current_or_no_release']
     if !r.blank? && r > 0
       condition = ["#{RbRelease.table_name}.id = ? ", r]
@@ -88,10 +90,10 @@ class RbGenericboard < ActiveRecord::Base
     options
   end
 
-  def __team_condition(project, filteroptions={})
+  def __team_condition(project, filter, filteroptions={})
     options = {}
     options[:conditions] ||= []
-    pf = prefilter_object_ids(project, filteroptions)
+    pf = filter_object_ids(project, filter, filteroptions)
     #FIXME
     r = pf['__my_team']
     if !r.blank? && r > 0
@@ -101,10 +103,10 @@ class RbGenericboard < ActiveRecord::Base
     options
   end
 
-  def __element_condition(project, filteroptions={}) #FIXME codesmell
+  def __element_condition(project, filter, filteroptions={}) #FIXME codesmell
     options = {}
     options[:conditions] ||= []
-    pf = prefilter_object_ids(project, filteroptions)
+    pf = filter_object_ids(project, filter, filteroptions)
 
     if pf.include? '__current_release'
       id = pf['__current_release']
@@ -174,18 +176,18 @@ class RbGenericboard < ActiveRecord::Base
   end
 
 
-  def resolve_scope(object_type, project, options={})
+  def resolve_scope(object_type, project, filter, options={})
     case object_type
     when '__sprint'
-      conditions = __sprints_condition(project, options)
+      conditions = __sprints_condition(project, filter, options)
       open_shared_versions(project).scoped(conditions).collect{|v| v.becomes(RbSprint)}
 
     when '__release'
-      conditions = __release_condition(project, options)
+      conditions = __release_condition(project, filter, options)
       open_releases_by_date(project).scoped(conditions)
 
     when '__team'
-      conditions = __team_condition(project, options)
+      conditions = __team_condition(project, filter, options)
       Group.order(:lastname).scoped(conditions).collect{|g| g.becomes(RbTeam) }
 
     when '__state'
@@ -194,7 +196,7 @@ class RbGenericboard < ActiveRecord::Base
 
     else #assume an id of tracker, see our options in helper
       tracker_id = object_type
-      conditions = __element_condition(project, options)
+      conditions = __element_condition(project, filter, options)
       return RbGeneric.visible.
         scoped(conditions).
         generic_backlog_scope({
@@ -401,21 +403,19 @@ class RbGenericboard < ActiveRecord::Base
     end
   end
 
-  def prefilter_objects(project, filteroptions={})
-    if prefilter.nil?
+  def filter_objects(project, filter, filteroptions={})
+    if filter.nil?
       return {}
     end
-    filter = prefilter
     filter = [filter] if filter && !filter.is_a?(Array)
 
     Hash[filter.zip(filter.collect{|f| find_filter_object(project, f, filteroptions)})]
   end
 
-  def prefilter_object_ids(project, filteroptions)
-    if prefilter.nil?
+  def filter_object_ids(project, filter, filteroptions)
+    if filter.nil?
       return {}
     end
-    filter = prefilter
     filter = [filter] if filter && !filter.is_a?(Array)
 
     Hash[filter.zip(filter.collect{|f| find_filter_object_id(project, f, filteroptions)})]
@@ -452,7 +452,7 @@ class RbGenericboard < ActiveRecord::Base
 
   def columns(project, options={})
     if col_type != element_type #elements by col_type
-      c = resolve_scope(col_type, project, options)
+      c = resolve_scope(col_type, project, colfilter, options)
       if include_none_in_cols?
         c = c.to_a.unshift(RbFakeGeneric.new("No #{col_type_name}"))
       end
@@ -463,7 +463,7 @@ class RbGenericboard < ActiveRecord::Base
   end
 
   def rows(project, options={})
-    c = resolve_scope(row_type, project, options)
+    c = resolve_scope(row_type, project, rowfilter, options)
     if include_none_in_rows?
       c.to_a.append(RbFakeGeneric.new("No #{row_type_name}"))
     end
@@ -471,7 +471,7 @@ class RbGenericboard < ActiveRecord::Base
   end
 
   def elements(project, options={})
-    resolve_scope(element_type, project, options)
+    resolve_scope(element_type, project, prefilter, options)
   end
 
   def elements_by_cell(project, options={})

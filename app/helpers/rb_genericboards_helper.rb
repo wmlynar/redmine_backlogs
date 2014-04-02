@@ -36,6 +36,25 @@ module RbGenericboardsHelper
     options_for_select((values || []), selected)
   end
 
+  def genericboards_rowfilter_options_for_select(selected=nil)
+    values = []
+    values.append(["No filter", 0])
+    values.append(["Current Release", '__current_release'])
+    values.append(["Current Sprint", '__current_sprint'])
+    values.append(["My team", '__my_team'])
+    values.append(["Parent", '__parent'])
+    options_for_select((values || []), selected)
+  end
+
+  def genericboards_colfilter_options_for_select(selected=nil)
+    values = []
+    values.append(["No filter", 0])
+    values.append(["Current Release", '__current_release'])
+    values.append(["Current Sprint", '__current_sprint'])
+    values.append(["My team", '__my_team'])
+    options_for_select((values || []), selected)
+  end
+
   def genericboards_boardlist_options_for_select(selected=nil)
     values = RbGenericboard.order(:name).map {|b| [b.name, b.id]}
     options_for_select((values || []), selected)
