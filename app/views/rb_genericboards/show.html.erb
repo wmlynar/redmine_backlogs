@@ -100,6 +100,7 @@ filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,Start
     <table id="generics" class="board" cellspacing="0">
       <tbody class="row-list">
       <% @rows.each do |row| %>
+      <% if @rb_genericboard.row_used? row.id %>
         <tr id="swimlane-<%= row.id %>" class="story-swimlane ui-sortable">
           <td id="<%= row.id %>_rowelement">
             <div class="generic_addbtn"></div>
@@ -114,6 +115,7 @@ filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,Start
           </td>
           <% end %>
         </tr>
+      <% end %>
       <% end %>
       </tbody>
     </table>

@@ -248,6 +248,7 @@ en:
   field_include_none_in_rows: "Include None in rows"
   field_include_closed_elements: "Include closed elements"
   field_immutable_positions: "Make position of elements immutable"
+  field_hide_empty_rows: "Hide empty rows"
   label_rb_genericbord_colfilter: "Column filter"
   label_rb_genericbord_rowfilter: "Row filter"
   

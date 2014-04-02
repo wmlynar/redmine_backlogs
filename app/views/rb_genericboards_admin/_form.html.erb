@@ -18,5 +18,6 @@
   <p><%= f.select :row_type, genericboards_rows_options_for_select(@rb_genericboard.row_type), :label=>:label_rb_genericbord_rows %></p>
   <p><%= f.select :rowfilter, genericboards_rowfilter_options_for_select(@rb_genericboard.rowfilter),
     {:label=>:label_rb_genericbord_rowfilter}, {:multiple => true} %></p>
+  <p><%= f.check_box :hide_empty_rows %></p>
   <p><%= f.check_box :include_none_in_rows %></p>
 </div>

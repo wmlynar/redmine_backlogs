@@ -200,9 +200,9 @@ class RbGenericboardsController < RbApplicationController
 
   def show
     @filteroptions = params.select{|k,v| k.starts_with?('__')}
+    @elements_by_cell = @rb_genericboard.elements_by_cell(@project, @filteroptions)
     @rows = @rb_genericboard.rows(@project, @filteroptions).to_a
     @columns = @rb_genericboard.columns(@project, @filteroptions).to_a
-    @elements_by_cell = @rb_genericboard.elements_by_cell(@project, @filteroptions)
     @all_boards = RbGenericboard.all
 
     respond_to do |format|

@@ -16,7 +16,8 @@ end
 class RbGenericboard < ActiveRecord::Base
   include Redmine::SafeAttributes
   attr_accessible :col_type, :element_type, :name, :prefilter, :colfilter, :rowfilter, :row_type,
-    :include_none_in_rows, :include_none_in_cols, :include_closed_elements, :immutable_positions
+    :include_none_in_rows, :include_none_in_cols, :include_closed_elements, :immutable_positions,
+    :hide_empty_rows
   serialize :prefilter, Array
   serialize :rowfilter, Array
   serialize :colfilter, Array
@@ -36,7 +37,8 @@ class RbGenericboard < ActiveRecord::Base
     'include_none_in_rows',
     'include_none_in_cols',
     'include_closed_elements',
-    'immutable_positions'
+    'immutable_positions',
+    'hide_empty_rows'
 
   private
 
@@ -483,6 +485,7 @@ class RbGenericboard < ActiveRecord::Base
       col_id = 0
     end
 
+    @used_rows = {}
     #aggregate all elements in scope into a matrix indexed by row/column object ids
     map = {}
     elements(project, options).each {|element|
@@ -508,8 +511,14 @@ class RbGenericboard < ActiveRecord::Base
         map[row_id][col_id] = []
       end
       map[row_id][col_id].append(element)
+      @used_rows[row_id] = true
     }
+
     map
+  end
+
+  def row_used?(row_id)
+    @used_rows.include? row_id
   end
 
   def include_none_in_rows?
@@ -547,6 +556,15 @@ class RbGenericboard < ActiveRecord::Base
   end
   def immutable_positions=(val)
     self.boardoptions['immutable_positions'] = val
+  end
+  def hide_empty_rows?
+    self.boardoptions['hide_empty_rows'] == "1"
+  end
+  def hide_empty_rows
+    self.boardoptions['hide_empty_rows']
+  end
+  def hide_empty_rows=(val)
+    self.boardoptions['hide_empty_rows'] = val
   end
 
 end
