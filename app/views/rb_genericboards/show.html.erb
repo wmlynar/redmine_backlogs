@@ -71,6 +71,13 @@ filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,Start
         <%= options_for_select((filteroptions[:values] || []), filteroptions[:selected]) %>
       </select>
       <% end %>
+
+      <% @rb_genericboard.rowfilter_alternative_options(@project, @filteroptions).each do |key, filteroptions| %>
+      <%= filteroptions[:label] %>
+      <select name="<%=filteroptions[:key]%>" id="filter<%=filteroptions[:key]%>">
+        <%= options_for_select((filteroptions[:values] || []), filteroptions[:selected]) %>
+      </select>
+      <% end %>
     </form>
   </span>
 <%- end %>
@@ -100,7 +107,7 @@ filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,Start
     <table id="generics" class="board" cellspacing="0">
       <tbody class="row-list">
       <% @rows.each do |row| %>
-      <% if @rb_genericboard.row_used? row.id %>
+      <% if !@rb_genericboard.hide_empty_rows? || @rb_genericboard.row_used?(row.id) %>
         <tr id="swimlane-<%= row.id %>" class="story-swimlane ui-sortable">
           <td id="<%= row.id %>_rowelement">
             <div class="generic_addbtn"></div>

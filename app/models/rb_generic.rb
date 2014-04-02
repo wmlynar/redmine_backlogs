@@ -106,6 +106,7 @@ class RbGeneric < Issue
 
   scope :backlog_scope, lambda{|opts| RbGeneric.find_options(opts) }
   scope :generic_backlog_scope, lambda{|opts| RbGeneric.find_options(opts, true) }
+  scope :epics, lambda{|opts| self.generic_backlog_scope(opts.merge({:trackers => self.epic_trackers})) }
 
   def self.trackers(options = {})
     self.get_trackers(:story_trackers, options)

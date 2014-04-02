@@ -170,6 +170,18 @@ class RbGenericboard < ActiveRecord::Base
       Backlogs::ActiveRecord.add_condition(options, condition) if condition
     end
 
+    if pf.include? '__parent'
+      id = pf['__parent']
+      if id < 0 # None
+        condition = ["#{RbGeneric.table_name}.parent_id is null "]
+      elsif id > 0
+        condition = ["(#{RbGeneric.table_name}.parent_id = ?) ", id]
+      else
+        condition = nil
+      end
+      Backlogs::ActiveRecord.add_condition(options, condition) if condition
+    end
+
     unless include_closed_elements?
       Backlogs::ActiveRecord.add_condition(options, ["is_closed = ?", false])
     end
@@ -276,6 +288,16 @@ class RbGenericboard < ActiveRecord::Base
         User.current.groups.order(:lastname).first || 0
       end
 
+    when '__parent'
+      if filteroptions.include? '__parent'
+        if filteroptions['__parent'].to_i > 0
+          RbGeneric.find(filteroptions['__parent']) || nil
+        else
+          filteroptions['__parent'].to_i
+        end
+      else
+        RbGeneric.epics({:project=>project}).order(:subject).first || 0
+      end
     else
       0
     end
@@ -291,6 +313,8 @@ class RbGenericboard < ActiveRecord::Base
     when '__my_team'
       #User.current.groups.order(:lastname).to_a
       Group.order(:lastname).to_a
+    when '__parent'
+      RbGeneric.epics({:project => project}).order(:position).to_a
     else
       nil
     end
@@ -304,6 +328,8 @@ class RbGenericboard < ActiveRecord::Base
       '__release'
     when '__my_team'
       '__team'
+    when '__parent'
+      '__parent'
     else
       nil
     end
@@ -356,6 +382,8 @@ class RbGenericboard < ActiveRecord::Base
       "Team"
     when '__state'
       "State"
+    when '__parent'
+      "Epic"
     else #assume an id of tracker, see our options in helper
       tracker_id = object_type
       tracker = Tracker.find(tracker_id)
@@ -400,6 +428,8 @@ class RbGenericboard < ActiveRecord::Base
       "Current or no Sprint"
     when '__my_team'
       "my Team"
+    when '__parent'
+      "Epic"
     else
       default
     end
@@ -424,7 +454,18 @@ class RbGenericboard < ActiveRecord::Base
   end
 
   def prefilter_alternative_options(project, filteroptions)
-    filter = prefilter
+    filter_alternative_options(project, prefilter, filteroptions)
+  end
+
+  def rowfilter_alternative_options(project, filteroptions)
+    if rowfilter.include? '__parent'
+      filter_alternative_options(project, ['__parent'], filteroptions)
+    else # do not offer current release or stuff filters for rows here
+      []
+    end
+  end
+
+  def filter_alternative_options(project, filter, filteroptions)
     filter = [filter] if filter && !filter.is_a?(Array)
     # assemble objects into __filter => list
     opts = Hash[filter.collect{|f|
@@ -433,7 +474,7 @@ class RbGenericboard < ActiveRecord::Base
     # convert onbjects in lists to [id, name] tuples
     opts.each {|key, optionlist|
       unless optionlist.blank?
-        optionlist[:values].collect!{|o| [o.name, o.id] unless o.blank?}.compact()
+        optionlist[:values].collect!{|o| [o.respond_to?(:subject) ? o.subject : o.name, o.id] unless o.blank?}.compact()
         optionlist[:values] << [ 'None', -1]
         optionlist[:values] << [ 'Any', 0]
 
@@ -473,7 +514,23 @@ class RbGenericboard < ActiveRecord::Base
   end
 
   def elements(project, options={})
-    resolve_scope(element_type, project, prefilter, options)
+    #it will do no harm when we got the '__parents' filter set in options, it will not be used when it is not in prefilter.
+    e = resolve_scope(element_type, project, prefilter, options)
+
+    # when we have an issue as parent, we don't need to query all elements, we restrict to visible rows
+    parent_attribute = resolve_parent_attribute(row_type)
+    if parent_attribute == :parent
+      #Rails.logger.info('XXXXXXX injecting parent relation for elements')
+      row_ids = rows(project, options).to_a.collect{|f| f.id}.to_a
+      #Rails.logger.info("xxxxxxxrows #{row_ids}")
+      if include_none_in_rows?
+        e = e.where(["(#{RbGeneric.table_name}.parent_id in (?) or #{RbGeneric.table_name}.parent_id is null)", row_ids])
+      else
+        e = e.where(:parent_id => row_ids)
+      end
+      #Rails.logger.info("xxxxxelements #{e.to_a.collect{|f| f.id}}")
+    end
+    e
   end
 
   def elements_by_cell(project, options={})
