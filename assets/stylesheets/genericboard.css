@@ -40,6 +40,10 @@
     cursor: move;
 }
 
+#taskboard .issue .project .v {
+    display: none;
+}
+
 #generics td {
     position: relative;
 }
