@@ -59,11 +59,11 @@ RB.Genericboard = RB.Object.create({
     j.bind('mouseup.taskboard', function(e) { return self.onMouseUp(e); });
 
     // Initialize task lists, restricting drop to the story
-    var tasks_lists =j.find('.story-swimlane');
-    if (!tasks_lists || !tasks_lists.length) {
-      alert("There are no task states. Please check the workflow of your tasks tracker in the administration section.");
-      return;
-    }
+    //var tasks_lists =j.find('.story-swimlane');
+    //if (!tasks_lists || !tasks_lists.length) {
+    //  alert("There are no task states. Please check the workflow of your tasks tracker in the administration section.");
+    //  return;
+    //}
 
     var sortableOpts = {
       placeholder: 'placeholder',
