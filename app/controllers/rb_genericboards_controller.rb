@@ -75,13 +75,19 @@ class RbGenericboardsController < RbApplicationController
 
       filteroptions = params.select{|k,v| k.starts_with?('__')} #FIXME these params are not transported in create, yet
       prefilter_objects = @rb_genericboard.prefilter_objects(@project, filteroptions).each {|k, v|
-        case k
-        when '__current_release', '__current_or_no_release'
-          params[:release_id] = v.id unless (v.blank? && params.include?(:release_id))
-        when '__current_sprint', '__current_or_no_sprint'
-          params[:fixed_version_id] = v.id unless (v.blank? && params.include?(:fixed_version_id))
-        when '__my_team'
-          params[:rbteam_id] = v.id unless (v.blank? && params.include?(:rbteam_id))
+        begin
+          Rails.logger.info("determining param from prefilter #{k} #{v}")
+          case k
+          when '__current_release', '__current_or_no_release'
+            params[:release_id] = v.id unless (v.blank? && params.include?(:release_id))
+          when '__current_sprint', '__current_or_no_sprint'
+            Rails.logger.info("determining sprint from filter #{k} #{v} #{params}")
+            params[:fixed_version_id] = v.id unless (v.blank? && params.include?(:fixed_version_id))
+          when '__my_team'
+            params[:rbteam_id] = v.id unless (v.blank? && params.include?(:rbteam_id))
+          end
+        rescue => e
+          Rails.logger.error("Error converting params from prefilter #{k} #{v} #{e}")
         end
       }
       Rails.logger.info("Create: got prefilter_objects #{prefilter_objects}")
@@ -217,6 +223,8 @@ class RbGenericboardsController < RbApplicationController
       Rails.logger.info "Creating generic with attrs #{attrs}"
       story = RbGeneric.create_and_position(attrs)
     rescue => e
+      Rails.logger.error "Error in genericboards create: #{e}"
+      e.backtrace.each {|l| Rails.logger.error l}
       render :text => e.message.blank? ? e.to_s : e.message, :status => 400
       return
     end
@@ -228,7 +236,6 @@ class RbGenericboardsController < RbApplicationController
 
 
     status = (story.id ? 200 : 400)
-
     respond_to do |format|
       format.html { render :partial => "generic", :object => story, :status => status, :locals => {:cls => cls_hint} }
     end
