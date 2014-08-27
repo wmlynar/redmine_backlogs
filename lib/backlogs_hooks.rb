@@ -90,6 +90,12 @@ module BacklogsPlugin
               relation_translate = l("label_release_relationship_#{RbStory.find(issue.id).release_relationship}")
               snippet += "<th>#{l(:field_release_relationship)}</th><td>#{relation_translate}</td></tr>"
             end
+
+            unless issue.rbteam_id.nil?
+              team = Group.find(issue.rbteam_id)
+              snippet += "<tr><th>#{l(:field_team)}</th><td>#{team.name}</td>"
+            end
+
           end
 
           if issue.is_task? && User.current.allowed_to?(:update_remaining_hours, project) != nil
@@ -136,6 +142,8 @@ module BacklogsPlugin
 
               snippet += '</p></div>'
             end
+
+            snippet += 'TEAM form'
           end
 
           if issue.is_story?
