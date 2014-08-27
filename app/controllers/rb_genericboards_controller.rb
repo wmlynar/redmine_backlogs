@@ -217,6 +217,7 @@ class RbGenericboardsController < RbApplicationController
   end
 
   def create
+    Rails.logger.info("Create on genericboard params #{params}")
     params['author_id'] = User.current.id
     begin
       attrs, cls_hint = process_params(params, true)

@@ -16,6 +16,15 @@
                            :context => 'genericboard',
                            :format => 'js') %>">
   </script>
+  <script type="text/javascript">
+    RB.constants.genericboard_active_filters={};
+    <% @rb_genericboard.prefilter_alternative_options(@project, @filteroptions).each do |key, filteroptions| %>
+    RB.constants.genericboard_active_filters['<%= filteroptions[:key]%>'] = '<%= filteroptions[:selected]%>';
+    <% end %>
+    <% @rb_genericboard.rowfilter_alternative_options(@project, @filteroptions).each do |key, filteroptions| %>
+    RB.constants.genericboard_active_filters['<%= filteroptions[:key]%>'] = '<%= filteroptions[:selected]%>';
+    <% end %>
+  </script>
 
   <%= javascript_include_tag(
     'genericboard',
@@ -67,14 +76,14 @@ filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,Start
     <form action='' method='GET' name="prefilter-overrides" id="prefilter-overrides">
       <% @rb_genericboard.prefilter_alternative_options(@project, @filteroptions).each do |key, filteroptions| %>
       <%= filteroptions[:label] %>
-      <select name="<%=filteroptions[:key]%>" id="filter<%=filteroptions[:key]%>">
+      <select name="<%=filteroptions[:key]%>" id="filter<%=filteroptions[:key]%>" _selected="<%=filteroptions[:selected]%>">
         <%= options_for_select((filteroptions[:values] || []), filteroptions[:selected]) %>
       </select>
       <% end %>
 
       <% @rb_genericboard.rowfilter_alternative_options(@project, @filteroptions).each do |key, filteroptions| %>
       <%= filteroptions[:label] %>
-      <select name="<%=filteroptions[:key]%>" id="filter<%=filteroptions[:key]%>">
+      <select name="<%=filteroptions[:key]%>" id="filter<%=filteroptions[:key]%>" _selected="<%=filteroptions[:selected]%>">
         <%= options_for_select((filteroptions[:values] || []), filteroptions[:selected]) %>
       </select>
       <% end %>

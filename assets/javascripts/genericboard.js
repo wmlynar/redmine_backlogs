@@ -77,7 +77,7 @@ RB.Genericboard = RB.Object.create({
     };
 
     //initialize the cells (td) as sortable
-    if (RB.permissions.update_tasks) {
+    if (RB.permissions && RB.permissions.update_tasks) {
       j.find('.story-swimlane .list').sortable(RB.$.extend({
         connectWith: '.story-swimlane .list'
         }, sortableOpts));

@@ -62,6 +62,8 @@ if (!RB.constants) {
   };
 }
 
+  RB.permissions = {};
+
 <% if @project %>
   RB.constants.project_id = <%= @project.id %>;
   RB.permissions = {
@@ -128,8 +130,8 @@ RB.constants.task_states = <%= workflow_transitions(RbTask).to_json.html_safe %>
 <% if @project && Backlogs.setting[:scaled_agile_enabled] %>
   RB.routes.genericboards = <%= url_for(:controller => 'rb_genericboards', :action => 'show', :project_id => @project, :genericboard_id => ':id').to_json.html_safe %>;
   <% if @genericboard %>
-  RB.routes.create_generic = <%= url_for(:controller => 'rb_genericboards', :action => 'create', :project_id => @project, :genericboard_id => @genericboard.id).to_json.html_safe %>;
-  RB.routes.update_generic = <%= url_for(:controller => 'rb_genericboards', :action => 'update', :project_id => @project, :genericboard_id => @genericboard.id, :id => ':id').to_json.html_safe %>;
-  RB.constants.genericboard_id = <%= @genericboard.id %>;
+    RB.routes.create_generic = <%= url_for(:controller => 'rb_genericboards', :action => 'create', :project_id => @project, :genericboard_id => @genericboard.id).to_json.html_safe %>;
+    RB.routes.update_generic = <%= url_for(:controller => 'rb_genericboards', :action => 'update', :project_id => @project, :genericboard_id => @genericboard.id, :id => ':id').to_json.html_safe %>;
+    RB.constants.genericboard_id = <%= @genericboard.id %>;
   <% end %>
 <% end %>

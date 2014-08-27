@@ -87,6 +87,11 @@ RB.Generic = RB.Object.create(RB.Issue, {
     if( project.length){
       data += "&project_id=" + project.text();
     }
+    if (RB.constants.genericboard_active_filters) {
+      for (var k in RB.constants.genericboard_active_filters) {
+        data += "&"+k+"="+RB.constants.genericboard_active_filters[k];
+      }
+    }
 
     if( this.isNew() ){
       url = RB.urlFor( 'create_generic' );
