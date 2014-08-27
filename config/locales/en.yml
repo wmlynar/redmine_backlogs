@@ -102,6 +102,7 @@ en:
   field_position: Position
   field_priority: Priority
   field_project_id: "Project Id"
+  field_rbteam: "Team"
   field_release: Release
   field_release_ids: Releases
   field_release_end_date: "Release end date"

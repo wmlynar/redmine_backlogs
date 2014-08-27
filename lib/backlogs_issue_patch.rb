@@ -21,6 +21,7 @@ module Backlogs
         validates_inclusion_of :release_relationship, :in => RbStory::RELEASE_RELATIONSHIP
 
         safe_attributes 'release_id','release_relationship' #FIXME merge conflict. is this required?
+        safe_attributes 'rbteam_id'
 
         before_save :backlogs_before_save
         after_save  :backlogs_after_save

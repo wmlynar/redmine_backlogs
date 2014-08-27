@@ -252,6 +252,11 @@ filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,Start
     s.html_safe
   end
 
+  def teams_assignable_options_for_select(teams, selected=nil)
+    collection = teams.collect{|t| [t.name, t.id]}
+    options_for_select(collection, selected.id)
+  end
+
   def release_options_for_select(releases, selected=nil)
     grouped = Hash.new {|h,k| h[k] = []}
     selected = [selected].compact unless selected.kind_of?(Array)

@@ -102,6 +102,7 @@ de:
   field_position: Position
   field_priority: Priorität
   field_project_id: "Projekt Id"
+  field_rbteam: "Team"
   field_release: Release
   field_release_end_date: "Release Enddatum"
   field_release_relationship: "Release relationship"
@@ -110,6 +111,7 @@ de:
   field_story_points: Storypunkte
   field_subject: Thema
   field_task_color: "Task color"
+  field_team: "Team"
   field_time_entry_comments: "Zeiterfassung Kommentar"
   field_time_entry_hours: "Zeiterfassung Stunden"
   field_time_entry_spend_on: "Zeit gebucht auf"

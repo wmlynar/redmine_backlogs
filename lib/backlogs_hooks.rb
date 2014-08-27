@@ -143,7 +143,9 @@ module BacklogsPlugin
               snippet += '</p></div>'
             end
 
-            snippet += 'TEAM form'
+              snippet += '<div class="splitcontentleft"><p>'
+              snippet += context[:form].select :rbteam_id, teams_assignable_options_for_select(Group.all, issue.rbteam), :include_blank => true
+              snippet += '</p></div>'
           end
 
           if issue.is_story?
