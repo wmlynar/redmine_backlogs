@@ -254,7 +254,9 @@ filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,Start
 
   def teams_assignable_options_for_select(teams, selected=nil)
     collection = teams.collect{|t| [t.name, t.id]}
-    options_for_select(collection, selected.id)
+    s_id = 0
+    s_id = selected.id if selected
+    options_for_select(collection, s_id)
   end
 
   def release_options_for_select(releases, selected=nil)
