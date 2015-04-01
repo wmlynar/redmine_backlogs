@@ -5,6 +5,8 @@ class RbStory < Issue
 
   private
 
+  def self.tracker_setting; :story_trackers end
+
   def self.__find_options_normalize_option(option)
     option = [option] if option && !option.is_a?(Array)
     option = option.collect{|s| s.is_a?(Integer) ? s : s.id} if option
@@ -209,7 +211,7 @@ class RbStory < Issue
     # somewhere early in the initialization process during first-time migration this gets called when the table doesn't yet exist
     trackers = []
     if has_settings_table
-      trackers = Backlogs.setting[:story_trackers]
+      trackers = Backlogs.setting[tracker_setting]
       trackers = [] if trackers.blank?
     end
 
@@ -262,7 +264,14 @@ class RbStory < Issue
     self.position!(params)
 
     # lft and rgt fields are handled by acts_as_nested_set
-    attribs = params.select{|k,v| !['prev', 'id', 'project_id', 'lft', 'rgt'].include?(k) && RbStory.column_names.include?(k) }
+    if Issue.const_defined? "SAFE_ATTRIBUTES"
+      safe_attributes_names = RbStory::SAFE_ATTRIBUTES
+    else
+      safe_attributes_names = Issue.new(
+        :project_id=>params[:project_id] # required to verify "safeness"
+      ).safe_attribute_names
+    end
+    attribs = params.select{|k,v| !['prev', 'id', 'project_id', 'lft', 'rgt'].include?(k) && safe_attributes_names.include?(k) }
     attribs = Hash[*attribs.flatten]
 
     return self.journalized_update_attributes attribs

@@ -2,15 +2,8 @@ require 'rubygems'
 require 'yaml'
 require 'singleton'
 
-unless defined?('ReliableTimout') || defined?(:ReliableTimout)
-  if Backlogs.gems.include?('system_timer')
-    require 'system_timer'
-    ReliableTimout = SystemTimer
-  else
-    require 'timeout'
-    ReliableTimout = Timeout
-  end
-end
+require 'timeout'
+ReliableTimout = Timeout
 
 module Backlogs
   def version
