@@ -13,6 +13,21 @@ module BacklogsPlugin
         Rails.logger.error "#{ex.message} (#{ex.class}): " + ex.backtrace.join("\n")
       end
 
+      def helper_issues_show_detail_after_setting(context={ })
+      	begin
+          if context[:detail].prop_key == 'release_id'
+            r = RbRelease.find_by_id(context[:detail].value)
+            context[:detail].value = r.name unless r.nil? || r.name.nil?
+
+            r = RbRelease.find_by_id(context[:detail].old_value)
+            context[:detail].old_value = r.name unless r.nil? || r.name.nil?
+          end
+        rescue => e
+          exception(context, e)
+          return ''
+        end
+      end
+
       def view_issues_sidebar_planning_bottom(context={ })
         begin
           return '' if User.current.anonymous?
@@ -128,7 +143,7 @@ module BacklogsPlugin
             if Backlogs.setting[:story_points].blank?
               snippet += context[:form].text_field(:story_points, :size => 3)
             else
-              snippet += context[:form].select(:story_points, options_for_select(Backlogs.setting[:story_points].split(',').map(&:to_i), issue.story_points.try(:to_i).try(:to_s)), include_blank: true)
+              snippet += context[:form].select(:story_points, options_for_select(Backlogs.setting[:story_points].split(',').map(&:to_f), issue.story_points.try(:to_f).try(:to_s)), include_blank: true)
             end
             snippet += '</p>'
 
