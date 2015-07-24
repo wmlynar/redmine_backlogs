@@ -17,13 +17,15 @@ class RbReleaseMultiview < ActiveRecord::Base
   end
 
   def has_burnchart?
-    releases.inject(false) {|result,release| result |= release.has_burndown?}
+    false
+    #releases.inject(false) {|result,release| result |= release.has_burndown?}
   end
 
   def burnchart
-    return nil unless self.has_burnchart?
-    @cached_burnchart ||= RbReleaseMultiviewBurnchart.new(self)
-    return @cached_burnchart
+    return nil #multiview burndown chart does not work on ruby2/rails4
+    #return nil unless self.has_burnchart?
+    #@cached_burnchart ||= RbReleaseMultiviewBurnchart.new(self)
+    #return @cached_burnchart
   end
 
 end
