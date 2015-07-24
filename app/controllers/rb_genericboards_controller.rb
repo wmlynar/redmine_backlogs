@@ -249,6 +249,8 @@ class RbGenericboardsController < RbApplicationController
       Rails.logger.info "Genericboard update #{story} #{attrs} #{cls_hint} #{@rb_genericboard}"
       result = story.update_and_position!(attrs)
     rescue => e
+      Rails.logger.error "Error in genericboards update: #{e}"
+      e.backtrace.each {|l| Rails.logger.error l}
       render :text => e.message.blank? ? e.to_s : e.message, :status => 400
       return
     end
