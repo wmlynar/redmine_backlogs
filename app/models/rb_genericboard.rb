@@ -194,15 +194,15 @@ class RbGenericboard < ActiveRecord::Base
     case object_type
     when '__sprint'
       conditions = __sprints_condition(project, filter, options)
-      open_shared_versions(project).scoped(conditions).collect{|v| v.becomes(RbSprint)}
+      open_shared_versions(project).where(conditions[:conditions]).collect{|v| v.becomes(RbSprint)}
 
     when '__release'
       conditions = __release_condition(project, filter, options)
-      open_releases_by_date(project).scoped(conditions)
+      open_releases_by_date(project).where(conditions[:conditions])
 
     when '__team'
       conditions = __team_condition(project, filter, options)
-      Group.order(:lastname).scoped(conditions).collect{|g| g.becomes(RbTeam) }
+      Group.order(:lastname).where(conditions[:conditions]).collect{|g| g.becomes(RbTeam) }
 
     when '__state'
       tracker = Tracker.find(element_type) #FIXME multiple trackers, no tracker
@@ -212,7 +212,7 @@ class RbGenericboard < ActiveRecord::Base
       tracker_id = object_type
       conditions = __element_condition(project, filter, options)
       return RbGeneric.visible.
-        scoped(conditions).
+        where(conditions[:conditions]).
         generic_backlog_scope({
             :project => project,
             :trackers => resolve_trackers(tracker_id)
@@ -258,7 +258,7 @@ class RbGenericboard < ActiveRecord::Base
     when '__current_release', '__current_or_no_release'
       if filteroptions.include? '__release'
         if filteroptions['__release'].to_i > 0
-          RbRelease.find(filteroptions['__release']) || project.active_release || nil
+          RbRelease.where(:id => filteroptions['__release']).take || project.active_release || nil
         else
           filteroptions['__release'].to_i
         end
@@ -269,7 +269,7 @@ class RbGenericboard < ActiveRecord::Base
     when '__current_sprint', '__current_or_no_sprint'
       if filteroptions.include? '__sprint'
         if filteroptions['__sprint'].to_i > 0
-          RbSprint.find(filteroptions['__sprint']) || project.active_sprint || nil
+          RbSprint.where(:id => filteroptions['__sprint']).take || project.active_sprint || nil
         else
           filteroptions['__sprint'].to_i
         end
@@ -280,7 +280,7 @@ class RbGenericboard < ActiveRecord::Base
     when '__my_team'
       if filteroptions.include? '__team'
         if filteroptions['__team'].to_i > 0
-          Group.find(filteroptions['__team']) || User.current.groups.order(:lastname).first || nil
+          Group.where(:id => filteroptions['__team']).take || User.current.groups.order(:lastname).first || nil
         else
           filteroptions['__team'].to_i
         end
@@ -291,7 +291,7 @@ class RbGenericboard < ActiveRecord::Base
     when '__parent'
       if filteroptions.include? '__parent'
         if filteroptions['__parent'].to_i > 0
-          RbGeneric.find(filteroptions['__parent']) || nil
+          RbGeneric.where(:id => filteroptions['__parent']).take || nil
         else
           filteroptions['__parent'].to_i
         end
@@ -386,7 +386,7 @@ class RbGenericboard < ActiveRecord::Base
       "Epic"
     else #assume an id of tracker, see our options in helper
       tracker_id = object_type
-      tracker = Tracker.find(tracker_id)
+      tracker = Tracker.where(:id => tracker_id).take
       if tracker
         tracker.name
       else
