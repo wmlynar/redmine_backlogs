@@ -2,9 +2,9 @@ class RbReleaseMultiview < ActiveRecord::Base
   self.table_name = 'rb_releases_multiview'
 
   unloadable
-
   belongs_to :project
 
+  attr_accessible :name, :project_id, :release_ids
   serialize :release_ids
 
   validates_presence_of :project_id, :name
@@ -12,9 +12,8 @@ class RbReleaseMultiview < ActiveRecord::Base
   include Backlogs::ActiveRecord::Attributes
 
   def releases
-    RbRelease.find(:all,
-                   :conditions => {:id => self.release_ids},
-                   :order => "release_end_date ASC, release_start_date ASC")
+    RbRelease.where(id: self.release_ids)
+            .order("release_end_date ASC, release_start_date ASC").all
   end
 
   def has_burnchart?

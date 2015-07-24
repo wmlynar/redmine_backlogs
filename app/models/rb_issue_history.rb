@@ -28,9 +28,9 @@ class RbIssueHistory < ActiveRecord::Base
 
   def self.statuses
     Hash.new{|h, k|
-      s = IssueStatus.find_by_id(k.to_i)
+      s = IssueStatus.where(:id => k.to_i).take
       if s.nil?
-        s = IssueStatus.default
+        s = IssueStatus.first.id
         puts "IssueStatus #{k.inspect} not found, using default #{s.id} instead"
       end
       h[k] = {:id => s.id, :open => ! s.is_closed?, :success => s.is_closed? ? (s.default_done_ratio.nil? || s.default_done_ratio == 100) : false }
@@ -105,7 +105,7 @@ class RbIssueHistory < ActiveRecord::Base
   end
 
   def self.rebuild_issue(issue, status=nil)
-    rb = RbIssueHistory.find_or_initialize_by_issue_id(issue.id)
+    rb = RbIssueHistory.where(:issue_id => issue.id).first_or_initialize
 
     rb.history = [{:date => issue.created_on.to_date - 1, :origin => :rebuild}]
 
@@ -196,7 +196,7 @@ class RbIssueHistory < ActiveRecord::Base
     }
 
     # Wouldn't be needed if redmine just created journals for update_parent_properties
-    subissues = Issue.find(:all, :conditions => ['parent_id = ?', issue.id]).to_a
+    subissues = Issue.where(parent_id: issue.id).to_a
     subhists = []
     subdates = []
     subissues.each{|i|
@@ -306,7 +306,7 @@ class RbIssueHistory < ActiveRecord::Base
 
     if rb.history.detect{|h| h[:tracker] == :story }
       rb.history.collect{|h| h[:sprint] }.compact.uniq.each{|sprint_id|
-        sprint = RbSprint.find_by_id(sprint_id)
+        sprint = RbSprint.find(sprint_id.to_i)
         next unless sprint
         sprint.burndown.touch!(issue.id)
       }
@@ -319,10 +319,13 @@ class RbIssueHistory < ActiveRecord::Base
     status = self.statuses
 
     issues = Issue.count
-    Issue.find(:all, :order => 'root_id asc, lft desc').each_with_index{|issue, n|
-      puts "#{issue.id.to_s.rjust(6, ' ')} (#{(n+1).to_s.rjust(6, ' ')}/#{issues})..."
-      RbIssueHistory.rebuild_issue(issue, status)
-    }
+    begin
+      Issue.order('root_id asc, lft desc').each_with_index{|issue, n|
+        puts "#{issue.id.to_s.rjust(6, ' ')} (#{(n+1).to_s.rjust(6, ' ')}/#{issues})..."
+        RbIssueHistory.rebuild_issue(issue, status)
+      }
+    rescue ActiveRecord::RecordNotFound => e
+    end
   end
 
   def init_history
@@ -365,8 +368,12 @@ class RbIssueHistory < ActiveRecord::Base
 
   def touch_sprint
     self.history.select{|h| h[:sprint]}.uniq{|h| "#{h[:sprint]}::#{h[:tracker]}"}.each{|h|
-      sprint = RbSprint.find_by_id(h[:sprint])
-      next unless sprint
+      begin
+        sprint = RbSprint.find(h[:sprint].to_i)
+        next unless sprint
+      rescue
+        next
+      end
       sprint.burndown.touch!(h[:tracker] == :story ? self.issue.id : nil)
     }
   end

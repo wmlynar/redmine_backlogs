@@ -1,5 +1,5 @@
-source 'https://rubygems.org'
-
+#source 'https://rubygems.org'
+#
 redmine_version_file = File.expand_path("../../../lib/redmine/version.rb",__FILE__)
 if (!File.exists? redmine_version_file)
   redmine_version_file = File.expand_path("lib/redmine/version.rb");
@@ -15,18 +15,21 @@ deps = Hash.new
 @dependencies.map{|dep| deps[dep.name] = dep }
 rails3 = Gem::Dependency.new('rails', '~>3.0')
 RAILS_VERSION_IS_3 = rails3 =~ deps['rails']
+rails4 = Gem::Dependency.new('rails', '~>4.0')
+RAILS_VERSION_IS_4 = rails4 =~ deps['rails']
 
 gem "holidays", "~>1.0.3"
 gem "icalendar"
 # Choose nokogiri depending on RM version. This is done to avoid conflict with
 # RM 2.3 which pinned nokogiri at "<1.6.0" for group :test.
+# TODO: drop RM 2.3 support, its a security risk to use that nokogiri
 if (redmine_version_major == 2 && redmine_version_minor == 3)
 gem "nokogiri", "< 1.6.0"
 else
 gem "nokogiri"
 end
 gem "open-uri-cached"
-gem "prawn", "< 1.0.0"
+gem "prawn"
 gem 'json'
 gem "system_timer" if RUBY_VERSION =~ /^1\.8\./ && RUBY_PLATFORM =~ /darwin|linux/
 
@@ -38,7 +41,15 @@ group :test do
   gem 'chronic'
   gem 'ZenTest', "=4.5.0" # 4.6.0 has a nasty bug that breaks autotest
   gem 'autotest-rails'
-  if RAILS_VERSION_IS_3
+  if RAILS_VERSION_IS_4
+    #gem 'cucumber-rails', '~>1.4.0', require: false
+    gem 'cucumber-rails', require: false
+    gem "culerity"
+    gem "cucumber"
+    gem "capybara", "~> 1"
+    #gem "faye-websocket"
+    gem "poltergeist"
+  elsif RAILS_VERSION_IS_3
     unless chiliproject
       gem 'capybara', "~> 1.1" if ENV['IN_RBL_TESTENV'] == 'true' # redmine 2.3 conflicts
       gem "faye-websocket", "~>0.4.7"
@@ -52,25 +63,31 @@ group :test do
       gem "poltergeist", "~>0.6.0"
     end
     gem "cucumber", "=1.1.0"
-    gem 'cucumber-rails2', "~> 0.3.5"
+    gem 'cucumber-rails2', "~> 0.3.5" #FIXME, cant find the sources of Vanuans fork anymore.
     gem "culerity", "=0.2.15"
   end
   gem "database_cleaner"
-  if RAILS_VERSION_IS_3
+  if RAILS_VERSION_IS_4
+    gem "gherkin"
+  elsif RAILS_VERSION_IS_3
     gem "gherkin", "~> 2.6"
   else
     gem "gherkin", "~> 2.5.0"
   end
   gem "redgreen" if RUBY_VERSION < "1.9"
-  if RAILS_VERSION_IS_3
+  if RAILS_VERSION_IS_4
+    gem "rspec"
+    gem "rspec-rails"
+  elsif RAILS_VERSION_IS_3
     gem "rspec", '~>2.11.0'
     gem "rspec-rails", '~> 2.11.0'
   else
     gem "rspec", "=1.3.1"
     gem "rspec-rails", "=1.3.3"
   end
-  if RUBY_VERSION >= "1.9"
-    gem "simplecov", "~>0.6"
+  if redmine_version_major >= 3 #redmine 3.0.3 has simplecov
+  elsif RUBY_VERSION >= "1.9"
+    gem "simplecov", "~>0.9.1"
   else
     gem "rcov",  "=0.9.11"
   end

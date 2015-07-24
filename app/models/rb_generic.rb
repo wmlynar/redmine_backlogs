@@ -101,7 +101,7 @@ class RbGeneric < Issue
       options[:joins] << :project
     end
 
-    options
+    joins(options[:joins]).where(options[:conditions])
   end
 
   scope :backlog_scope, lambda{|opts| RbGeneric.find_options(opts) }
@@ -148,7 +148,7 @@ class RbGeneric < Issue
       trackers = [] if trackers.blank?
     end
 
-    trackers = Tracker.find_all_by_id(trackers)
+    trackers = Tracker.where(id: trackers)
     trackers = trackers & options[:project].trackers if options[:project]
     trackers = trackers.sort_by { |t| [t.position] }
 
@@ -171,6 +171,7 @@ class RbGeneric < Issue
 
     # lft and rgt fields are handled by acts_as_nested_set
     attribs = params.select{|k,v| !['prev', 'next', 'id', 'lft', 'rgt'].include?(k) && RbStory.column_names.include?(k) }
+    attribs[:status] = RbStory.class_default_status
     attribs = Hash[*attribs.flatten]
     s = self.new(attribs)
     s.save!

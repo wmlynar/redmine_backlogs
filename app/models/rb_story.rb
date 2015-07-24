@@ -7,9 +7,17 @@ class RbStory < RbGeneric
 
   public
 
+  def self.class_default_status
+    begin
+      RbStory.trackers(:trackers)[0].default_status
+    rescue
+      Rails.logger.error("Story has no trackers configured")
+      nil
+    end
+  end
+
   def self.inject_lower_higher
     prev = nil
-    i = 1
     all.map {|story|
       #optimization: set virtual attributes to avoid hundreds of sql queries
       # this requires that the scope is clean - meaning exactly ONE backlog is queried here.
@@ -20,7 +28,8 @@ class RbStory < RbGeneric
   end
 
   def self.backlog(project_id, sprint_id, release_id, options={})
-    self.visible.order("#{self.table_name}.position").
+    self.visible.
+      order("#{self.table_name}.position").
       backlog_scope(
         options.merge({
           :project => project_id,
@@ -201,7 +210,7 @@ class RbStory < RbGeneric
     self.relations.each{|r|
       if r.relation_type == IssueRelation::TYPE_COPIED_TO
         from_story = RbStory.find(r.issue_from_id)
-        if from_story.status.backlog_is?(:failure)
+        if from_story.status.backlog_is?(:failure, RbStory.trackers(:trackers)[0])
 #FIXME check from_story is in the same release as this story at the
 # point in time being examined.
           return true
@@ -229,15 +238,6 @@ class RbStory < RbGeneric
       end
     }
     return bd
-  end
-
-  def list_with_gaps_scope_condition(options={})
-    return options if self.new_record?
-    self.class.find_options(options.dup.merge({
-      :project => self.project_id,
-      :sprint => self.fixed_version_id,
-      :release => self.release_id
-    }))
   end
 
   def story_follow_task_state

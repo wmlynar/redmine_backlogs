@@ -8,7 +8,13 @@ def rb_match(object, path, hash)
       hash.delete(:via)
     end
     object.connect path, hash
-  else
+  elsif Rails::VERSION::MAJOR > 3
+    if not hash[:via]
+      hash[:via] = [:get]
+    end
+    match path, hash
+
+  else # Rails 3
     match path, hash
   end
 end
@@ -74,11 +80,11 @@ def rb_common_routes(rb)
                :to => 'rb_master_backlogs#menu'
   rb_match rb, 'master_backlog/:project_id/closed_sprints', :to => 'rb_master_backlogs#closed_sprints'
 
-  rb_match rb, 'impediment/create', :to => 'rb_impediments#create'
-  rb_match rb, 'impediment/update/:id', :to => 'rb_impediments#update'
+  rb_match rb, 'impediment/create', :to => 'rb_impediments#create', :via => [:post]
+  rb_match rb, 'impediment/update/:id', :to => 'rb_impediments#update', :via => [:post]
 
-  rb_match rb, 'sprint/create', :to => 'rb_sprints#create'
-  rb_match rb, 'sprint/:sprint_id/update', :to => 'rb_sprints#update'
+  rb_match rb, 'sprint/create', :to => 'rb_sprints#create', :via => [:post]
+  rb_match rb, 'sprint/:sprint_id/update', :to => 'rb_sprints#update', :via => [:put]
   rb_match rb, 'sprint/:sprint_id/close', :to => 'rb_sprints#close'
   rb_match rb, 'sprint/:sprint_id/reset', :to => 'rb_sprints#reset'
   rb_match rb, 'sprint/download/:sprint_id.xml', :to => 'rb_sprints#download', :format => 'xml'
@@ -86,8 +92,8 @@ def rb_common_routes(rb)
 
   rb_match rb, 'stories/:project_id/:sprint_id.pdf', :to => 'rb_stories#index', :format => 'pdf'
   rb_match rb, 'stories/:project_id.pdf', :to => 'rb_stories#index', :format => 'pdf'
-  rb_match rb, 'story/create', :to => 'rb_stories#create'
-  rb_match rb, 'story/update/:id', :to => 'rb_stories#update'
+  rb_match rb, 'story/create', :to => 'rb_stories#create', :via => [:post]
+  rb_match rb, 'story/update/:id', :to => 'rb_stories#update', :via => [:put, :post]
   rb_match rb, 'story/:id/tooltip', :to => 'rb_stories#tooltip'
 
   rb_match rb, 'calendar/:key/:project_id.ics', :to => 'rb_calendars#ical',
@@ -102,16 +108,16 @@ def rb_common_routes(rb)
   rb_match rb, 'hooks/sidebar/project/:project_id/:sprint_id',
           :to => 'rb_hooks_render#view_issues_sidebar'
 
-  rb_match rb, 'project/:project_id/backlogs', :to => 'rb_project_settings#project_settings'
+  rb_match rb, 'project/:project_id/backlogs', :to => 'rb_project_settings#project_settings', :via => [:get, :post]
 
   rb_match rb, 'projects/:project_id/genericboard',
-          :to => 'rb_genericboards#index'
+          :to => 'rb_genericboards#index', :via => [:get]
   rb_match rb, 'projects/:project_id/genericboards/:genericboard_id',
-          :to => 'rb_genericboards#show'
+          :to => 'rb_genericboards#show', :via => [:get]
   rb_match rb, 'projects/:project_id/genericboards/:genericboard_id/create',
-          :to => 'rb_genericboards#create'
+          :to => 'rb_genericboards#create', :via => [:post, :put]
   rb_match rb, 'projects/:project_id/genericboards/:genericboard_id/update/:id',
-          :to => 'rb_genericboards#update'
+          :to => 'rb_genericboards#update', :via => [:post, :put]
 
 end
 

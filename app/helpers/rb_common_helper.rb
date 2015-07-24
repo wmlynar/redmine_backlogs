@@ -105,11 +105,21 @@ filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,Start
   end
 
   def status_id_or_default(story)
-    story.new_record? ? IssueStatus.default.id : story.status.id
+    #story.new_record? ? IssueStatus.default.id : story.status.id
+    if story.new_record?
+      story.default_status ? story.default_status.id : 0
+    else
+      story.status ? story.status.id : 0
+    end
   end
 
   def status_label_or_default(story)
-    story.new_record? ? IssueStatus.default.name : story.status.name
+    #story.new_record? ? IssueStatus.default.name : story.status.name
+    if story.new_record?
+      story.default_status ? story.default_status.name : ""
+    else
+      story.status ? story.status.name : ""
+    end
   end
 
   def sprint_html_id_or_empty(sprint)
@@ -211,10 +221,11 @@ filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,Start
   end
 
   def self.find_backlogs_enabled_active_projects
-    projects = EnabledModule.find(:all,
-                             :conditions => ["enabled_modules.name = 'backlogs' and status = ?", Project::STATUS_ACTIVE],
-                             :include => :project,
-                             :joins => :project).collect { |mod| mod.project}
+    #projects =
+    EnabledModule.where(name: 'backlogs')
+                  .includes(:project)
+                  .joins(:project).where(projects: {status: Project::STATUS_ACTIVE})
+                  .collect { |mod| mod.project}
   end
 
   # Returns a collection of users allowed to log time for the current project. (see app/views/rb_taskboards/show.html.erb for usage)
