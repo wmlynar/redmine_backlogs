@@ -9,6 +9,8 @@ class RbSprintBurndown < ActiveRecord::Base
   serialize :burndown, Hash
   after_initialize :init
 
+  attr_accessible :stories, :burndown, :direction, :version
+
   def direction
     @direction
   end
@@ -26,7 +28,12 @@ class RbSprintBurndown < ActiveRecord::Base
       self.stories << story_id
     end
     self.burndown = nil
-    self.save!
+    begin
+      self.save!
+    rescue => e
+      Rails.logger.error "Error in sprint burndown touch: #{e}"
+      e.backtrace.each {|l| Rails.logger.error l}
+    end
   end
 
 #  This causes a recursive call to recalculate. I don't know why yet
