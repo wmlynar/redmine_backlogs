@@ -1,9 +1,10 @@
 Given(/^scaled agile features are enabled and configured$/) do
   Backlogs.setting[:scaled_agile_enabled] = true
 
+  defaultstatus = IssueStatus.find_by(:name => 'New')
   # Configure the epic and feature trackers
-  epic_trackers = [(Tracker.find_by_name('Epic') || Tracker.create!(:name => 'Epic'))]
-  feature_trackers = [(Tracker.find_by_name('Feature') || Tracker.create!(:name => 'Feature'))]
+  epic_trackers = [(Tracker.find_by_name('Epic') || Tracker.create!(:name => 'Epic', :default_status => defaultstatus))]
+  feature_trackers = [(Tracker.find_by_name('Feature') || Tracker.create!(:name => 'Feature', :default_status => defaultstatus))]
   # get the ids
   epic_trackers = epic_trackers.map { |t| t.id }
   feature_trackers = feature_trackers.map { |t| t.id }

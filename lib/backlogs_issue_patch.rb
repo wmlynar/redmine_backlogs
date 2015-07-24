@@ -193,8 +193,8 @@ module Backlogs
                                updated_on = #{self.class.connection.quote(self.updated_on)},
                                release_id = #{self.class.connection.quote(self.release_id)}
                                where root_id=#{self.class.connection.quote(self.root_id)} and
-                                  lft > #{self.class.connection.quote(self.left)} and
-                                  rgt < #{self.class.connection.quote(self.right)} and
+                                  lft > #{self.class.connection.quote(self.lft)} and
+                                  rgt < #{self.class.connection.quote(self.rgt)} and
                                   (tracker_id in (#{self.class.connection.quote(RbTask.tracker)})
                                    or
                                    tracker_id in (#{RbGeneric.story_trackers({:type=>:array}).join(',')})
@@ -236,8 +236,8 @@ module Backlogs
                                updated_on = #{self.class.connection.quote(self.updated_on)},
                                rbteam_id = #{self.class.connection.quote(self.rbteam_id)}
                                where root_id=#{self.class.connection.quote(self.root_id)} and
-                                  lft > #{self.class.connection.quote(self.left)} and
-                                  rgt < #{self.class.connection.quote(self.right)} and
+                                  lft > #{self.class.connection.quote(self.lft)} and
+                                  rgt < #{self.class.connection.quote(self.rgt)} and
                                   tracker_id in (#{self.class.connection.quote(RbTask.tracker)})
                                ")
           end

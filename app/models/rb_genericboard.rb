@@ -46,7 +46,7 @@ class RbGenericboard < ActiveRecord::Base
     #similar to project.open_shared_sprints but we not become(RbSprint) and return scopable query
     if Backlogs.setting[:sharing_enabled]
       order = 'ASC'
-      project.shared_versions.visible.scoped(:conditions => {:status => ['open', 'locked']}, :order => "sprint_start_date #{order}, effective_date #{order}")
+      project.shared_versions.visible.where(:status => ['open', 'locked']).order("sprint_start_date #{order}, effective_date #{order}")
     else #no backlog sharing
       RbSprint.open_sprints(project)
     end
@@ -54,7 +54,7 @@ class RbGenericboard < ActiveRecord::Base
 
   def open_releases_by_date(project)
     #similar to project.open_releases_by_date but we want to order ascending
-    order = 'ASC'
+    #order = 'ASC'
     (Backlogs.setting[:sharing_enabled] ? project.shared_releases : project.releases).
       visible.open.
       reorder("#{RbRelease.table_name}.release_end_date ASC, #{RbRelease.table_name}.release_start_date ASC")
