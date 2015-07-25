@@ -1,5 +1,5 @@
 Feature: Scaled agile
-  As an agile enterprase
+  As an agile enterprise
   I want to manage all aspects of planning from strategy via program to actual projects
   So that they get done according to the companys vision and strategy
 
