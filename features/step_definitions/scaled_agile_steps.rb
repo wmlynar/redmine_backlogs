@@ -145,7 +145,7 @@ Then(/^the boards should provide correct data for rows, columns and elements$/) 
   columns = b.columns(@project)
   #puts "columns #{columns}"
   columns.length.should == 1
-  columns[0].is_a?(RbGeneric).should be_true
+  columns[0].is_a?(RbGeneric).should be true
   #puts "rows #{b.rows(@project).to_a}"
   #puts b.elements(@project).to_a
   #puts "elements by cell #{b.elements_by_cell(@project)}"
@@ -161,7 +161,7 @@ Then(/^the boards should provide correct data for rows, columns and elements$/) 
   #puts "prefilter objects #{b.prefilter_objects(@project)}"
   f = b.prefilter_objects(@project)
   f.length.should == 1
-  f['__current_release'].is_a?(RbRelease).should be_true
+  f['__current_release'].is_a?(RbRelease).should be true
   f['__current_release'].name.should == 'Rel 1'
   puts b.elements(@project).to_a
 
@@ -173,17 +173,17 @@ Then(/^the boards should provide correct data for rows, columns and elements$/) 
   f = b.prefilter_objects(@project)
   puts "prefilter objects #{f}"
   f.length.should == 2
-  f['__current_release'].is_a?(RbRelease).should be_true
+  f['__current_release'].is_a?(RbRelease).should be true
   f['__current_release'].name.should == 'Rel 1'
-  f['__my_team'].is_a?(Group).should be_true
+  f['__my_team'].is_a?(Group).should be true
   f['__my_team'].lastname.should == 'Team 1'
 
   columns = b.columns(@project)
   puts "columns #{columns}"
   columns.length.should == 3
-  columns[0].is_a?(RbFakeGeneric).should be_true
-  columns[1].is_a?(RbSprint).should be_true
-  columns[2].is_a?(RbSprint).should be_true
+  columns[0].is_a?(RbFakeGeneric).should be true
+  columns[1].is_a?(RbSprint).should be true
+  columns[2].is_a?(RbSprint).should be true
 
   puts b.elements(@project).to_a
 
