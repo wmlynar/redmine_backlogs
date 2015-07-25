@@ -2,6 +2,8 @@ class RbReleaseMultiview < ActiveRecord::Base
   self.table_name = 'rb_releases_multiview'
 
   unloadable
+  attr_protected :created_at # hack, all attributes will be mass asigment
+
   belongs_to :project
 
   attr_accessible :name, :project_id, :release_ids
@@ -17,12 +19,12 @@ class RbReleaseMultiview < ActiveRecord::Base
   end
 
   def has_burnchart?
-    false
+    false #FIXME release burndown broken
     #releases.inject(false) {|result,release| result |= release.has_burndown?}
   end
 
   def burnchart
-    return nil #multiview burndown chart does not work on ruby2/rails4
+    return nil #FIXME release burndown broken
     #return nil unless self.has_burnchart?
     #@cached_burnchart ||= RbReleaseMultiviewBurnchart.new(self)
     #return @cached_burnchart

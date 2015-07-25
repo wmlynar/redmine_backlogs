@@ -36,7 +36,6 @@ module Backlogs
     module InstanceMethods
       def history
         @history ||= RbIssueHistory.where(:issue_id => self.id).first_or_initialize
-        #@history ||= RbIssueHistory.find_or_create_by_issue_id(self.id)
       end
 
       def release_burnchart_day_caches(release_id)
@@ -52,7 +51,7 @@ module Backlogs
       end
 
       def is_story?
-        return RbStory.trackers.include?(tracker_id)
+        RbStory.trackers_include?(tracker_id)
       end
 
       def is_rbgeneric?
@@ -60,7 +59,7 @@ module Backlogs
       end
 
       def is_task?
-        return (tracker_id == RbTask.tracker)
+        RbTask.tracker?(tracker_id)
       end
 
       def backlogs_issue_type

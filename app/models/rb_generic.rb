@@ -101,12 +101,20 @@ class RbGeneric < Issue
       options[:joins] << :project
     end
 
-    joins(options[:joins]).where(options[:conditions])
+    joins(options[:joins]).includes(options[:joins]).where(options[:conditions])
   end
 
-  scope :backlog_scope, lambda{|opts| RbGeneric.find_options(opts) }
-  scope :generic_backlog_scope, lambda{|opts| RbGeneric.find_options(opts, true) }
+  scope :backlog_scope, lambda{|opts={}| self.find_options(opts) }
+  scope :generic_backlog_scope, lambda{|opts| self.find_options(opts, true) }
   scope :epics, lambda{|opts| self.generic_backlog_scope(opts.merge({:trackers => self.epic_trackers})) }
+
+  def list_with_gaps_options
+    {
+      :project => self.project_id,
+      :sprint => self.fixed_version_id,
+      :release => self.release_id
+    }
+  end
 
   def self.trackers(options = {})
     self.get_trackers(:story_trackers, options)
