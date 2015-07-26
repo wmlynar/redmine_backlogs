@@ -76,6 +76,8 @@ Given(/^some default generic boards are configured$/) do
   board.element_type = story
   board.row_type = team
   board.prefilter = ['__current_release', '__my_team']
+  board.colfilter = ['__current_release']
+  board.include_none_in_cols = "1"
   board.save!
 
   #2.4
@@ -180,6 +182,9 @@ Then(/^the boards should provide correct data for rows, columns and elements$/) 
 
   columns = b.columns(@project)
   puts "columns #{columns}"
+  #columns.each {|c| puts("col #{c}") }
+  page.driver.render('/tmp/2.3.png', :full=>true)
+
   columns.length.should == 3
   columns[0].is_a?(RbFakeGeneric).should be true
   columns[1].is_a?(RbSprint).should be true
