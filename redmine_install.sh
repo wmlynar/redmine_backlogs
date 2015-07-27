@@ -213,6 +213,8 @@ sed -i -e 's=.*gem ["'\'']test-unit["'\''].*==g' ${PATH_TO_REDMINE}/Gemfile
 # 2) tell out Gemfile that we're testing: so force test-unit 1.2.3 #done globally above by setting IN_RBL_TESTENV=true
 #capybara 2 breaks our tests. too much has changed.
 sed -i -e 's=.*gem ["'\'']capybara["'\''].*==g' ${PATH_TO_REDMINE}/Gemfile
+#protected_attributes works as of 1.1.0, 1.1.3 breaks backlogs
+sed -i -e 's=.*gem ["'\'']protected_attributes["'\''].*==g' ${PATH_TO_REDMINE}/Gemfile
 
 # install gems
 mkdir -p vendor/bundle

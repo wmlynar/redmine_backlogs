@@ -12,7 +12,6 @@ gem "nokogiri"
 gem "open-uri-cached"
 gem "prawn"
 gem 'json'
-gem "system_timer" if RUBY_VERSION =~ /^1\.8\./ && RUBY_PLATFORM =~ /darwin|linux/
 
 group :development do
   gem "inifile"
@@ -31,13 +30,14 @@ group :test do
   gem "poltergeist"
   gem "database_cleaner"
   gem "gherkin"
-  gem "redgreen" if RUBY_VERSION < "1.9"
   gem "rspec"
   gem "rspec-rails"
   gem "ruby-prof", :platforms => [:ruby]
   gem "spork"
-  gem "test-unit", "=1.2.3" if RUBY_VERSION >= "1.9" and ENV['IN_RBL_TESTENV'] == 'true'
+  gem "test-unit", "=1.2.3"
   gem "timecop", '~> 0.3.5'
+  # 1.1.1 and newer breaks our tests
+  gem "protected_attributes", "=1.1.0"
 end
 
 # moved out of the dev group so backlogs can be tested by the user after install. Too many issues of weird setups with apache, nginx, etc.
