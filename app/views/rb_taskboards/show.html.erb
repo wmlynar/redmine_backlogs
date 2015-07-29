@@ -147,6 +147,12 @@
     <%- end %>
   </select>
 
+  <select class="time_entry_activity_id template" id="time_entry_activity_id_options">
+    <%- TimeEntryActivity.shared.active.each do |act| %>
+        <option value="<%= act.id %>" <%= act.id = TimeEntryActivity.default.id ? 'selected' : '' %> ><%= act.name %></option>
+    <%- end %>
+  </select>
+
   <select class="priority_id template" id="priority_id_options">
     <%- IssuePriority.all.each do |p| %>
     <option value="<%= p.id %>"><%= h p.name %></option>
@@ -171,4 +177,5 @@
     <div id="spinner"> </div>
     <div id="warning"> </div>
   </div>
+
 <%- end %>

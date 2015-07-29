@@ -108,6 +108,7 @@ nl:
   field_time_entry_hours: "Tijd registratie uren"
   field_time_entry_spend_on: "Tijd registratie spendeer aan"
   field_time_entry_user_id: "Tijd registratie gebruiker"
+  field_time_entry_activity: "Tijd registratie activiteit"
   field_tracker_id: "Tracker ID"
   field_velocity_based_estimate: "Schatting op basis van velocity"
   label_all_tasks: "All tasks"

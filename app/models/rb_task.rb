@@ -227,12 +227,16 @@ class RbTask < Issue
         @time_entry.spent_on = Date.today
       end
       @time_entry.hours = params[:time_entry_hours].gsub(',', '.').to_f
-      # Choose default activity
-      # If default is not defined first activity will be chosen
-      if default_activity = TimeEntryActivity.default
-        @time_entry.activity_id = default_activity.id
+      # Choose activity
+      if !params[:time_entry_activity_id].blank?
+        @time_entry.activity_id = params[:time_entry_activity_id]
       else
-        @time_entry.activity_id = TimeEntryActivity.first.id
+        # If default is not defined first activity will be chosen
+        if default_activity = TimeEntryActivity.default
+          @time_entry.activity_id = default_activity.id
+        else
+          @time_entry.activity_id = TimeEntryActivity.first.id
+        end
       end
       @time_entry.comments = params[:time_entry_comments]
       self.time_entries << @time_entry

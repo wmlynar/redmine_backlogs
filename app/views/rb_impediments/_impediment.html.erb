@@ -18,6 +18,10 @@
         <div class="v" style="display: none" ><%= assignee_id_or_empty(impediment) %></div>
       </div>
     <% end %>
+    <div class="time_entry_activity_id editable"  style="display: none" fieldtype="select" fieldname="time_entry_activity_id" fieldlabel="<%= l(:field_time_entry_activity) %>">
+      <div class="t"><%= h TimeEntryActivity.default.name %></div>
+      <div class="v"><%= TimeEntryActivity.default.id %></div>
+    </div>
     <div class="Time_entry_spent_on editable date" fieldname="time_entry_spent_on" fieldlabel="<%=l(:field_time_entry_spend_on)%>" style="display:none"><%= Date.today %></div>
     <div class="Time_entry_comments editable" fieldtype=textarea fieldname="time_entry_comments" fieldlabel="<%=l(:field_time_entry_comments)%>"></div>
   <% end %>
