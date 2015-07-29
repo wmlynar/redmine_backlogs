@@ -214,7 +214,7 @@ sed -i -e 's=.*gem ["'\'']test-unit["'\''].*==g' ${PATH_TO_REDMINE}/Gemfile
 #capybara 2 breaks our tests. too much has changed.
 sed -i -e 's=.*gem ["'\'']capybara["'\''].*==g' ${PATH_TO_REDMINE}/Gemfile
 #protected_attributes works as of 1.1.0, 1.1.3 breaks backlogs
-sed -i -e 's=.*gem ["'\'']protected_attributes["'\''].*==g' ${PATH_TO_REDMINE}/Gemfile
+#sed -i -e 's=.*gem ["'\'']protected_attributes["'\''].*==g' ${PATH_TO_REDMINE}/Gemfile
 
 # install gems
 mkdir -p vendor/bundle
