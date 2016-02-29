@@ -7,7 +7,8 @@
 
   <script type="text/javascript"
           src="<%= url_for(:controller => 'rb_server_variables',
-                           :action => 'project', :project_id => @project.id,
+                           :action => 'project',
+                           :project_id => @project.identifier,
                            :context => 'epicboard',
                            :format => 'js') %>">
   </script>
