@@ -28,7 +28,7 @@ class RbEpicboardsController < RbApplicationController
     end
 
     #This project and subprojects
-    @epics = RbEpic.find(:all, :conditions => { :project_id => @project }).select { |s| RbEpic.trackers.include?(s.tracker_id) }
+    @epics = RbEpic.where(:project_id => @project).select { |s| RbEpic.trackers.include?(s.tracker_id) }
 
     @columns = @release_backlogs
     @columns.concat(@sprint_backlogs)
