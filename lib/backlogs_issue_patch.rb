@@ -252,7 +252,7 @@ module Backlogs
       end
 
       def assignable_releases
-        project.shared_releases
+        project.shared_releases.open
       end
 
       def release_id=(rid)
