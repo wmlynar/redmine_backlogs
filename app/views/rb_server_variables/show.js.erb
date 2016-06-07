@@ -37,6 +37,9 @@ if (!RB.constants) {
     update_sprint: <%= url_for(:controller => 'rb_sprints', :action => 'update', :sprint_id => ':id').to_json.html_safe %>,
     update_release: <%= url_for(:controller => 'rb_releases', :action => 'update', :release_id => ':id').to_json.html_safe %>,
 
+    create_epic: <%= url_for(:controller => 'rb_epics', :action => 'create').to_json.html_safe %>,
+    update_epic: <%= url_for(:controller => 'rb_epics', :action => 'update', :id => ':id').to_json.html_safe %>,
+
     create_story: <%= url_for(:controller => 'rb_stories', :action => 'create').to_json.html_safe %>,
     update_story: <%= url_for(:controller => 'rb_stories', :action => 'update', :id => ':id').to_json.html_safe %>,
 
@@ -65,6 +68,8 @@ if (!RB.constants) {
 <% if @project %>
   RB.constants.project_id = <%= @project.id %>;
   RB.permissions = {
+      create_epics: <%= User.current.allowed_to?(:create_epics, @project) ? 'true' : 'false' %>,
+      update_epics: <%= User.current.allowed_to?(:update_epics, @project) ? 'true' : 'false' %>,
       create_stories: <%= User.current.allowed_to?(:create_stories, @project) ? 'true' : 'false' %>,
       update_stories: <%= User.current.allowed_to?(:update_stories, @project) ? 'true' : 'false' %>,
       create_sprints: <%= User.current.allowed_to?(:create_sprints, @project) ? 'true' : 'false' %>,

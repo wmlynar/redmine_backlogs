@@ -133,6 +133,10 @@ Redmine::Plugin.register :redmine_backlogs do
                                         :rb_wikis   => [:edit, :update]
                                       }
 
+    # Epic permissions
+    permission :create_epics,         { :rb_epics => :create }
+    permission :update_epics,         { :rb_epics => :update }
+
     # Story permissions
     # :show_stories and :list_stories are implicit in :view_master_backlog permission
     permission :create_stories,         { :rb_stories => :create }
