@@ -1,6 +1,18 @@
 require 'fileutils'
 require 'benchmark'
 
+def init_tracker_workflow(tracker)
+  # Workflow
+  Role.all.select{|r| r != Role.anonymous && r != Role.non_member }.each { |role|
+    puts "Set very permissive default workflow for " + role.name + " on " + tracker.name
+    IssueStatus.all.each { |os|
+      IssueStatus.all.each { |ns|
+        WorkflowTransition.create!(:tracker_id => tracker.id, :role_id => role.id, :old_status_id => os.id, :new_status_id => ns.id) unless os == ns
+      }
+    }
+  }
+end
+
 namespace :redmine do
   namespace :backlogs do
 
@@ -48,24 +60,26 @@ namespace :redmine do
 
       trackers = Tracker.all
 
-      if ENV['story_trackers'] && ENV['story_trackers'] != ''
-        trackers =  ENV['story_trackers'].split(',')
+      if ENV['epic_trackers'] && ENV['epic_trackers'] != ''
+        trackers =  ENV['epic_trackers'].split(',')
         trackers.each{|name|
           if ! Tracker.find_by_name(name)
-            puts "Creating story tracker '#{name}'"
+            puts "Creating epic tracker '#{name}'"
             default_status = IssueStatus.find_by(:name => 'New')
             tracker = Tracker.new(:name => name, :default_status => default_status)
             tracker.save!
+            init_tracker_workflow(tracker)
+            Setting.default_projects_tracker_ids = Setting.default_projects_tracker_ids + [tracker.id.to_s]
           end
         }
-        Backlogs.setting[:story_trackers] = trackers.collect{|n| Tracker.find_by_name(n).id }
+        Backlogs.setting[:epic_trackers] = trackers.collect{|n| Tracker.find_by_name(n).id }
       else
         if RbStory.trackers.length == 0
-          puts "Configuring story and task trackers..."
+          puts "Configuring epic and task trackers..."
           invalid = true
           while invalid
             puts "-----------------------------------------------------"
-            puts "Which trackers do you want to use for your stories?"
+            puts "Which trackers do you want to use for your epics?"
             trackers.each_with_index { |t, i| puts "  #{ i + 1 }. #{ t.name }" }
             print "Separate values with a space (e.g. 1 3): "
             STDOUT.flush
@@ -94,7 +108,59 @@ namespace :redmine do
             end
           end
 
-          Backlogs.setting[:story_trackers] = selection.map{ |s| trackers[s.to_i-1].id }
+          Backlogs.setting[:epic_trackers] = selection.map{ |s| trackers[s.to_i-1].id }
+        end
+      end
+
+      if ENV['story_trackers'] && ENV['story_trackers'] != ''
+        trackers =  ENV['story_trackers'].split(',')
+        trackers.each{|name|
+          if ! Tracker.find_by_name(name)
+            puts "Creating story tracker '#{name}'"
+            default_status = IssueStatus.find_by(:name => 'New')
+            tracker = Tracker.new(:name => name, :default_status => default_status)
+            tracker.save!
+            init_tracker_workflow(tracker)
+            Setting.default_projects_tracker_ids = Setting.default_projects_tracker_ids + [tracker.id.to_s]
+          end
+        }
+        Backlogs.setting[:story_trackers] = trackers.collect{|n| Tracker.find_by_name(n).id }
+      else
+        if RbStory.trackers.length == 0
+          invalid = true
+          while invalid
+            puts "-----------------------------------------------------"
+            puts "Which trackers do you want to use for your stories?"
+            available_trackers = trackers.select{|t| !Backlogs.setting[:epics_trackers].include? t.id}
+            available_trackers.each_with_index { |t, i| puts "  #{ i + 1 }. #{ t.name }" }
+            print "Separate values with a space (e.g. 1 3): "
+            STDOUT.flush
+            selection = (STDIN.gets.chomp!).split(/\D+/)
+
+            # Check that all values correspond to an items in the list
+            invalid = false
+            invalid_value = nil
+            tracker_names = []
+            selection.each do |s|
+              if s.to_i > available_trackers.length
+                invalid = true
+                invalid_value = s
+                break
+              else
+                tracker_names << available_trackers[s.to_i-1].name
+              end
+            end
+
+            if invalid
+              puts "Oooops! You entered an invalid value (#{invalid_value}). Please try again."
+            else
+              print "You selected the following trackers: #{tracker_names.join(', ')}. Is this correct? (y/n) "
+              STDOUT.flush
+              invalid = !(STDIN.gets.chomp!).match("y")
+            end
+          end
+
+          Backlogs.setting[:story_trackers] = selection.map{ |s| available_trackers[s.to_i-1].id }
         end
       end
 
@@ -104,18 +170,21 @@ namespace :redmine do
           default_status = IssueStatus.find_by(:name => 'New')
           tracker = Tracker.new(:name => ENV['task_tracker'], :default_status => default_status)
           tracker.save!
+          init_tracker_workflow(tracker)
+          Setting.default_projects_tracker_ids = Setting.default_projects_tracker_ids + [tracker.id.to_s]
         end
         Backlogs.setting[:task_tracker] = Tracker.find_by_name(ENV['task_tracker']).id
       else
         if !RbTask.tracker
           # Check if there is at least one tracker available
           puts "-----------------------------------------------------"
-          if Backlogs.setting[:story_trackers].length < trackers.length
+          if (Backlogs.setting[:story_trackers].length + Backlogs.setting[:epics_trackers].length) < trackers.length
             invalid = true
             while invalid
               # If there's at least one, ask the user to pick one
               puts "Which tracker do you want to use for your tasks?"
-              available_trackers = trackers.select{|t| !Backlogs.setting[:story_trackers].include? t.id}
+              available_trackers = trackers.select{|t| !Backlogs.setting[:epics_trackers].include? t.id}
+              available_trackers = available_trackers.select{|t| !Backlogs.setting[:story_trackers].include? t.id}
               j = 0
               available_trackers.each_with_index { |t, i| puts "  #{ j = i + 1 }. #{ t.name }" }
               # puts "  #{ j + 1 }. <<new>>"
@@ -192,6 +261,8 @@ namespace :redmine do
           default_status = IssueStatus.find_by(:name => 'New')
           tracker = Tracker.new(:name => name, :default_status => default_status)
           tracker.save!
+          init_tracker_workflow(tracker)
+          Setting.default_projects_tracker_ids = Setting.default_projects_tracker_ids + [tracker.id.to_s]
           repeat = false
         end
       end
