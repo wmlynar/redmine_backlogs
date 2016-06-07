@@ -228,7 +228,7 @@ class RbStory < Issue
   end
 
   def self.trackers_include?(tracker_id)
-    tracker_ids = Backlogs.setting[:story_trackers] || []
+    tracker_ids = Backlogs.setting[tracker_setting] || []
     tracker_ids = tracker_ids.map(&:to_i)
     tracker_ids.include?(tracker_id.to_i)
   end

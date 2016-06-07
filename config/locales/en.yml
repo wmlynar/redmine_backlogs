@@ -227,6 +227,7 @@ en:
   error_cannot_close_sprint_with_open_stories: "Cannot close a sprint while it still has open stories."
   backlogs_epic: Epic
   label_new_epic: New Epic
+  backlogs_stories: Stories
   backlogs_stories_in_no_epic: Stories not sorted into an Epic
   backlogs_epic_tracker: Epic trackers
   label_epics: Epics

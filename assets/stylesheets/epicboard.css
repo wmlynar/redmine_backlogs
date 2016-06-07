@@ -2,7 +2,8 @@
   background-color: white;
   color: black;
 }
-#epicboard .story {
+#epicboard .story
+#epicboard .epic {
   color: black; 
 }
 #epicboard .issue .subject {
@@ -34,9 +35,9 @@ determine the unit width of the swimlanes.
 See RB.Taskboard.initialize()
 */
 .swimlane{
-  min-width:105px; /* width + (2*margin) + (2*padding) + (2*border) of .issue */
+  min-width:200px; /* width + (2*margin) + (2*padding) + (2*border) of .issue */
   padding:5px;
-  width:105px; /* Must be the same as min-width */
+  width: 100%;
 }
 
 #epicboard { position: relative; } /*for fixed header*/
@@ -95,23 +96,24 @@ See RB.Taskboard.initialize()
 .board tr:last-child td{
   border-bottom:none;
 }
-.board .add_new{
+.add_new{
   display: inline-block;
   vertical-align:middle;
 }
-.board .add_new:hover{
+.add_new:hover{
   cursor:pointer;
   background-color:#ffffcc;
 }
-.epic,
-.label_sprint_impediments{
+#epicboard .epic,
+.label_sprint_impediments,
+.epic_editor_dialog {
   -moz-box-shadow: 2px 2px 2px #CCCCCC;
   -webkit-box-shadow: 2px 2px 2px #CCCCCC;;
   box-shadow: 2px 2px 2px #CCCCCC;;
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#c9de96), color-stop(44%,#8ab66b), color-stop(100%,#398235));
   background: -moz-linear-gradient(top, color-stop(25%, green), color-stop(75%, green));
   filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,StartColorStr=color-stop(25%, green),EndColorStr=color-stop(75%, green));
-  background-color:#F8F6A5;
+  /*background-color:#F8F6A5;*/
   border:none;
   display:block;
   float:left;
@@ -175,7 +177,7 @@ See RB.Taskboard.initialize()
 }
 
 /* item styles used by .story and .impediment */
-#epicboard .issue, #epicboard .placeholder{
+#epicboard .story, #epicboard .placeholder {
   background-color:#CCCCCC;
   background: -webkit-gradient(linear, left top, left bottom, from(#FEE), to(#FD2));
   background: -moz-linear-gradient(top, #FEE, #FD2);
@@ -192,11 +194,13 @@ See RB.Taskboard.initialize()
   width:85px;
   line-height: 12px;
 }
-#epicboard .issue{
+
+#epicboard .story {
   -moz-box-shadow: 2px 2px 2px #CCCCCC;
   -webkit-box-shadow: 2px 2px 2px #CCCCCC;
   box-shadow: 2px 2px 2px #CCCCCC;
 }
+
 #epicboard .placeholder{
   background-color:#FFFF00;
   border:1px dashed #333300;

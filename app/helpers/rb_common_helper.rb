@@ -124,6 +124,10 @@ filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,Start
     story.new_record? ? "" : "story_#{story.id}"
   end
 
+  def epic_html_id_or_empty(epic)
+    epic.new_record? ? "" : "#{epic.id}"
+  end
+
   def release_html_id_or_empty(release)
     release.new_record? ? "" : "release_#{release.id}"
   end
@@ -257,10 +261,10 @@ filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,Start
     s.html_safe
   end
 
-  def tracker_options_for_select()
+  def tracker_options_for_select(rb_type)
     s = ''
 
-    (RbStory.trackers & @project.tracker_ids).each do |id|
+    (rb_type.trackers & @project.tracker_ids).each do |id|
         s << "<option value=\"#{id}\" color=\"#AAAAAA\" color_light=\"#E0E0E0\">#{h Tracker.find_by_id(id).name}</option>"
     end
     s.html_safe

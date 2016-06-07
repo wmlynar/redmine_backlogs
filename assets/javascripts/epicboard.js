@@ -14,13 +14,6 @@ RB.Epicboard = RB.Object.create({
     // Associate this object with the element for later retrieval
     j.data('this', self);
 
-    // Initialize column widths
-    self.colWidthUnit = RB.$(".swimlane").width();
-    self.defaultColWidth = 2;
-    self.loadColWidthPreference();
-    self.updateColWidths();
-    RB.$("#col_width input").bind('keyup', function(e){ if(e.which==13) self.updateColWidths(); });
-
     //initialize mouse handling for drop handling
     /*j.bind('mousedown.epicboard', function(e) { return self.onMouseDown(e); });
     j.bind('mouseup.epicboard', function(e) { return self.onMouseUp(e); });*/
@@ -53,8 +46,12 @@ RB.Epicboard = RB.Object.create({
     j.find('.story').each(function(index){
       RB.Factory.initialize(RB.StoryEB, this); // 'this' refers to an element with class="story"
     });
+    j.find('.epic').each(function(index){
+      RB.Factory.initialize(RB.EpicEB, this); // 'this' refers to an element with class="story"
+    });
 
     // Add handler for .add_new click
+    j.find('#board_header .add_new').bind('click', self.handleAddNewEpicClick);
     j.find('#stories .add_new').bind('click', self.handleAddNewStoryClick);
 
   },
@@ -103,13 +100,9 @@ RB.Epicboard = RB.Object.create({
     RB.$('#epicboard').data('this').newStory(row);
   },
 
-  loadColWidthPreference: function(){
-    var w = RB.UserPreferences.get('epicboardColWidth');
-    if(w==null){
-      w = this.defaultColWidth;
-      RB.UserPreferences.set('epicboardColWidth', w);
-    }
-    RB.$("#col_width input").val(w);
+  handleAddNewEpicClick: function(event){
+    if (event.button > 1) return;
+    RB.$('#epicboard').data('this').newEpic();
   },
 
   newStory: function(row){
@@ -118,15 +111,13 @@ RB.Epicboard = RB.Object.create({
     var o = RB.Factory.initialize(RB.StoryEB, story);
     o.edit();
   },
-  
-  updateColWidths: function(){
-    var w = parseInt(RB.$("#col_width input").val(), 10);
-    if(w==null || isNaN(w)){
-      w = this.defaultColWidth;
-    }
-    RB.$("#col_width input").val(w);
-    RB.UserPreferences.set('epicboardColWidth', w);
-    RB.$(".swimlane").width(this.colWidthUnit * w).css('min-width', this.colWidthUnit * w);
+
+  newEpic: function(){
+    var epic = RB.$('#epic_template').children().first().clone();
+    RB.$("#stories").prepend('<tr class="epic-swimlame"><td></td><td class="swimlane list ui-sortable"></td></tr>');
+    RB.$("#stories tr:first td:first").prepend(epic);
+    var o = RB.Factory.initialize(RB.EpicEB, epic);
+    o.edit();
   }
 });
 

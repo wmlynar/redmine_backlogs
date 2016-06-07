@@ -1,6 +1,6 @@
 <!-- EPICBOARD VIEW -->
 <% content_for :head_tags do %>
-  <%= javascript_include_tag  'show_main', 'board_updater', 'epicboard', 'model', 'issue', 'task', 'story_eb', 'jquery/jquery.multiselect.js', 'jquery/jquery.qtip.pack.js', 'jquery/jquery.qtip.setup.js', :plugin => 'redmine_backlogs' %>
+  <%= javascript_include_tag  'show_main', 'board_updater', 'epicboard', 'model', 'issue', 'task', 'story_eb', 'epic_eb', 'jquery/jquery.multiselect.js', 'jquery/jquery.qtip.pack.js', 'jquery/jquery.qtip.setup.js', :plugin => 'redmine_backlogs' %>
   <%= stylesheet_link_tag 'jquery/jquery.qtip.css', :plugin => 'redmine_backlogs' %>
   <%= stylesheet_link_tag 'jquery/jquery.multiselect.css', :plugin => 'redmine_backlogs' %>
   <%= stylesheet_link_tag 'epicboard.css', :plugin => 'redmine_backlogs', :media => 'print,screen' %>
@@ -22,21 +22,19 @@
 
 <% end %>
 
-<%- content_for :view_specific_links do %>
-  <span id="col_width"><%= l(:label_column_width) %>: <input name="col_width"/></span>
-<%- end %>
-
 <%- content_for :main do %>
 <span id="userid" style="visibility:hidden;"><%= User.current.id %></span>
 <div id="epicboard">
 
   <table id="board_header" cellspacing="0">
     <tr>
-      <td><%= l(:backlogs_epic) %></td>
-      <td class="swimlane"><%= h @product_backlog[:sprint].name %></td>
-      <%- @columns.each do |col|  %>
-      <td class="swimlane"><%= h col[:sprint].name %></td>
-      <%- end %>
+      <td>
+        <span class="add_new">
+          <%= image_tag("add.png", :alt => "+") %>
+        </span>
+        <%= l(:backlogs_epic) %>
+      </td>
+      <td class="swimlane"><%= l(:backlogs_stories) %></td>
     </tr>
   </table>
 
@@ -64,20 +62,14 @@
           <%- end %>
         </div>
       </td>
-      <td class="swimlane list" id="<%= epic.id %>_<%= @product_backlog[:sprint].id %>" _rb_type="<%= @product_backlog[:type] %>" _rb_sprint_id="<%= @product_backlog[:sprint].id %>">
-        <%=
-        list = @product_backlog[:stories].select{|s| s.kind_of?(RbStory) and s.parent_id == epic.id}
-        render :partial => "rb_stories/story_eb", :collection => list, :as => :story
-       %>
-      </td>
-      <%- @columns.each do |col| %>
-      <td class="swimlane list" id="<%= epic.id %>_<%= col[:sprint].id %>" _rb_type="<%= col[:type] %>" _rb_sprint_id="<%= col[:sprint].id %>">
-        <%=
+      <td class="swimlane list" id="<%= epic.id %> %>">
+        <%- @columns.each do |col| %>
+          <%=
           list = col[:stories].select{|s| s.kind_of?(RbStory) and s.parent_id == epic.id}
           render :partial => "rb_stories/story_eb", :collection => list, :as => :story
-       %>
+          %>
+	<% end %>
       </td>
-      <%- end %>
     </tr>
     <%- end %>
 
@@ -88,20 +80,14 @@
             </span>
             <%= l(:backlogs_stories_in_no_epic) %>
       </div></td>
-      <td class="swimlane list" id="impcell_<%= @product_backlog[:sprint].id %>" _rb_type="<%= @product_backlog[:type] %>" _rb_sprint_id="<%= @product_backlog[:sprint].id %>">
-        <%=
-        list = @product_backlog[:stories].select{|s| s.kind_of?(RbStory) and RbStory.trackers.include?(s.tracker_id) and s.parent.nil? }
-        render :partial => "rb_stories/story_eb", :collection => list, :as => :story
-        %>
-      </td>
-      <%- @columns.each do |col| %>
-      <td class="swimlane list" id="impcell_<%= col[:sprint].id %>" _rb_type="<%= col[:type] %>" _rb_sprint_id="<%= col[:sprint].id %>">
-        <%=
-          list = col[:stories].select{|s| s.kind_of?(RbStory) and RbStory.trackers.include?(s.tracker_id) and s.parent_id.nil? }
+      <td class="swimlane list" id="impcell">
+        <%- @columns.each do |col| %>
+          <%=
+          list = col[:stories].select{|s| s.kind_of?(RbStory) and RbStory.trackers.include?(s.tracker_id) and s.parent.nil? }
           render :partial => "rb_stories/story_eb", :collection => list, :as => :story
-        %>
+          %>
+	<% end %>
       </td>
-      <%- end %>
     </tr>
   </table>
 
@@ -125,13 +111,20 @@
     <option value="" color="#AAAAAA" color_light="#E0E0E0"> </option>
     <%= users_assignable_options_for_select(@project.assignable_users) %>
   </select>
-
   <select class="tracker_id template" id="tracker_id_options">
-    <%= tracker_options_for_select()  %>
+    <%= tracker_options_for_select(RbStory)  %>
   </select>
+  <select class="tracker_id template" id="epic_tracker_id_options">
+    <%= tracker_options_for_select(RbEpic)  %>
+  </select>
+
   <div id="story_template">
     <%= render :partial => "rb_stories/story_eb", :collection => [RbStory.new], :as => :story %>
   </div>
+  <div id="epic_template">
+      <%= render :partial => "rb_epics/epic_eb", :collection => [RbEpic.new], :as => :epic %>
+  </div>
+
   <!-- end of templates -->
   <div id="issue_editor"> </div>
   <div class="meta" id="last_updated"><%= date_string_with_milliseconds( (@last_updated.blank? ? Time.now : @last_updated.updated_on) )  %></div>

@@ -1,0 +1,24 @@
+<div class="epic <%= mark_if_closed(epic) %>" id="<%= epic_html_id_or_empty(epic) %>" <%= build_inline_style(epic).html_safe %>>
+  <div class="id epic_tooltip">
+    <div class="tracker_id editable epic_field" fieldtype="select" fieldname="epic_tracker_id" fieldlabel="<%=l(:field_tracker_id)%>">
+      <div class="t"><%= h tracker_name_or_empty(epic) %></div>
+      <div class="v"><%= tracker_id_or_empty(epic) %></div>
+    </div>
+    <%- if epic.id %>
+      <%= link_to epic.id, {:controller => 'issues', :action => 'show', :id => epic.id}, { :target => "_blank" } %>
+    <%- end %>
+    <span class="add_new">
+      <%= image_tag("add.png", :alt => "+") %>
+    </span>
+    <span class="assignee">
+      <%= assignee_name_or_empty(epic) %>
+    </span>
+  </div>
+  <div class="subject editable" fieldname="subject" fieldlabel="<%=l(:field_subject)%>" fieldtype="input"><%=h epic.subject %></div>
+  <%- if @project != epic.project %>
+    <div class="id project">
+      <span class="t"><%= h epic.project %></span>
+      <span class="v"><%= epic.project ? epic.project.id : '' %></span>
+    </div>
+  <%- end %>
+</div>

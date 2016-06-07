@@ -32,6 +32,7 @@ class RbEpicboardsController < RbApplicationController
 
     @columns = @release_backlogs
     @columns.concat(@sprint_backlogs)
+    @columns.append(@product_backlog)
 
     respond_to do |format|
       format.html { render :layout => "rb" }
