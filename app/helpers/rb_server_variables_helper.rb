@@ -28,7 +28,7 @@ module RbServerVariablesHelper
           transitions[:transitions][tracker_id][key] ||= {}
 
           begin
-            allowed_statues = status.new_statuses_allowed_to(roles, tracker, creator, assignee)
+            allowed_statues = status.new_statuses_allowed_to(roles, tracker, @project.workspace_id, creator, assignee)
           rescue #Workaround in order to support redmine 1.1.3
             allowed_statues = status.new_statuses_allowed_to(roles, tracker)
           end

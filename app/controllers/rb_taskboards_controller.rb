@@ -19,7 +19,7 @@ class RbTaskboardsController < RbApplicationController
       enabled = {}
       statuses.each{|s| enabled[s.id] = false}
       # enable all statuses held by current tasks, regardless of whether the current user has access
-      RbTask.where(fixed_version_id: @sprint.id).find_each {|task| enabled[task.status_id] = true }
+      RbTask.where(fixed_version_id: @sprint.id, tracker_id: tracker).find_each {|task| enabled[task.status_id] = true }
 
       roles = User.current.roles_for_project(@project)
       #@transitions = {}
@@ -29,7 +29,7 @@ class RbTaskboardsController < RbApplicationController
         [false, true].each {|creator|
           [false, true].each {|assignee|
 
-            allowed = status.new_statuses_allowed_to(roles, tracker, creator, assignee).collect{|s| s.id}
+            allowed = status.new_statuses_allowed_to(roles, tracker, @project.workspace_id, creator, assignee).collect{|s| s.id}
             #@transitions["c#{creator ? 'y' : 'n'}a#{assignee ? 'y' : 'n'}"] = allowed
             allowed.each{|s| enabled[s] = true}
           }
