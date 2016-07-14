@@ -36,6 +36,7 @@ a:hover{
   float: left;
   margin-left: 10px;
   margin-right: 10px;
+  padding: 12px;
 }
 #toolbar .breadcrumbs .home{
   font-size:1.2em;
@@ -51,7 +52,7 @@ a:hover{
   position:relative;
 }
 #toolbar .links{
-  bottom:5px;
+  padding:12px;
   display:block;
   right:10px;
   position:absolute;
@@ -59,6 +60,9 @@ a:hover{
 #toolbar .links a{
   cursor:pointer;
   padding-left:5px;
+}
+#toolbar .ui-multiselect{
+  margin:11px;
 }
 body.loading #refresh{
   background-image:url('images/bouncer.gif');
