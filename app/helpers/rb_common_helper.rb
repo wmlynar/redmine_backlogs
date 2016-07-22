@@ -173,6 +173,10 @@ filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,Start
     item.remaining_hours.blank? || item.remaining_hours==0 ? "" : item.remaining_hours
   end
 
+  def spent_hours_or_empty(item)
+    item.total_spent_hours.blank? || item.total_spent_hours==0 ? "0" : item.total_spent_hours.round(1)
+  end
+
   def workdays(start_day, end_day)
     return (start_day .. end_day).select {|d| (d.wday > 0 and d.wday < 6) }
   end
