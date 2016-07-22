@@ -8,7 +8,6 @@ redmine_version_major = version_file.match(/MAJOR =/).post_match.match(/\d/)[0].
 
 gem "holidays", "~>1.0.3"
 gem "icalendar"
-gem "nokogiri"
 gem "open-uri-cached"
 gem "prawn"
 gem 'json'
@@ -21,12 +20,9 @@ group :test do
   gem 'chronic'
   gem 'ZenTest', "=4.5.0" # 4.6.0 has a nasty bug that breaks autotest
   gem 'autotest-rails'
-  #gem 'cucumber-rails', '~>1.4.0', require: false
   gem 'cucumber-rails', require: false
   gem "culerity"
   gem "cucumber"
-  gem "capybara", "~> 1"
-  #gem "faye-websocket"
   gem "poltergeist"
   gem "database_cleaner"
   gem "gherkin"
