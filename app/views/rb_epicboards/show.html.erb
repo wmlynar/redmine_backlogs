@@ -15,11 +15,13 @@
 <% end %>
 
 <% content_for :breadcrumbs do %>
-
   <%= link_to l(:label_master_backlog), :controller => "rb_master_backlogs", :action => "show", :project_id => @project %>
-  <%= breadcrumb_separator %>
-  <%= h @project.name %>
-
+  <%= breadcrumb_split %>
+  <%= h l(:label_epics) %>
+  <%- if Backlogs.configured? && Backlogs.setting[:scaled_agile_enabled] %>
+    <%= breadcrumb_split %>
+    <%= link_to l(:label_rb_genericboard_plural), :controller => :rb_genericboards, :action => :index, :project_id => @project %>
+  <%- end %>
 <% end %>
 
 <%- content_for :main do %>

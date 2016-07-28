@@ -61,7 +61,11 @@ filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,Start
 <%- end %>
 
 <%- content_for :breadcrumbs do %>
-  <%= @rb_genericboard.name %> <% unless @rb_genericboard.prefilter_name.blank? %>(<%= @rb_genericboard.prefilter_name %>)<% end %>
+  <%= link_to l(:label_master_backlog), :controller => "rb_master_backlogs", :action => "show", :project_id => @project %>
+  <%= breadcrumb_split %>
+  <%= link_to l(:label_epics), :controller => :rb_epicboards, :action => :show, :project_id => @project %>
+  <%= breadcrumb_split %>
+  <%= l(:label_rb_genericboard_plural) %>:&nbsp;<%= @rb_genericboard.name %> <% unless @rb_genericboard.prefilter_name.blank? %>(<%= @rb_genericboard.prefilter_name %>)<% end %>
 <%- end %>
 
 <%- content_for :view_specific_users do %>

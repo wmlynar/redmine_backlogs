@@ -41,6 +41,10 @@ filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,Start
     "<span class='separator'>&raquo;</span>".html_safe
   end
 
+  def breadcrumb_split
+    "<span class='separator'>|</span>".html_safe
+  end
+
   def description_or_empty(story)
     story.new_record? ? "" : textilizable(story, :description)
   end
