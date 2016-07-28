@@ -43,7 +43,7 @@ module Backlogs
       end
 
       def is_epic?
-        return RbGeneric.epic_trackers.include?(tracker_id)
+        return RbEpic.trackers.include?(tracker_id)
       end
 
       def is_feature?
@@ -55,7 +55,7 @@ module Backlogs
       end
 
       def is_rbgeneric?
-        [].concat(RbGeneric.feature_trackers).concat(RbGeneric.epic_trackers).concat(RbGeneric.trackers).include?(tracker_id)
+        [].concat(RbGeneric.feature_trackers).concat(RbEpic.trackers).concat(RbGeneric.trackers).include?(tracker_id)
       end
 
       def is_task?

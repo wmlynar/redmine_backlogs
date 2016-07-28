@@ -106,7 +106,6 @@ class RbGeneric < Issue
 
   scope :backlog_scope, lambda{|opts={}| self.find_options(opts) }
   scope :generic_backlog_scope, lambda{|opts| self.find_options(opts, true) }
-  scope :epics, lambda{|opts| self.generic_backlog_scope(opts.merge({:trackers => self.epic_trackers})) }
 
   def list_with_gaps_options
     {
@@ -124,17 +123,13 @@ class RbGeneric < Issue
     self.get_trackers(:story_trackers, options)
   end
 
-  def self.epic_trackers(options = {})
-    self.get_trackers(:epic_trackers, options)
-  end
-
   def self.feature_trackers(options = {})
     self.get_trackers(:feature_trackers, options)
   end
 
   def self.all_trackers(tracker_id)
-    if self.epic_trackers(:type=>:array).include?(tracker_id)
-      return self.epic_trackers
+    if RbEpic.trackers(:type=>:array).include?(tracker_id)
+      return RbEpic.trackers
     elsif self.feature_trackers(:type=>:array).include?(tracker_id)
       return self.feature_trackers
     elsif self.story_trackers(:type=>:array).include?(tracker_id)
