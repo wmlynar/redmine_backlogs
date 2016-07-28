@@ -264,7 +264,7 @@ module Backlogs
           @shared_releases ||= begin
             order = Backlogs.setting[:sprint_sort_order] == 'desc' ? 'DESC' : 'ASC'
             r = root? ? self : root
-            RbRelease.joins(:project).includes(:project).where("#{Project.table_name}.id = #{id}" +
+            RbRelease.open.joins(:project).includes(:project).where("#{Project.table_name}.id = #{id}" +
                 " OR (#{Project.table_name}.status <> #{Project::STATUS_ARCHIVED} AND (" +
                   " #{RbRelease.table_name}.sharing = 'system'" +
                 " OR (#{Project.table_name}.lft >= #{r.lft} AND #{Project.table_name}.rgt <= #{r.rgt} AND #{RbRelease.table_name}.sharing = 'tree')" +
