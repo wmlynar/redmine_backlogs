@@ -132,6 +132,7 @@ en:
   label_closed_releases: "Closed releases"
   label_column_width: "Column width"
   label_download_sprint: Download
+  label_epics: Epics
   label_filter_tasks: "Filter by user"
   label_filter_tasks_my_tasks: "Filter by user - my tasks"
   label_hide_completed_sprints: "Hide Completed Sprints"
@@ -254,4 +255,9 @@ en:
   field_hide_empty_rows: "Hide empty rows"
   label_rb_genericbord_colfilter: "Column filter"
   label_rb_genericbord_rowfilter: "Row filter"
-  
+  backlogs_epic: Epic
+  label_new_epic: New Epic
+  backlogs_stories: Stories
+  backlogs_stories_in_no_epic: Stories not sorted into an Epic
+  backlogs_epic_tracker: Epic trackers
+  label_epics: Epics

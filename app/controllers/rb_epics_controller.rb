@@ -3,7 +3,7 @@ require 'backlogs_printable_cards'
 
 include RbCommonHelper
 
-class RbStoriesController < RbApplicationController
+class RbEpicsController < RbApplicationController
   unloadable
   include BacklogsPrintableCards
 
@@ -14,7 +14,7 @@ class RbStoriesController < RbApplicationController
     end
 
     begin
-      cards = BacklogsPrintableCards::PrintableCards.new(params[:sprint_id] ? @sprint.stories : RbStory.product_backlog(@project), params[:sprint_id], current_language)
+      cards = BacklogsPrintableCards::PrintableCards.new(params[:sprint_id] ? @sprint.epics : RbEpic.product_backlog(@project), params[:sprint_id], current_language)
     rescue Prawn::Errors::CannotFit
       render :text => "There was a problem rendering the cards. A possible error could be that the selected font exceeds a render box", :status => 500
       return
@@ -33,29 +33,29 @@ class RbStoriesController < RbApplicationController
       params[:tracker_id] = params[:epic_tracker_id]
     end
     begin
-      story = RbStory.create_and_position(params)
+      epic = RbEpic.create_and_position(params)
     rescue => e
       render :text => e.message.blank? ? e.to_s : e.message, :status => 400
       return
     end
 
-    status = (story.id ? 200 : 400)
+    status = (epic.id ? 200 : 400)
 
-    if params[:view] == "story_eb"
+    if params[:view] == "epic_eb"
       respond_to do |format|
-        format.html { render :partial => "story_eb", :collection => [story], :as => :story }
+        format.html { render :partial => "epic_eb", :collection => [epic], :as => :epic }
       end
     else
       respond_to do |format|
-        format.html { render :partial => "story", :object => story, :status => status }
+        format.html { render :partial => "epic", :object => epic, :status => status }
       end
     end
   end
 
   def update
-    story = RbStory.find(params[:id])
+    epic = RbEpic.find(params[:id])
     begin
-      result = story.update_and_position!(params)
+      result = epic.update_and_position!(params)
     rescue => e
       render :text => e.message.blank? ? e.to_s : e.message, :status => 400
       return
@@ -63,21 +63,21 @@ class RbStoriesController < RbApplicationController
 
     status = (result ? 200 : 400)
 
-    if params[:view] == "story_eb"
+    if params[:view] == "epic_eb"
       respond_to do |format|
-        format.html { render :partial => "story_eb", :collection => [story], :as => :story }
+        format.html { render :partial => "epic_eb", :collection => [epic], :as => :epic }
       end
     else
       respond_to do |format|
-        format.html { render :partial => "story", :object => story, :status => status }
+        format.html { render :partial => "epic", :object => epic, :status => status }
       end
     end
   end
 
   def tooltip
-    story = RbStory.find(params[:id])
+    epic = RbEpic.find(params[:id])
     respond_to do |format|
-      format.html { render :partial => "tooltip", :object => story }
+      format.html { render :partial => "tooltip", :object => epic }
     end
   end
 

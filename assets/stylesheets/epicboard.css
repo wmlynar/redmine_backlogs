@@ -1,11 +1,12 @@
-#taskboard, #taskboard table {
+#epicboard, #epicboard table {
   background-color: white;
   color: black;
 }
-#taskboard .task {
-  color: black;
+#epicboard .story
+#epicboard .epic {
+  color: black; 
 }
-#taskboard .issue .subject {
+#epicboard .issue .subject {
   white-space: normal;
 }
 
@@ -28,18 +29,18 @@
  swimlane class is used by:
   - #board_header
   - .board
-
+  
 Also use by the Column Width preference to
 determine the unit width of the swimlanes.
 See RB.Taskboard.initialize()
 */
 .swimlane{
-  min-width:105px; /* width + (2*margin) + (2*padding) + (2*border) of .issue */
+  min-width:200px; /* width + (2*margin) + (2*padding) + (2*border) of .issue */
   padding:5px;
-  width:105px; /* Must be the same as min-width */
+  width: 100%;
 }
 
-#taskboard { position: relative; } /*for fixed header*/
+#epicboard { position: relative; } /*for fixed header*/
 #impediments { padding-top: 40px; }
 /* status labels */
 #board_header{
@@ -67,7 +68,7 @@ See RB.Taskboard.initialize()
   border-right:none;
 }
 
-/* shared #impediments and #tasks */
+/* shared #impediments and #storys */
 .board{
   /* background-color:#FCFCFC; */
   border:1px solid #CCCCCC;
@@ -87,7 +88,7 @@ See RB.Taskboard.initialize()
 .board td:first-child{
   min-width:210px;
   padding:5px;
-  width:210px;
+  width:210px; 
 }
 .board td:last-child{
   border-right:none;
@@ -95,23 +96,24 @@ See RB.Taskboard.initialize()
 .board tr:last-child td{
   border-bottom:none;
 }
-.board .add_new{
+.add_new{
   display: inline-block;
   vertical-align:middle;
 }
-.board .add_new:hover{
+.add_new:hover{
   cursor:pointer;
   background-color:#ffffcc;
 }
-.story,
-.label_sprint_impediments{
+#epicboard .epic,
+.label_sprint_impediments,
+.epic_editor_dialog {
   -moz-box-shadow: 2px 2px 2px #CCCCCC;
   -webkit-box-shadow: 2px 2px 2px #CCCCCC;;
   box-shadow: 2px 2px 2px #CCCCCC;;
-  background: -webkit-gradient(linear, left top, left bottom, from(#FEE), to(#FD2));
-  background: -moz-linear-gradient(top, #FEE, #FD2);
-  filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,StartColorStr=#FFEEEE,EndColorStr=#FFDD22);
-  background-color:#F8F6A5;
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#c9de96), color-stop(44%,#8ab66b), color-stop(100%,#398235));
+  background: -moz-linear-gradient(top, color-stop(25%, green), color-stop(75%, green));
+  filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,StartColorStr=color-stop(25%, green),EndColorStr=color-stop(75%, green));
+  /*background-color:#F8F6A5;*/
   border:none;
   display:block;
   float:left;
@@ -122,7 +124,7 @@ See RB.Taskboard.initialize()
   position:relative;
   width:190px;
 }
-.story .id{
+.epic .id{
   -moz-border-radius:4px 4px 4px 4px;
   -webkit-border-radius:4px 4px 4px 4px;
   border-radius:4px 4px 4px 4px;
@@ -133,32 +135,32 @@ See RB.Taskboard.initialize()
   padding:1px 3px 1px 3px;
   line-height: 14px;
 }
-.story .id a,
-.story .id .remaininghours {
+.epic .id a,
+.epic .id .remaininghours {
   float:right;
   margin-left: 4px;
 }
-.story .id .assignee{
+.epic .id .assignee{
   font-weight: bold;
 }
-.story .subject{
-  height:68px;
+.epic .subject{
+  height:63px;
   line-height:13px;
   margin-top:0;
   overflow:hidden;
   padding:2px;
   width:186px;
 }
-.story .project {
+.epic .project {
   text-align:left;
 }
-.story .id .v {
+.epic .id .v {
   display:none;
 }
-.story.closed .subject{
+.epic.closed .subject{
   text-decoration:line-through;
 }
-.story .story_points.editable{
+.epic .epic_points.editable{
   -moz-border-radius:15px 15px 15px 15px;
   -webkit-border-radius:15px 15px 15px 15px;
   border-radius:15px 15px 15px 15px;
@@ -170,34 +172,36 @@ See RB.Taskboard.initialize()
   bottom:-5px;
   right:-5px;
 }
-.story .story_points.editable:empty{
+.epic .epic_points.editable:empty{
   display:none;
 }
 
-/* item styles used by .task and .impediment */
-#taskboard .issue, #taskboard .placeholder{
+/* item styles used by .story and .impediment */
+#epicboard .story, #epicboard .placeholder {
   background-color:#CCCCCC;
-  background: -webkit-gradient(linear, left top, left bottom, from(#E0E0E0), to(#AAA));
-  background: -moz-linear-gradient(top, #E0E0E0, #AAA);
-  filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,StartColorStr=#E0E0E0,EndColorStr=#AAAAAA);
+  background: -webkit-gradient(linear, left top, left bottom, from(#FEE), to(#FD2));
+  background: -moz-linear-gradient(top, #FEE, #FD2);
+  filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,StartColorStr=#FFEEEE,EndColorStr=#FFDD22);
   border:none;
   cursor:move;
   display:block;
   float:left;
   font-size:10px;
-  height:90px;
+  height:80px;
   margin:5px;
   padding:5px;
   position:relative;
   width:85px;
   line-height: 12px;
 }
-#taskboard .issue{
+
+#epicboard .story {
   -moz-box-shadow: 2px 2px 2px #CCCCCC;
   -webkit-box-shadow: 2px 2px 2px #CCCCCC;
   box-shadow: 2px 2px 2px #CCCCCC;
 }
-#taskboard .placeholder{
+
+#epicboard .placeholder{
   background-color:#FFFF00;
   border:1px dashed #333300;
   height:78px;
@@ -227,7 +231,7 @@ See RB.Taskboard.initialize()
   background-color:transparent;
 }
 .issue .subject.editable{
-  height:52px;
+  height:26px;
   line-height:13px;
   margin-top:0;
   overflow:hidden;
@@ -266,6 +270,10 @@ See RB.Taskboard.initialize()
   display:none;
 }
 
+.issue .status_id .v{
+  display:none;
+}
+
 .issue .priority_id.editable{
   -moz-border-radius:15px 15px 15px 15px;
   -webkit-border-radius:15px 15px 15px 15px;
@@ -287,7 +295,7 @@ See RB.Taskboard.initialize()
 }
 
 .issue .remaining_hours.editable
-#epicboard .issue .story_points{
+#epicboard .issue .epic_points{
   -moz-border-radius:15px 15px 15px 15px;
   -webkit-border-radius:15px 15px 15px 15px;
   border-radius:15px 15px 15px 15px;
@@ -377,7 +385,6 @@ See RB.Taskboard.initialize()
   width:100%;
 }
 .rb_editor .subject{
-  height:65px;
   width:272px;
 }
 
@@ -399,8 +406,8 @@ See RB.Taskboard.initialize()
 
 /* others */
 #impediment_template,
-#task_template,
-#story_template{
+#story_template,
+#epic_template{
   display:none;
 }
 #preloader{
@@ -417,6 +424,8 @@ See RB.Taskboard.initialize()
   display: none;
 }
 
-#project_quick_jump_box{
-  max-width: 300px;
-}
+/*epicboard*/
+#epicboard { position: relative; }
+#epicboard #stories { padding-top: 40px; }
+#epicboard .epic .status_id, #epicboard .epic .project { display:none;}
+

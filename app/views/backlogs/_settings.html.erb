@@ -18,9 +18,23 @@
 
     disable = false;
     log = tasktracker + '::'
+
+    // Check task tracker is not a story tracker
     RB.$("#settings_story_trackers :selected").each(function(i, selected){
       disable = disable || (RB.$(selected).attr('value') == tasktracker);
     });
+    // Check task tracker is not an epics tracker
+    RB.$("#settings_epic_trackers :selected").each(function(i, selected){
+      disable = disable || (RB.$(selected).attr('value') == tasktracker);
+    });
+    // Check epics trackers are not stories trackers
+    RB.$("#settings_epic_trackers :selected").each(function(i, epic_selected){
+      RB.$("#settings_story_trackers :selected").each(function(i, selected){
+        disable = disable || (RB.$(selected).attr('value') == (RB.$(epic_selected).attr('value')));
+      });
+    });
+
+    // Disable button if needed
     if (disable) {
       submit.attr('disabled', 'disabled');
     } else {
@@ -38,6 +52,7 @@
   RB.$(document).ready(function() {
     RB.$("#settings_task_tracker").change(function() { enable_apply(); });
     RB.$("#settings_story_trackers").change(function() { enable_apply(); });
+    RB.$("#settings_epic_trackers").change(function() { enable_apply(); });
 
     RB.$("#settings_story_follow_task_status_loose").change(function(){update_storystate('loose');});
     RB.$("#settings_story_follow_task_status_close").change(function(){update_storystate('close');});
@@ -71,6 +86,12 @@
 <% end %>
 <fieldset>
   <legend><%= l(:backlogs_general_settings) %></legend>
+
+<p>
+  <%= content_tag(:label, l(:backlogs_epic_tracker)) %>
+  <%= select_tag("settings[epic_trackers]", options_from_collection_for_select(Tracker.all, :id, :name, RbEpic.trackers), :multiple => true) %>
+</p>
+
 <p>
   <%= content_tag(:label, l(:backlogs_story_tracker)) %>
   <%= select_tag("settings[story_trackers]", options_from_collection_for_select(Tracker.all, :id, :name, RbStory.trackers), :multiple => true) %>

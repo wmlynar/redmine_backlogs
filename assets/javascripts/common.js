@@ -134,6 +134,14 @@ RB.util = {
         var _ = RB.$(this);
         _.qtip(RB.$.qtipMakeOptions(_, true));
     });
+    RB.$('div.epic_tooltip').each(function(el) {
+        var _ = RB.$(this);
+        _.qtip(RB.$.qtipMakeOptions(_));
+    });
+    RB.$('div.epic_tooltip_ajax').each(function(el) {
+        var _ = RB.$(this);
+        _.qtip(RB.$.qtipMakeOptions(_, true));
+    });
   },
 
   refreshToolTip: function(scope) {
@@ -142,6 +150,14 @@ RB.util = {
         _.qtip(RB.$.qtipMakeOptions(_));
     });
     scope.$.find('div.story_tooltip_ajax').each(function(el) {
+        var _ = RB.$(this);
+        _.qtip(RB.$.qtipMakeOptions(_, true));
+    });
+    scope.$.find('div.epic_tooltip').each(function(el) {
+        var _ = RB.$(this);
+        _.qtip(RB.$.qtipMakeOptions(_));
+    });
+    scope.$.find('div.epic_tooltip_ajax').each(function(el) {
         var _ = RB.$(this);
         _.qtip(RB.$.qtipMakeOptions(_, true));
     });

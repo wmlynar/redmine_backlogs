@@ -1,0 +1,42 @@
+<div class="model issue story <%= mark_if_closed(story) %>" id="issue_<%= story.id %>" <%= build_inline_style(story).html_safe %>>
+  <% qtip_cls = "story_tooltip"
+     qtip_cls = "story_tooltip_ajax" unless defined?(render_tooltip)  %>
+  <div class="id <%= qtip_cls %>">
+    <div class="tooltip_text"><%= render :partial => "rb_stories/tooltip", :object => story if defined?(render_tooltip) %></div>
+    <div class="t"><%= issue_link_or_empty(story) %></div>
+    <div class="v"><%= id_or_empty(story) %></div>
+  </div>
+  <div class="subject editable story_field" fieldtype="textarea" fieldname="subject" fieldlabel="<%=l(:field_subject)%>"><%= h story.subject %></div>
+  <div class="description editable story_field" style="display: none" fieldtype="textarea" fieldname="description" fieldlabel="<%=l(:field_description)%>"><%= h story.description %></div>
+  <div class="assigned_to_id editable story_field" fieldtype="select" fieldname="assigned_to_id" fieldlabel="<%=l(:field_assigned_to)%>">
+    <div class="t"><%= assignee_name_or_empty(story) %></div>
+    <div class="v"><%= assignee_id_or_empty(story) %></div>
+  </div>
+  <div class="tracker_id editable story_field"  fieldtype="select"  fieldname="story_tracker_id" fieldlabel="<%=l(:field_tracker_id)%>">
+    <%- RbStory.trackers(:project => @project, :type => :trackers).each do |tracker| %>
+      <%- if (Backlogs.settings[:default_story_tracker] && tracker.id.to_s==Backlogs.settings[:default_story_tracker]) %>
+        <div class="t"><%= h tracker.name %></div>
+        <div class="v" selected="selected"><%= tracker.id %></div>
+      <%- else %>
+        <div class="t"><%= h tracker.name %></div>
+        <div class="v"><%= tracker.id %></div>
+      <%- end %>
+    <%- end %>
+  </div>
+  <% if Backlogs.settings[:show_priority] || story.priority_id != IssuePriority.default.id %>
+    <div class="priority_id editable story_field"  fieldtype="select"  fieldname="priority_id" fieldlabel="<%=l(:field_priority)%>">
+      <div class="t"><%= h story.priority.name %></div>
+      <div class="v"><%= story.priority_id %></div>
+    </div>
+  <% end %>
+  <div class="indicator"> </div>
+  <div class="meta">
+    <div class="story_id"><%= story.story ? story.story.id : '' %></div>
+    <div class="status_id"><%= story.status_id %></div>
+    <div class="project_id"><%= story.project_id %></div>
+    <div class="user_status"><%= story.author == User.current ? '+' : '-' %>c<%= story.assigned_to == User.current ? '+' : '-' %>a</div>
+    <!--<div class="tracker_id"><%= tracker_id_or_empty(story) %></div>-->
+    <div class="previous"><%= story.right_sibling.blank? ? '' : story.right_sibling.id %></div>
+    <%= render :partial => "backlogs/model_errors", :object => story.errors unless story.errors.empty? %>
+  </div>
+</div>

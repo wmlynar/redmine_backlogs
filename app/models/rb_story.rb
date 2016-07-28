@@ -5,6 +5,58 @@ class RbStory < RbGeneric
 
   private
 
+  def self.tracker_setting; :story_trackers end
+
+  def self.__find_options_normalize_option(option)
+    option = [option] if option && !option.is_a?(Array)
+    option = option.collect{|s| s.is_a?(Integer) ? s : s.id} if option
+  end
+
+  def self.__find_options_add_permissions(options)
+    permission = options.delete(:permission)
+    permission = false if permission.nil?
+
+    options[:conditions] ||= []
+    if permission
+      if Issue.respond_to? :visible_condition
+        visible = Issue.visible_condition(User.current, :project => project || Project.find(project_id))
+      else
+        visible = Project.allowed_to_condition(User.current, :view_issues)
+      end
+      Backlogs::ActiveRecord.add_condition(options, visible)
+    end
+  end
+
+  def self.__find_options_sprint_condition(project_id, sprint_ids)
+    if Backlogs.settings[:sharing_enabled]
+      ["
+        tracker_id in (?)
+        and fixed_version_id IN (?)", self.trackers, sprint_ids]
+    else
+      ["
+        issues.project_id = ?
+        and tracker_id in (?)
+        and fixed_version_id IN (?)", project_id, self.trackers, sprint_ids]
+    end
+  end
+
+  def self.__find_options_release_condition(project_id, release_ids)
+    ["
+      issues.project_id in (#{Project.find(project_id).projects_in_shared_product_backlog.map{|p| p.id}.join(',')})
+      and tracker_id in (?)
+      and fixed_version_id is NULL
+      and release_id in (?)", self.trackers, release_ids]
+  end
+
+  def self.__find_options_pbl_condition(project_id)
+    ["
+      issues.project_id in (#{Project.find(project_id).projects_in_shared_product_backlog.map{|p| p.id}.join(',')})
+      and tracker_id in (?)
+      and release_id is NULL
+      and fixed_version_id is NULL
+      and is_closed = ?", self.trackers, false]
+  end
+
   public
 
   def self.class_default_status
@@ -70,6 +122,23 @@ class RbStory < RbGeneric
     end
   end
 
+  def self.create_and_position(params)
+    params['prev'] = params.delete('prev_id') if params.include?('prev_id')
+    params['next'] = params.delete('next_id') if params.include?('next_id')
+    params['prev'] = nil if (['next', 'prev'] - params.keys).size == 2
+
+    # lft and rgt fields are handled by acts_as_nested_set
+    attribs = params.select{|k,v| !['prev', 'next', 'id', 'lft', 'rgt'].include?(k) && RbStory.column_names.include?(k) }
+
+    attribs[:status] = RbStory.class_default_status
+    attribs = Hash[*attribs.flatten]
+    s = RbStory.new(attribs)
+    s.save!
+    s.update_and_position!(params)
+
+    return s
+  end
+
   scope :updated_since, lambda {|since|
           where(["#{self.table_name}.updated_on > ?", Time.parse(since)]).
           order("#{self.table_name}.updated_on ASC")
@@ -89,8 +158,31 @@ class RbStory < RbGeneric
           updated_since(since)
   end
 
+  def self.trackers(options = {})
+    # legacy
+    options = {:type => options} if options.is_a?(Symbol)
+
+    # somewhere early in the initialization process during first-time migration this gets called when the table doesn't yet exist
+    trackers = []
+    if has_settings_table
+      trackers = Backlogs.setting[tracker_setting]
+      trackers = [] if trackers.blank?
+    end
+
+    trackers = Tracker.where(:id => trackers).all
+    trackers = trackers & options[:project].trackers if options[:project]
+    trackers = trackers.sort_by { |t| [t.position] }
+
+    case options[:type]
+      when :trackers      then return trackers
+        when :array, nil  then return trackers.collect{|t| t.id}
+        when :string      then return trackers.collect{|t| t.id.to_s}.join(',')
+        else                   raise "Unexpected return type #{options[:type].inspect}"
+    end
+  end
+
   def self.trackers_include?(tracker_id)
-    tracker_ids = Backlogs.setting[:story_trackers] || []
+    tracker_ids = Backlogs.setting[tracker_setting] || []
     tracker_ids = tracker_ids.map(&:to_i)
     tracker_ids.include?(tracker_id.to_i)
   end
@@ -114,6 +206,41 @@ class RbStory < RbGeneric
     return notsized if story_points == nil || story_points.blank?
     return 'S' if story_points == 0
     return story_points.to_s
+  end
+
+  def update_and_position!(params)
+    params['prev'] = params.delete('prev_id') if params.include?('prev_id')
+    params['next'] = params.delete('next_id') if params.include?('next_id')
+    self.position!(params)
+
+    # lft and rgt fields are handled by acts_as_nested_set
+    if Issue.const_defined? "SAFE_ATTRIBUTES"
+      safe_attributes_names = RbStory::SAFE_ATTRIBUTES
+    else
+      safe_attributes_names = Issue.new(
+        :project_id=>params[:project_id] # required to verify "safeness"
+      ).safe_attribute_names
+    end
+    attribs = params.select{|k,v| !['prev', 'id', 'project_id', 'lft', 'rgt'].include?(k) && safe_attributes_names.include?(k) }
+    attribs = Hash[*attribs.flatten]
+
+    return self.journalized_update_attributes attribs
+  end
+
+  def position!(params)
+    if params.include?('prev')
+      if params['prev'].blank?
+        self.move_to_top # move after 'prev'. Meaning no prev, we go at top
+      else
+        self.move_after(RbStory.find(params['prev']))
+      end
+    elsif params.include?('next')
+      if params['next'].blank?
+        self.move_to_bottom
+      else
+        self.move_before(RbStory.find(params['next']))
+      end
+    end
   end
 
 

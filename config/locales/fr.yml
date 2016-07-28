@@ -120,6 +120,7 @@ fr:
   label_closed_releases: "Releases fermées"
   label_column_width: "Largeur des colonnes"
   label_download_sprint: Télécharger
+  label_epics: Epics
   label_filter_tasks: "Filtrer par utilisateur"
   label_filter_tasks_my_tasks: "Filtrer par utilisateur - mes tâches"
   label_hide_completed_sprints: "Cacher Itérations complétées"

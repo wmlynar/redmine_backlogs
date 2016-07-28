@@ -56,6 +56,7 @@ Redmine::Plugin.register :redmine_backlogs do
   version 'v1.0.6'
 
   settings :default => {
+                         :epic_trackers             => nil,
                          :story_trackers            => nil,
                          :default_story_tracker     => nil,
                          :task_tracker              => nil,
@@ -93,6 +94,10 @@ Redmine::Plugin.register :redmine_backlogs do
 
     permission :manage_generic_boards, {
                                         :rb_genericboards_admin => [ :index, :new, :create, :edit, :update, :destroy ],
+                                      }
+
+    permission :view_epicboards,      {
+                                        :rb_epicboards       => :show
                                       }
 
     permission :view_releases,        {
@@ -133,6 +138,10 @@ Redmine::Plugin.register :redmine_backlogs do
                                         :rb_wikis   => [:edit, :update]
                                       }
 
+    # Epic permissions
+    permission :create_epics,         { :rb_epics => :create }
+    permission :update_epics,         { :rb_epics => :update }
+
     # Story permissions
     # :show_stories and :list_stories are implicit in :view_master_backlog permission
     permission :create_stories,         { :rb_stories => :create }
@@ -155,7 +164,8 @@ Redmine::Plugin.register :redmine_backlogs do
   end
 
   menu :project_menu, :rb_master_backlogs, { :controller => :rb_master_backlogs, :action => :show }, :caption => :label_backlogs, :after => :roadmap, :param => :project_id, :if => Proc.new { Backlogs.configured? }
-  menu :project_menu, :rb_taskboards, { :controller => :rb_taskboards, :action => :current }, :caption => :label_task_board, :after => :rb_master_backlogs, :param => :project_id, :if => Proc.new {|project| Backlogs.configured? && project && project.active_sprint }
+  menu :project_menu, :rb_epicboards, { :controller => :rb_epicboards, :action => :show }, :caption => :label_epics, :after => :rb_master_backlogs, :param => :project_id, :if => Proc.new { Backlogs.configured? }
+  menu :project_menu, :rb_taskboards, { :controller => :rb_taskboards, :action => :current }, :caption => :label_task_board, :after => :rb_epicboards, :param => :project_id, :if => Proc.new {|project| Backlogs.configured? && project && project.active_sprint }
   menu :project_menu, :rb_releases, { :controller => :rb_releases, :action => :index }, :caption => :label_release_plural, :after => :rb_taskboards, :param => :project_id, :if => Proc.new { Backlogs.configured? }
   menu :project_menu, :rb_genericboards, { :controller => :rb_genericboards, :action => :index },
     :caption => :label_rb_genericboard_plural, :after => :rb_releases, :param => :project_id,

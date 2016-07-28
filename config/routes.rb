@@ -84,6 +84,12 @@ def rb_common_routes(rb)
   rb_match rb, 'impediment/create', :to => 'rb_impediments#create', :via => [:post]
   rb_match rb, 'impediment/update/:id', :to => 'rb_impediments#update', :via => [:post, :put]
 
+  rb_match rb, 'epicboard/:project_id',
+               :to => 'rb_epicboards#show', :via => [:get]
+  rb_match rb, 'epic/create', :to => 'rb_epics#create', :via => [:post, :put]
+  rb_match rb, 'epic/update/:id', :to => 'rb_epics#update', :via => [:post, :put]
+  rb_match rb, 'epic/:id/tooltip', :to => 'rb_epics#tooltip', :via => [:get]
+
   rb_match rb, 'sprint/create', :to => 'rb_sprints#create', :via => [:post]
   rb_match rb, 'sprint/:sprint_id/update', :to => 'rb_sprints#update', :via => [:post, :put]
   rb_match rb, 'sprint/:sprint_id/close', :to => 'rb_sprints#close', :via => [:get, :post, :put]
