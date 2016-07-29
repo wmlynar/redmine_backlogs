@@ -159,7 +159,9 @@ filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,Start
     return '' if story.new_record?
     res = ''
     story.custom_field_values.each{|value|
-      res += "<b>#{h(value.custom_field.name)}</b>: #{simple_format_without_paragraph(h(show_value(value)))}<br>"
+      if value.value.present?
+        res += "<b>#{h(value.custom_field.name)}</b>: #{simple_format_without_paragraph(h(show_value(value)))}<br>"
+      end
     }
     res.html_safe
   end
