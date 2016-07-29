@@ -51,7 +51,6 @@ class RbGeneric < Issue
     ["
       project_id in (#{Project.find(project_id).projects_in_shared_product_backlog.map{|p| p.id}.join(',')})
       and tracker_id in (?)
-      and release_id is NULL
       and fixed_version_id is NULL
       and is_closed = ?", tracker_ids, false]
   end
@@ -66,6 +65,7 @@ class RbGeneric < Issue
   public
 
   def self.find_options(options, generic_scope=false)
+    Rails.logger.info "Options: #{options}"
     options = options.dup
 
     project = options.delete(:project)
@@ -83,6 +83,7 @@ class RbGeneric < Issue
     sprint_ids = self.__find_options_normalize_option(options.delete(:sprint))
     release_ids = self.__find_options_normalize_option(options.delete(:release))
     tracker_ids = self.__find_options_normalize_option(options.delete(:trackers) || self.trackers)
+    Rails.logger.info "SprintId: #{sprint_ids}; ReleaseId: #{release_ids}; TrackerId: #{tracker_ids}; GenScope: #{generic_scope};"
     if generic_scope
       Backlogs::ActiveRecord.add_condition(options, self.__find_options_generic_condition(project_id, tracker_ids))
       options[:joins] ||= []

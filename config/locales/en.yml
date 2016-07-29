@@ -261,3 +261,5 @@ en:
   backlogs_stories_in_no_epic: Stories not sorted into an Epic
   backlogs_epic_tracker: Epic trackers
   label_epics: Epics
+  backlogs_use_one_product_backlog: Use only one product backlog
+  backlogs_use_one_product_backlog_explanation: "This disables the release backlog view on the master backlog. Usage of releases is not disabled"

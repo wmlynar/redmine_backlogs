@@ -80,22 +80,30 @@ class RbStory < RbGeneric
   end
 
   def self.backlog(project_id, sprint_id, release_id, options={})
+    options = options.merge({
+      :project => project_id,
+      :sprint => sprint_id
+	  })
+
+	  #optionaly merge release_id
+    if release_id != nil
+      if release_id < 0
+        release_id = nil
+      end
+      options = options.merge({:release => release_id })
+    end
+  
     self.visible.
       order("#{self.table_name}.position").
-      backlog_scope(
-        options.merge({
-          :project => project_id,
-          :sprint => sprint_id,
-          :release => release_id
-      }))
+      backlog_scope(options)
   end
 
-  def self.product_backlog(project, limit=nil)
-    return RbStory.backlog(project.id, nil, nil, :limit => limit)
+  def self.product_backlog(project, includereleases=false, limit=nil)
+    return RbStory.backlog(project.id, nil, includereleases ? nil : -1, :limit => limit)
   end
 
   def self.sprint_backlog(sprint, options={})
-    return RbStory.backlog(sprint.project.id, sprint.id, nil, options)
+    return RbStory.backlog(sprint.project.id, sprint.id, -1, options)
   end
 
   def self.release_backlog(release, options={})
@@ -107,7 +115,7 @@ class RbStory < RbGeneric
     return [] unless sprints
     sprints.map do |s|
       { :sprint => s,
-        :stories => RbStory.backlog(project.id, s.id, nil, options)
+        :stories => RbStory.backlog(project.id, s.id, -1, options)
       }
     end
   end
@@ -211,6 +219,9 @@ class RbStory < RbGeneric
   def update_and_position!(params)
     params['prev'] = params.delete('prev_id') if params.include?('prev_id')
     params['next'] = params.delete('next_id') if params.include?('next_id')
+
+    params.delete('release_id') if Backlogs.settings[:use_one_product_backlog]
+
     self.position!(params)
 
     # lft and rgt fields are handled by acts_as_nested_set

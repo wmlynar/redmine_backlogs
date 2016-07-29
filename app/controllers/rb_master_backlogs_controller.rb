@@ -4,20 +4,27 @@ class RbMasterBacklogsController < RbApplicationController
   unloadable
 
   def show
-    product_backlog_stories = RbStory.product_backlog(@project)
+    product_backlog_stories = RbStory.product_backlog(@project, @settings[:use_one_product_backlog])
     @product_backlog = { :sprint => nil, :stories => product_backlog_stories }
+    Rails.logger.info "Backlog stories: #{product_backlog_stories}"
 
     #collect all sprints which are sharing into @project
     sprints = @project.open_shared_sprints
     @sprint_backlogs = RbStory.backlogs_by_sprint(@project, sprints)
 
-    releases = @project.open_releases_by_date
-    @release_backlogs = RbStory.backlogs_by_release(@project, releases)
+	  if @settings[:use_one_product_backlog]
+      @last_update = [product_backlog_stories,
+        @sprint_backlogs.map{|s| s[:stories]},
+        ].flatten.compact.map{|s| s.updated_on}.sort.last
+	  else
+      releases = @project.open_releases_by_date
+      @release_backlogs = RbStory.backlogs_by_release(@project, releases)
 
-    @last_update = [product_backlog_stories,
-      @sprint_backlogs.map{|s| s[:stories]},
-      @release_backlogs.map{|r| r[:releases]}
-      ].flatten.compact.map{|s| s.updated_on}.sort.last
+      @last_update = [product_backlog_stories,
+        @sprint_backlogs.map{|s| s[:stories]},
+        @release_backlogs.map{|r| r[:releases]}
+        ].flatten.compact.map{|s| s.updated_on}.sort.last
+    end
 
     respond_to do |format|
       format.html { render :layout => "rb"}
