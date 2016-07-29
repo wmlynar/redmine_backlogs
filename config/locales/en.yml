@@ -255,11 +255,11 @@ en:
   field_hide_empty_rows: "Hide empty rows"
   label_rb_genericbord_colfilter: "Column filter"
   label_rb_genericbord_rowfilter: "Row filter"
-  backlogs_epic: Epic
-  label_new_epic: New Epic
-  backlogs_stories: Stories
-  backlogs_stories_in_no_epic: Stories not sorted into an Epic
-  backlogs_epic_tracker: Epic trackers
-  label_epics: Epics
-  backlogs_use_one_product_backlog: Use only one product backlog
+  backlogs_epic: "Epic"
+  label_new_epic: "New Epic"
+  backlogs_stories: "Stories"
+  backlogs_stories_in_no_epic: "Stories not sorted into an Epic"
+  backlogs_epic_tracker: "Epic trackers"
+  label_epics: "Epics"
+  backlogs_use_one_product_backlog: "Use only one product backlog"
   backlogs_use_one_product_backlog_explanation: "This disables the release backlog view on the master backlog. Usage of releases is not disabled"
