@@ -11,19 +11,49 @@
 
 <% if @releases_open.empty? && @releases_closed.empty? %><p class="nodata"><%= l(:label_no_data) %></p><% end %>
 
-<% @releases_open.each do |release| %>
-    <%= render :partial => 'rb_releases/release', :object => release %>
-<% end %>
+<table class="list issues">
+  <thead>
+  <th>#</th>
+  <th><%= l(:field_release_ids) %></th>
+  <th><%= l(:field_release_start_date) %></th>
+  <th><%= l(:field_release_end_date) %></th>
+  </thead>
+  <% reset_cycle %>
+  <% @releases_open.each do |r| %>
+      <tr class="<%= cycle('odd', 'even') %>">
+        <td class="id"><%= link_to r.id, {:controller => "rb_releases", :action => "show", :release_id => r.id} %></td>
+        <td class="subject"><%= release_link_or_empty(r) %></td>
+        <td class="start_date"><%= r.release_start_date   %></td>
+        <td class="due_date"><%= r.release_end_date     %></td>
+      </tr>
+  <% end %>
+</table>
 
 <h2><%=l(:label_release_multiview)%></h2>
 <% @releases_multiview.each do |multiview| %>
   <%= render :partial => 'rb_releases_multiview/release_multiview', :object => multiview %>
 <% end %>
 
-<h2><%=l(:label_closed_releases)%></h2>
-<% @releases_closed.each do |release| %>
-    <%= render :partial => 'rb_releases/release', :object => release %>
-<% end %>
+<h2><a href="#" onclick="$(&quot;#toggle-closed-releases&quot;).toggleClass(&quot;collapsed&quot;); $(&quot;#closed-releases&quot;).toggle(); return false;" id="toggle-closed-releases" class="collapsible collapsed"><%=l(:label_closed_releases)%></a></h2>
+<div id="closed-releases" style="display:none;">
+  <table class="list issues">
+    <thead>
+    <th>#</th>
+    <th><%= l(:field_release_ids) %></th>
+    <th><%= l(:field_release_start_date) %></th>
+    <th><%= l(:field_release_end_date) %></th>
+    </thead>
+    <% reset_cycle %>
+    <% @releases_closed.each do |r| %>
+        <tr class="<%= cycle('odd', 'even') %>">
+          <td class="id"><%= link_to r.id, {:controller => "rb_releases", :action => "show", :release_id => r.id} %></td>
+          <td class="subject"><%= release_link_or_empty(r) %></td>
+          <td class="start_date"><%= r.release_start_date   %></td>
+          <td class="due_date"><%= r.release_end_date     %></td>
+        </tr>
+    <% end %>
+  </table>
+</div>
 
 <% content_for :sidebar do %>
     <h3><%= l(:label_release_plural) %></h3>
