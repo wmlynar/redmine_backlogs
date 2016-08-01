@@ -1,24 +1,42 @@
-<div class="epic <%= mark_if_closed(epic) %>" id="<%= epic_html_id_or_empty(epic) %>" <%= build_inline_style(epic).html_safe %>>
-  <div class="id epic_tooltip">
-    <div class="tracker_id editable epic_field" fieldtype="select" fieldname="epic_tracker_id" fieldlabel="<%=l(:field_tracker_id)%>">
-      <div class="t"><%= h tracker_name_or_empty(epic) %></div>
-      <div class="v"><%= tracker_id_or_empty(epic) %></div>
+<div class="epic model <%= mark_if_closed(epic) %>" id="<%= epic_html_id_or_empty(epic) %>" <%= build_inline_style(epic).html_safe %>>
+  <div class="id epic_tooltip epic_field">
+    <div class="tooltip_text"><%= render :partial => "rb_stories/tooltip", :object => epic %></div>
+    <div class="t">
+      <%= issue_link_or_empty(epic) %>
+      <span class="add_new">
+        <%= image_tag("add.png", :alt => "+") %>
+      </span>
+      <span class="assignee">
+        <%= assignee_name_or_empty(epic) %>
+      </span>
     </div>
-    <%- if epic.id %>
-      <%= link_to epic.id, {:controller => 'issues', :action => 'show', :id => epic.id}, { :target => "_blank" } %>
-    <%- end %>
-    <span class="add_new">
-      <%= image_tag("add.png", :alt => "+") %>
-    </span>
-    <span class="assignee">
-      <%= assignee_name_or_empty(epic) %>
-    </span>
+    <div class="v"><%= id_or_empty(epic) %></div>
   </div>
-  <div class="subject editable" fieldname="subject" fieldlabel="<%=l(:field_subject)%>" fieldtype="input"><%=h epic.subject %></div>
+
+  <div class="tracker_id editable epic_field" style="display: none;" fieldtype="select" fieldname="epic_tracker_id" fieldlabel="<%=l(:field_tracker_id)%>">
+    <div class="t"><%= h tracker_name_or_empty(epic) %></div>
+    <div class="v"><%= tracker_id_or_empty(epic) %></div>
+  </div>
+  <div class="subject editable epic_field" fieldtype="textarea" fieldname="subject" fieldlabel="<%=l(:field_subject)%>"><%=h epic.subject %></div>
+  <div class="description editable story_field" fieldtype="textarea" style="display: none;" fieldname="description" fieldlabel="<%=l(:field_description)%>" ><%=h textile_description_or_empty(epic) %>  </div>
+  <div class="assigned_to_id editable story_field" fieldtype="select" style="display: none;" fieldname="assigned_to_id" fieldlabel="<%=l(:field_assigned_to)%>">
+    <div class="t"><%= assignee_name_or_empty(epic) %></div>
+    <div class="v"><%= assignee_id_or_empty(epic) %></div>
+  </div>
   <%- if @project != epic.project %>
     <div class="id project">
       <span class="t"><%= h epic.project %></span>
       <span class="v"><%= epic.project ? epic.project.id : '' %></span>
     </div>
   <%- end %>
+  <div class="meta">
+    <div class="epic_id"><%= id_or_empty(epic) %></div>
+    <div class="project_id"><%= epic.project_id %></div>
+    <div class="assigned_to_id"><%= assignee_id_or_empty(epic) %></div>
+    <div class="fixed_version_id"><%= epic.fixed_version_id %></div>
+    <div class="tracker_id"><%= tracker_id_or_empty(epic) %></div>
+    <%= render :partial => "backlogs/model_errors", :object => epic.errors %>
+  </div>
+  <div class="clearfix"></div>
 </div>
+

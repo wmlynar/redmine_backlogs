@@ -44,33 +44,15 @@
     <%- @epics.each do |epic| %>
     <tr id="swimlane-<%= epic.id %>" class="epic-swimlane" _rb_parent_id="<%= epic.id %>">
       <td>
-        <div class="epic <%= mark_if_closed(epic) %>" <%= build_inline_style(epic).html_safe %>>
-          <div class="id epic_tooltip">
-            <div class="tooltip_text"><%= render :partial => "rb_stories/tooltip", :object => epic %></div>
-            <%= link_to epic.id, {:controller => 'issues', :action => 'show', :id => epic.id}, { :target => "_blank" } %>
-            <span class="add_new">
-              <%= image_tag("add.png", :alt => "+") %>
-            </span>
-            <span class="assignee">
-              <%= assignee_name_or_empty(epic) %>
-            </span>
-          </div>
-          <div class="subject"><%= h epic.subject %></div>
-          <%- if @project != epic.project %>
-            <div class="id project">
-              <span class="t"><%= h epic.project %></span>
-              <span class="v"><%= epic.project.id %></span>
-            </div>
-          <%- end %>
-        </div>
+        <%= render :partial => "rb_epics/epic_eb", :locals => { :epic => epic } %>
       </td>
-      <td class="swimlane list" id="<%= epic.id %> %>">
+      <td class="swimlane list" id="<%= epic.id %>">
         <%- @columns.each do |col| %>
           <%=
           list = col[:stories].select{|s| s.kind_of?(RbStory) and s.parent_id == epic.id}
           render :partial => "rb_stories/story_eb", :collection => list, :as => :story
           %>
-	<% end %>
+	      <% end %>
       </td>
     </tr>
     <%- end %>
@@ -88,7 +70,7 @@
           list = col[:stories].select{|s| s.kind_of?(RbStory) and RbStory.trackers.include?(s.tracker_id) and s.parent.nil? }
           render :partial => "rb_stories/story_eb", :collection => list, :as => :story
           %>
-	<% end %>
+	      <% end %>
       </td>
     </tr>
   </table>
@@ -113,9 +95,11 @@
     <option value="" color="#AAAAAA" color_light="#E0E0E0"> </option>
     <%= users_assignable_options_for_select(@project.assignable_users) %>
   </select>
+
   <select class="tracker_id template" id="tracker_id_options">
     <%= tracker_options_for_select(RbStory)  %>
   </select>
+
   <select class="tracker_id template" id="epic_tracker_id_options">
     <%= tracker_options_for_select(RbEpic)  %>
   </select>
@@ -125,6 +109,9 @@
   </div>
   <div id="epic_template">
       <%= render :partial => "rb_epics/epic_eb", :collection => [RbEpic.new], :as => :epic %>
+  </div>
+  <div>
+    <%= render :partial => "rb_stories/helpers" %>
   </div>
 
   <!-- end of templates -->

@@ -38,10 +38,10 @@ RB.EpicEB = RB.Object.create(RB.Issue, {
     }
     if(this.isNew()){
       this.$.hide('blind');
+      /* Remove row added to stories table */
+      this.$.parents('tr').remove();
     }
 
-    /* Remove row added to stories table */
-    this.$.parents('tr').remove();
   },
 
   beforeSave: function(){

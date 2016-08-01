@@ -10,6 +10,20 @@
   white-space: normal;
 }
 
+#epicboard .issue .assignee,
+#epicboard .issue .status {
+  white-space: nowrap;
+  display: block;
+  overflow: hidden;
+  padding: 2px;
+  height: 10px;
+  font-size: 9px;
+}
+
+#epicboard .issue .status {
+  font-style: italic;
+}
+
 #assigned_to_id_options{
   display:none;
 }
@@ -113,7 +127,7 @@ See RB.Taskboard.initialize()
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#c9de96), color-stop(44%,#8ab66b), color-stop(100%,#398235));
   background: -moz-linear-gradient(top, color-stop(25%, green), color-stop(75%, green));
   filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,StartColorStr=color-stop(25%, green),EndColorStr=color-stop(75%, green));
-  /*background-color:#F8F6A5;*/
+  background-color:#FEFCCE;
   border:none;
   display:block;
   float:left;
@@ -231,7 +245,7 @@ See RB.Taskboard.initialize()
   background-color:transparent;
 }
 .issue .subject.editable{
-  height:26px;
+  height:36px;
   line-height:13px;
   margin-top:0;
   overflow:hidden;
@@ -271,6 +285,23 @@ See RB.Taskboard.initialize()
 }
 
 .issue .status_id .v{
+  display:none;
+}
+
+.story .story_points{
+  -moz-border-radius:15px 15px 15px 15px;
+  -webkit-border-radius:15px 15px 15px 15px;
+  border-radius:15px 15px 15px 15px;
+  border:2px solid #FFFFFF;
+  background-color:#FF8800;
+  color:#FFFFFF;
+  position:absolute;
+  padding:1em;
+  bottom:-5px;
+  right:-5px;
+}
+
+.story .story_points:empty{
   display:none;
 }
 

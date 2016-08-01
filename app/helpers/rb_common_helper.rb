@@ -132,7 +132,7 @@ filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,Start
   end
 
   def epic_html_id_or_empty(epic)
-    epic.new_record? ? "" : "#{epic.id}"
+    epic.new_record? ? "" : "epic_#{epic.id}"
   end
 
   def release_html_id_or_empty(release)
