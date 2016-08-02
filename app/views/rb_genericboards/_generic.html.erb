@@ -78,7 +78,15 @@
           <span class="v"><%= el.project.id %></span>
         </div>
       <%- end %>
-      <div class="remaining_hours editable" fieldname="story_points" fieldlabel="<%=l(:field_story_points)%>"><%= el.story_points %></div>
+      <% if Backlogs.setting[:story_points].blank? %>
+          <div class="story_points editable story_points_text story_field" style="display: none;" fieldname="story_points" fieldlabel="<%=l(:story_points)%>" fieldtype="input"><%= story_points_or_empty(el) %></div>
+      <% else %>
+          <div class="story_points editable story_points_select story_field" style="display: none;" fieldtype="select" fieldname="story_points" fieldlabel="<%=l(:story_points)%>">
+            <% %w(t v).each do |c| %>
+                <div class="<%=h c %>"><%= story_points_or_empty(el) %></div>
+            <% end %>
+          </div>
+      <% end %>
     <% end #story %>
 
     <div class="indicator"> </div>

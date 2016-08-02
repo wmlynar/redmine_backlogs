@@ -170,4 +170,7 @@ filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,Start
     <%= users_assignable_options_for_select(@project.assignable_users) %>
   </select>
 
+  <div>
+    <%= render :partial => "rb_stories/helpers" %>
+  </div>
 <%- end %>
