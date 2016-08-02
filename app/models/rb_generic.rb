@@ -47,12 +47,21 @@ class RbGeneric < Issue
       and release_id in (?)", tracker_ids, release_ids]
   end
 
-  def self.__find_options_pbl_condition(project_id, tracker_ids)
+  def self.__find_options_pbl_condition(project_id, tracker_ids, include_releases)
+    if include_releases
     ["
       project_id in (#{Project.find(project_id).projects_in_shared_product_backlog.map{|p| p.id}.join(',')})
       and tracker_id in (?)
       and fixed_version_id is NULL
       and is_closed = ?", tracker_ids, false]
+    else
+      ["
+      project_id in (#{Project.find(project_id).projects_in_shared_product_backlog.map{|p| p.id}.join(',')})
+      and tracker_id in (?)
+      and release_id is NULL
+      and fixed_version_id is NULL
+      and is_closed = ?", tracker_ids, false]
+    end
   end
 
   def self.__find_options_generic_condition(project_id, tracker_ids)
@@ -80,6 +89,8 @@ class RbGeneric < Issue
 
     self.__find_options_add_permissions(options)
 
+    include_releases = options.delete(:include_releases)
+
     sprint_ids = self.__find_options_normalize_option(options.delete(:sprint))
     release_ids = self.__find_options_normalize_option(options.delete(:release))
     tracker_ids = self.__find_options_normalize_option(options.delete(:trackers) || self.trackers)
@@ -95,7 +106,7 @@ class RbGeneric < Issue
     elsif release_ids
       Backlogs::ActiveRecord.add_condition(options, self.__find_options_release_condition(project_id, release_ids, tracker_ids))
     else #product backlog
-      Backlogs::ActiveRecord.add_condition(options, self.__find_options_pbl_condition(project_id, tracker_ids))
+      Backlogs::ActiveRecord.add_condition(options, self.__find_options_pbl_condition(project_id, tracker_ids, include_releases))
       options[:joins] ||= []
       options[:joins] [options[:joins]] unless options[:joins].is_a?(Array)
       options[:joins] << :status

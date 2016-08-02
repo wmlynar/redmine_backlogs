@@ -6,7 +6,6 @@ class RbMasterBacklogsController < RbApplicationController
   def show
     product_backlog_stories = RbStory.product_backlog(@project, @settings[:use_one_product_backlog])
     @product_backlog = { :sprint => nil, :stories => product_backlog_stories }
-    Rails.logger.info "Backlog stories: #{product_backlog_stories}"
 
     #collect all sprints which are sharing into @project
     sprints = @project.open_shared_sprints

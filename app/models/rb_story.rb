@@ -82,28 +82,21 @@ class RbStory < RbGeneric
   def self.backlog(project_id, sprint_id, release_id, options={})
     options = options.merge({
       :project => project_id,
-      :sprint => sprint_id
+      :sprint => sprint_id,
+      :release => release_id
 	  })
 
-	  #optionaly merge release_id
-    if release_id != nil
-      if release_id < 0
-        release_id = nil
-      end
-      options = options.merge({:release => release_id })
-    end
-  
     self.visible.
       order("#{self.table_name}.position").
       backlog_scope(options)
   end
 
-  def self.product_backlog(project, includereleases=false, limit=nil)
-    return RbStory.backlog(project.id, nil, includereleases ? nil : -1, :limit => limit)
+  def self.product_backlog(project, include_releases=false, limit=nil)
+    return RbStory.backlog(project.id, nil, nil, {:limit => limit, :include_releases => include_releases })
   end
 
   def self.sprint_backlog(sprint, options={})
-    return RbStory.backlog(sprint.project.id, sprint.id, -1, options)
+    return RbStory.backlog(sprint.project.id, sprint.id, nil, options)
   end
 
   def self.release_backlog(release, options={})
@@ -115,7 +108,7 @@ class RbStory < RbGeneric
     return [] unless sprints
     sprints.map do |s|
       { :sprint => s,
-        :stories => RbStory.backlog(project.id, s.id, -1, options)
+        :stories => RbStory.backlog(project.id, s.id, nil, options)
       }
     end
   end
