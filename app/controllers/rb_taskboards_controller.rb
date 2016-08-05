@@ -13,30 +13,30 @@ class RbTaskboardsController < RbApplicationController
     tracker = Tracker.find_by_id(RbTask.tracker)
     statuses = tracker.issue_statuses
     # disable columns by default
+    enabled = {}
+    statuses.each{|s| enabled[s.id] = false}
+    # enable all statuses held by current tasks, regardless of whether the current user has access
+    RbTask.where(fixed_version_id: @sprint.id, tracker_id: tracker).find_each {|task| enabled[task.status_id] = true }
+
     if User.current.admin?
-      @statuses = statuses
+      roles = Role.all
     else
-      enabled = {}
-      statuses.each{|s| enabled[s.id] = false}
-      # enable all statuses held by current tasks, regardless of whether the current user has access
-      RbTask.where(fixed_version_id: @sprint.id, tracker_id: tracker).find_each {|task| enabled[task.status_id] = true }
-
       roles = User.current.roles_for_project(@project)
-      #@transitions = {}
-      statuses.each {|status|
+    end
+    #@transitions = {}
+    statuses.each {|status|
 
-        # enable all statuses the current user can reach from any task status
-        [false, true].each {|creator|
-          [false, true].each {|assignee|
+      # enable all statuses the current user can reach from any task status
+      [false, true].each {|creator|
+        [false, true].each {|assignee|
 
-            allowed = status.new_statuses_allowed_to(roles, tracker, @project.workspace_id, creator, assignee).collect{|s| s.id}
-            #@transitions["c#{creator ? 'y' : 'n'}a#{assignee ? 'y' : 'n'}"] = allowed
-            allowed.each{|s| enabled[s] = true}
-          }
+          allowed = status.new_statuses_allowed_to(roles, tracker, @project.workspace_id, creator, assignee).collect{|s| s.id}
+          #@transitions["c#{creator ? 'y' : 'n'}a#{assignee ? 'y' : 'n'}"] = allowed
+          allowed.each{|s| enabled[s] = true}
         }
       }
-      @statuses = statuses.select{|s| enabled[s.id]}
-    end
+    }
+    @statuses = statuses.select{|s| enabled[s.id]}
 
     if @sprint.stories.size == 0
       @last_updated = nil
