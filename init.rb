@@ -69,7 +69,8 @@ Redmine::Plugin.register :redmine_backlogs do
                          :scrum_stats_menu_position => 'top',
                          :show_redmine_std_header   => 'enabled',
                          :show_priority             => nil,
-                         :use_one_product_backlog   => nil
+                         :use_one_product_backlog   => nil,
+                         :always_allow_time_fields  => nil
                        },
            :partial => 'backlogs/settings'
 

@@ -212,6 +212,12 @@
     <%= check_box_tag("settings[show_priority]", 'enabled',
         Backlogs.setting[:show_priority]) %>
   </p>
+
+  <p>
+    <%= label_tag("settings_always_allow_time_fields", l(:backlogs_always_allow_time_fields)) %>
+    <%= check_box_tag("settings[always_allow_time_fields]", 'enabled',
+                      Backlogs.setting[:always_allow_time_fields]) %>
+  </p>
 </fieldset>
 
 <fieldset>
