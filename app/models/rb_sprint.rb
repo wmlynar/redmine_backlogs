@@ -1,4 +1,5 @@
 require 'date'
+require 'version'
 
 class RbSprint < Version
   unloadable
@@ -6,7 +7,7 @@ class RbSprint < Version
   validate :start_and_end_dates
 
   def start_and_end_dates
-    errors.add(:base, "sprint_end_before_start") if self.effective_date && self.sprint_start_date && self.sprint_start_date >= self.effective_date
+    errors.add(:base, l(:error_sprint_end_before_start) ) if self.effective_date && self.sprint_start_date && self.sprint_start_date >= self.effective_date
   end
 
   scope :open_sprints, lambda { |project| open_or_locked.by_date.in_project(project) }
@@ -25,6 +26,8 @@ class RbSprint < Version
   scope :by_date, -> { order(by_date_clause) }
   scope :in_project, lambda {|project| where(:project_id => project) }
 
+  safe_attributes 'sprint_start_date'
+  
   #depending on sharing mode
   #return array of projects where this sprint is visible
   def shared_to_projects(scope_project)
@@ -86,7 +89,7 @@ class RbSprint < Version
     return nil
   end
 
-  def wiki_page
+  def rb_wiki_page
     if ! project.wiki
       return ''
     end
@@ -145,5 +148,21 @@ class RbSprint < Version
             RbStory.trackers + [RbTask.tracker],
             self.id]
       ) #.sort {|a,b| a.closed? == b.closed? ?  a.updated_on <=> b.updated_on : (a.closed? ? 1 : -1) }
+  end
+
+  #override version issue count to count only stories
+  def load_issue_counts
+    unless @issue_count
+      @open_issues_count = 0
+      @closed_issues_count = 0
+      fixed_issues.where(:tracker_id => RbStory.trackers.map(&:to_i)).group(:status).count.each do |status, count|
+        if status.is_closed?
+          @closed_issues_count += count
+        else
+          @open_issues_count += count
+        end
+      end
+      @issue_count = @open_issues_count + @closed_issues_count
+    end
   end
 end

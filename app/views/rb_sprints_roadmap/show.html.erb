@@ -1,0 +1,70 @@
+<div class="contextual">
+<%= link_to(l(:button_edit), edit_rb_sprint_path(@sprint), :class => 'icon icon-edit') if User.current.allowed_to?(:manage_versions, @sprint.project) %>
+<%= link_to_if_authorized(l(:button_edit_associated_wikipage, :page_title => @sprint.wiki_page_title), {:controller => 'wiki', :action => 'edit', :project_id => @sprint.project, :id => Wiki.titleize(@sprint.wiki_page_title)}, :class => 'icon icon-edit') unless @sprint.wiki_page_title.blank? || @sprint.project.wiki.nil? %>
+<%= delete_link version_path(@sprint, :back_url => url_for(:controller => 'rb_sprints_roadmap', :action => 'index', :project_id => @sprint.project)) if User.current.allowed_to?(:manage_versions, @sprint.project) %>
+<%= call_hook(:view_versions_show_contextual, { :version => @sprint, :project => @project }) %>
+</div>
+
+<h2><%= @sprint.name %></h2>
+
+<div id="roadmap" class="<%= @sprint.css_classes %>">
+<%= render :partial => 'overview', :locals => {:version => @sprint} %>
+<%= render(:partial => "wiki/content", :locals => {:content => @sprint.wiki_page.content}) if @sprint.wiki_page %>
+
+<div id="version-summary">
+<% if @sprint.estimated_hours > 0 || User.current.allowed_to?(:view_time_entries, @project) %>
+<fieldset class="time-tracking"><legend><%= l(:label_time_tracking) %></legend>
+<table>
+<tr>
+    <th><%= l(:field_estimated_hours) %></th>
+    <td class="total-hours"><%= html_hours(l_hours(@sprint.estimated_hours)) %></td>
+</tr>
+<% if User.current.allowed_to_view_all_time_entries?(@project) %>
+<tr>
+    <th><%= l(:label_spent_time) %></th>
+    <td class="total-hours"><%= link_to html_hours(l_hours(@sprint.spent_hours)),
+                                        project_time_entries_path(@sprint.project, :set_filter => 1, :"issue.fixed_version_id" => @sprint.id) %></td>
+</tr>
+<% end %>
+</table>
+</fieldset>
+<% end %>
+
+<div id="status_by">
+<%= render_issue_status_by(@sprint, params[:status_by]) if @sprint.fixed_issues.count > 0 %>
+</div>
+</div>
+
+<% if @stories.present? %>
+<%= form_tag({}) do -%>
+  <%- sum_points = 0.0 %>
+  <table class="list issues">
+	<caption><%= l(:label_related_issues) %></caption>
+    <thead>
+      <th></th>
+      <th>#</th>
+      <th>Subject</th>
+      <th>Story Points</th>
+    </thead>
+    <% reset_cycle %>
+    <% @stories.each do |story|
+    klass=story.closed? ? 'closed':'open' %>
+    <tr class="hascontextmenu <%= klass %> <%= cycle('odd', 'even') %>">
+      <td class="checkbox"><%= check_box_tag 'ids[]', story.id, false, :id => nil %></td>
+      <td class="id" style="white-space: nowrap"><%= link_to_issue(story, :project => (@project != story.project), :subject => false) %></td>
+      <td class="subject"><%= story.subject %></td>
+      <td class="storypoints"><%= story_points_or_empty(story) %></td>
+    </tr>
+    <%
+      sum_points = sum_points + story.story_points.to_f if story.story_points
+      end %>
+    <tr><td colspan="3"></td><td><%= sum_points %></td></tr>
+  </table>
+<% end %>
+<%= context_menu issues_context_menu_path %>
+<% end %>
+</div>
+
+<%= call_hook :view_versions_show_bottom, :version => @sprint %>
+
+<% html_title @sprint.name %>

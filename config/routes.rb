@@ -97,6 +97,14 @@ def rb_common_routes(rb)
   rb_match rb, 'sprint/download/:sprint_id.xml', :to => 'rb_sprints#download', :format => 'xml', :via => [:get]
   rb_match rb, 'sprints/:project_id/close_completed', :to => 'rb_sprints#close_completed', :via => [:put]
 
+  rb_match rb, 'sprints/:project_id', :to => 'rb_sprints_roadmap#index', :via => [:get]
+  rb_match rb, 'sprints/:project_id/new', :to => 'rb_sprints_roadmap#new', :via => [:get]
+  rb_match rb, 'sprints/:project_id/new', :to => 'rb_sprints_roadmap#create', :via => [:post]
+  rb_match rb, 'sprint/:sprint_id', :to => 'rb_sprints_roadmap#show', :via => [:get]
+  rb_match rb, 'sprint/:sprint_id', :to => 'rb_sprints_roadmap#update', :via => [:patch, :put]
+  rb_match rb, 'sprint/:sprint_id/edit', :to => 'rb_sprints_roadmap#edit', :via => [:get, :post]
+  rb_match rb, 'sprint/:sprint_id', :to => 'rb_sprints_roadmap#destroy', :via => [:delete]
+
   rb_match rb, 'stories/:project_id/:sprint_id.pdf', :to => 'rb_stories#index', :format => 'pdf', :via => [:get]
   rb_match rb, 'stories/:project_id.pdf', :to => 'rb_stories#index', :format => 'pdf', :via => [:get]
   rb_match rb, 'story/create', :to => 'rb_stories#create', :via => [:post, :put]
@@ -157,7 +165,7 @@ else
     rb_common_routes rb
 
   resources :genericboards, :controller => :rb_genericboards_admin, :via => [:get]
-
+  
   resources :task, :except => :index, :controller => :rb_tasks
   rb_match rb, 'tasks/:story_id', :to => 'rb_tasks#index', :via => [:get]
 

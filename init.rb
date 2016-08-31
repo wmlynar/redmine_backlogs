@@ -70,7 +70,9 @@ Redmine::Plugin.register :redmine_backlogs do
                          :show_redmine_std_header   => 'enabled',
                          :show_priority             => nil,
                          :use_one_product_backlog   => nil,
-                         :always_allow_time_fields  => nil
+                         :always_allow_time_fields  => nil,
+                         :show_sprint_as_roadmap    => 'enabled',
+                         :hide_roadmap              => nil
                        },
            :partial => 'backlogs/settings'
 
@@ -85,6 +87,7 @@ Redmine::Plugin.register :redmine_backlogs do
     permission :view_master_backlog,  {
                                         :rb_master_backlogs  => [:show, :menu, :closed_sprints],
                                         :rb_sprints          => [:index, :show, :download],
+                                        :rb_sprints_roadmap  => [:index, :show, :download],
                                         :rb_hooks_render     => [:view_issues_sidebar],
                                         :rb_wikis            => :show,
                                         :rb_stories          => [:index, :show, :tooltip],
@@ -105,6 +108,7 @@ Redmine::Plugin.register :redmine_backlogs do
     permission :view_releases,        {
                                         :rb_releases         => [:index, :show],
                                         :rb_sprints          => [:index, :show, :download],
+                                        :rb_sprints_roadmap  => [:index, :show],
                                         :rb_wikis            => :show,
                                         :rb_stories          => [:index, :show, :tooltip],
                                         :rb_server_variables => [:project, :sprint, :index],
@@ -113,9 +117,10 @@ Redmine::Plugin.register :redmine_backlogs do
                                       }
 
     permission :view_taskboards,      {
-                                        :rb_genericboards       => [ :show, :index, :update, :create ],
+                                        :rb_genericboards    => [ :show, :index, :update, :create ],
                                         :rb_taskboards       => [:current, :show],
                                         :rb_sprints          => :show,
+                                        :rb_sprints_roadmap  => [:index, :show],
                                         :rb_stories          => [:index, :show, :tooltip],
                                         :rb_tasks            => [:index, :show],
                                         :rb_impediments      => [:index, :show],
@@ -134,11 +139,15 @@ Redmine::Plugin.register :redmine_backlogs do
 
     # Sprint permissions
     # :show_sprints and :list_sprints are implicit in :view_master_backlog permission
-    permission :create_sprints,      { :rb_sprints => [:new, :create]  }
+    permission :create_sprints,      {
+                                        :rb_sprints => [:new, :create],
+                                        :rb_sprints_roadmap => [:new, :create]
+                                     }
     permission :update_sprints,      {
                                         :rb_sprints => [:edit, :update, :close],
+                                        :rb_sprints_roadmap => [:edit, :update, :close],
                                         :rb_wikis   => [:edit, :update]
-                                      }
+                                     }
 
     # Epic permissions
     permission :create_epics,         { :rb_epics => :create }
@@ -165,7 +174,13 @@ Redmine::Plugin.register :redmine_backlogs do
     permission :view_scrum_statistics,   { :rb_all_projects => :statistics }
   end
 
-  menu :project_menu, :rb_master_backlogs, { :controller => :rb_master_backlogs, :action => :show }, :caption => :label_backlogs, :after => :roadmap, :param => :project_id, :if => Proc.new { Backlogs.configured? }
+  # http://www.redmine.org/boards/3/topics/16587
+  delete_menu_item :project_menu, :roadmap
+  menu :project_menu, :roadmap, { :controller => 'versions', :action => 'index' }, :after => :activity, :param => :project_id,
+              :if => Proc.new { |p| p.shared_versions.any? && (!Backlogs.configured? || (Backlogs.configured? && !Backlogs.setting[:hide_roadmap])) }
+
+  menu :project_menu, :rb_sprints, { :controller => :rb_sprints_roadmap, :action => :index }, :caption => :label_sprints, :after => :roadmap, :param => :project_id, :if => Proc.new { Backlogs.configured? && Backlogs.setting[:show_sprint_as_roadmap] }
+  menu :project_menu, :rb_master_backlogs, { :controller => :rb_master_backlogs, :action => :show }, :caption => :label_backlogs, :after => :rb_sprints, :param => :project_id, :if => Proc.new { Backlogs.configured? }
   menu :project_menu, :rb_epicboards, { :controller => :rb_epicboards, :action => :show }, :caption => :label_epics, :after => :rb_master_backlogs, :param => :project_id, :if => Proc.new { Backlogs.configured? }
   menu :project_menu, :rb_taskboards, { :controller => :rb_taskboards, :action => :current }, :caption => :label_task_board, :after => :rb_epicboards, :param => :project_id, :if => Proc.new {|project| Backlogs.configured? && project && project.active_sprint }
   menu :project_menu, :rb_releases, { :controller => :rb_releases, :action => :index }, :caption => :label_release_plural, :after => :rb_taskboards, :param => :project_id, :if => Proc.new { Backlogs.configured? }

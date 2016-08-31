@@ -264,3 +264,8 @@ en:
   backlogs_use_one_product_backlog: "Use only one product backlog"
   backlogs_use_one_product_backlog_explanation: "This disables the release backlog view on the master backlog. Usage of releases is not disabled"
   backlogs_always_allow_time_fields: "Always allow using timefields"
+  label_sprints: "Sprints"
+  field_sprint_start_date: "Sprint start date"
+  label_sprint: "Sprint"
+  backlogs_show_sprint_as_roadmap: "Show sprints as roadmap"
+  backlogs_hide_roadmap: "Hide build-in roadmap menu item"
