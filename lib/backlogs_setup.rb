@@ -32,7 +32,7 @@ module Backlogs
   def platform_support(raise_error = false)
     travis = nil # needed so versions isn't block-scoped in the timeout
     begin
-      ReliableTimout.timeout(10) { travis = YAML::load(open('https://raw.github.com/backlogs/redmine_backlogs/master/.travis.yml').read) }
+      ReliableTimout.timeout(10) { travis = YAML::load(open('https://raw.github.com/themagician1/redmine_backlogs/master/.travis.yml').read) }
     rescue
       travis = YAML::load(File.open(File.join(File.dirname(__FILE__), '..', '.travis.yml')).read)
     end

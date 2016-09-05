@@ -50,10 +50,10 @@ end
 
 
 Redmine::Plugin.register :redmine_backlogs do
-  name 'Redmine Backlogs'
-  author "friflaj,Mark Maglana,John Yani,mikoto20000,Frank Blendinger,Bo Hansen,stevel,Patrick Atamaniuk"
+  name 'Redmine Backlogs Fork'
+  author "friflaj,Mark Maglana,John Yani,mikoto20000,Frank Blendinger,Bo Hansen,stevel,Patrick Atamaniuk\nTheMagician1"
   description 'A plugin for agile teams'
-  version 'v1.0.6'
+  version 'v2.0.0'
 
   settings :default => {
                          :epic_trackers             => nil,
