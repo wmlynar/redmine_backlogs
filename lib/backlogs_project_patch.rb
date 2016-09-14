@@ -230,16 +230,15 @@ module Backlogs
       end
 
       def active_sprint
-        time = (Time.zone ? Time.zone : Time).now
+        search_date = (Time.zone ? Time.zone : Time).now.strftime('%Y-%m-%d')
         @active_sprint ||= RbSprint.where("project_id = ? and status = 'open' and not (sprint_start_date is null or effective_date is null) and ? >= sprint_start_date and ? <= effective_date",
-          self.id, time.end_of_day, time.beginning_of_day
-        ).take
+                                          self.id, search_date, search_date).take
       end
 
       def active_release
-        time = (Time.zone ? Time.zone : Time).now
+        search_date = (Time.zone ? Time.zone : Time).now.strftime('%Y-%m-%d')
         open_releases_by_date.where("#{RbRelease.table_name}.release_start_date <= ? and #{RbRelease.table_name}.release_end_date >= ?",
-                                    time.end_of_day, time.beginning_of_day).first
+                                    search_date, search_date).first
       end
 
       def open_releases_by_date
