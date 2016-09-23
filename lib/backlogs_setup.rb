@@ -125,13 +125,13 @@ module Backlogs
   def task_workflow(project)
     return false unless RbTask.tracker
 
-    roles = User.current.roles_for_project(@project)
+    roles = User.current.roles_for_project(project)
     tracker = Tracker.find(RbTask.tracker)
 
     [false, true].each{|creator|
       [false, true].each{|assignee|
         tracker.issue_statuses.each {|status|
-          status.new_statuses_allowed_to(roles, tracker, @project.workspace_id, creator, assignee).each{|s|
+          status.new_statuses_allowed_to(roles, tracker, project.workspace_id, creator, assignee).each{|s|
             return true
           }
         }
