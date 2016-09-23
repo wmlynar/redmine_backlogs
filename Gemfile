@@ -11,13 +11,13 @@ gem "icalendar"
 gem "open-uri-cached"
 gem "prawn"
 gem 'json'
+gem 'chronic'
 
 group :development do
   gem "inifile"
 end
 
 group :test do
-  gem 'chronic'
   gem 'ZenTest', "=4.5.0" # 4.6.0 has a nasty bug that breaks autotest
   gem 'autotest-rails'
   gem 'cucumber-rails', require: false
