@@ -37,8 +37,8 @@ class RbApplicationController < ApplicationController
     @settings = Backlogs.settings
 #    make a copy to workaround RuntimeError (can't modify frozen ActionController::Parameters):
     s1 = @settings.dup
-    if s1[:story_trackers].blank? || s1[:task_tracker].blank?
-      puts("check_if_plugin_is_configured: something is blank, halting. #{s1}")
+    if s1["story_trackers"].blank? || s1["task_tracker"].blank? || (s1["scaled_agile_enabled"] && (s1["epic_trackers"].blank? || s1["feature_trackers"].blank?))
+      puts("check_if_plugin_is_configured: no trackers for story or task, or if scaled agile is enabled for epic or feature, halting. --#{s1[:story_trackers]}--#{s1[:task_tracker]}-- #{s1}")
       respond_to do |format|
         format.html { render :template => "backlogs/not_configured",  :handlers => [:erb], :formats => [:html] }
         format.js { }
