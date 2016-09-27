@@ -147,8 +147,9 @@
   </select>
 
   <select class="time_entry_activity_id template" id="time_entry_activity_id_options">
+  	<%- defaultTimeEntryActivityId = TimeEntryActivity.default ? TimeEntryActivity.default.id : 0 %>
     <%- TimeEntryActivity.shared.active.each do |act| %>
-        <option value="<%= act.id %>" <%= act.id = TimeEntryActivity.default.id ? 'selected' : '' %> ><%= act.name %></option>
+        <option value="<%= act.id %>" <%= act.id = defaultTimeEntryActivityId ? 'selected' : '' %> ><%= act.name %></option>
     <%- end %>
   </select>
 
