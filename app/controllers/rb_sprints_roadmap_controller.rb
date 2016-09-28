@@ -29,7 +29,7 @@ class RbSprintsRoadmapController < RbApplicationController
   def index
     respond_to do |format|
       format.html {
-        @trackers = Tracker.where(:id => RbStory.trackers.map(&:to_i)).sorted.to_a
+        @trackers = Tracker.where(:id => RbStory.trackers(:project => @project).map(&:to_i)).sorted.to_a
         retrieve_selected_tracker_ids(@trackers, @trackers.select {|t| t.is_in_roadmap?})
         @with_subprojects = params[:with_subprojects].nil? ? Setting.display_subprojects_issues? : (params[:with_subprojects] == '1')
         project_ids = @with_subprojects ? @project.self_and_descendants.collect(&:id) : [@project.id]
@@ -149,7 +149,7 @@ class RbSprintsRoadmapController < RbApplicationController
   private
 
   def retrieve_selected_tracker_ids(selectable_trackers, default_trackers=nil)
-    if ids = Backlogs.settings[:story_trackers]
+    if ids = params[:tracker_ids]
       @selected_tracker_ids = (ids.is_a? Array) ? ids.collect { |id| id.to_i.to_s } : ids.split('/').collect { |id| id.to_i.to_s }
     else
       @selected_tracker_ids = (default_trackers || selectable_trackers).collect {|t| t.id.to_s }
