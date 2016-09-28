@@ -64,6 +64,7 @@ Redmine::Plugin.register :redmine_backlogs do
                          :story_close_status_id     => '0',
                          :taskboard_card_order      => 'story_follows_tasks',
                          :story_points              => "1,2,3,5,8",
+                         :story_points_are_integer  => 'enabled',
                          :show_burndown_in_sidebar  => 'enabled',
                          :show_project_name         => nil,
                          :scrum_stats_menu_position => 'top',

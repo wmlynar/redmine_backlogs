@@ -81,8 +81,17 @@ filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,Start
     !story.new_record? && story.status.is_closed? ? "closed" : ""
   end
 
+  def format_story_points(points, notsized='-')
+    # For reasons I have yet to uncover, activerecord will
+    # sometimes return numbers as Fixnums that lack the nil?
+    # method. Comparing to nil should be safe.
+    return notsized if points == nil || points.blank?
+    return points.to_i.to_s if Backlogs.setting[:story_points_are_integer]
+    return points.to_f.to_s
+  end
+
   def story_points_or_empty(story)
-    story.story_points.blank? ? "" : story.story_points
+    story.story_points.blank? ? "" : story.points_display('')
   end
 
   def record_id_or_empty(story)

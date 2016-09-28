@@ -37,7 +37,6 @@
 
 <% if @stories.present? %>
 <%= form_tag({}) do -%>
-  <%- sum_points = 0.0 %>
   <table class="list issues">
 	<caption><%= l(:label_related_issues) %></caption>
     <thead>
@@ -55,10 +54,8 @@
       <td class="subject"><%= story.subject %></td>
       <td class="storypoints"><%= story_points_or_empty(story) %></td>
     </tr>
-    <%
-      sum_points = sum_points + story.story_points.to_f if story.story_points
-      end %>
-    <tr><td colspan="3"></td><td><%= sum_points %></td></tr>
+    <% end %>
+    <tr><td colspan="3"></td><td><%= @sprint.sprint_points_display('') %></td></tr>
   </table>
 <% end %>
 <%= context_menu issues_context_menu_path %>

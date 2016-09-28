@@ -179,6 +179,12 @@
   </p>
 
   <p>
+    <%= label_tag("settings_story_points_are_integer", l(:backlogs_story_points_are_integer)) %>
+    <%= check_box_tag("settings[story_points_are_integer]", 'enabled',
+        Backlogs.setting[:story_points_are_integer]) %>
+  </p>
+
+  <p>
     <%= label_tag("settings_set_start_and_duedates_from_sprint", l(:backlogs_set_start_and_duedates_from_sprint)) %>
     <%= check_box_tag("settings[set_start_and_duedates_from_sprint]", 'enabled',
         Backlogs.setting[:set_start_and_duedates_from_sprint]) %>

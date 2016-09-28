@@ -165,4 +165,21 @@ class RbSprint < Version
       @issue_count = @open_issues_count + @closed_issues_count
     end
   end
+
+  def sprint_points
+    load_sprint_points
+    @sprint_points
+  end
+
+  def sprint_points_display(notsized='-')
+    format_story_points(sprint_points, notsized)
+  end
+
+  private
+  
+  def load_sprint_points
+    unless @sprint_points
+      @sprint_points = fixed_issues.where(:tracker_id => RbStory.trackers.map(&:to_i)).sum(:story_points)
+    end
+  end
 end

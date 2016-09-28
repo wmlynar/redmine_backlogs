@@ -201,11 +201,7 @@ class RbStory < RbGeneric
   end
 
   def points_display(notsized='-')
-    # For reasons I have yet to uncover, activerecord will
-    # sometimes return numbers as Fixnums that lack the nil?
-    # method. Comparing to nil should be safe.
-    return notsized if story_points == nil || story_points.blank?
-    return story_points.to_s
+    format_story_points(story_points, notsized)
   end
 
   def update_and_position!(params)

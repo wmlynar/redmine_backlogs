@@ -269,3 +269,4 @@ en:
   label_sprint: "Sprint"
   backlogs_show_sprint_as_roadmap: "Show sprints as roadmap"
   backlogs_hide_roadmap: "Hide build-in roadmap menu item"
+  backlogs_story_points_are_integer: "Show storypoints as integer number"

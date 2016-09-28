@@ -72,8 +72,8 @@ class RbTask < Issue
 
     blocks = params.delete('blocks')
 
-#if we are an impediment and have blocks, set our project_id.
-#if we have multiple blocked tasks, cross-project relations must be enabled, otherwise save-validation will fail. TODO: make this more user friendly by pre-validating here and suggesting to enable cross-project relation support in redmine base setup.
+    #if we are an impediment and have blocks, set our project_id.
+    #if we have multiple blocked tasks, cross-project relations must be enabled, otherwise save-validation will fail. TODO: make this more user friendly by pre-validating here and suggesting to enable cross-project relation support in redmine base setup.
     if is_impediment and blocks and blocks.strip != ''
       begin
         first_blocked_id = blocks.split(/\D+/)[0].to_i
