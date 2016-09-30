@@ -197,11 +197,11 @@ class RbStory < RbGeneric
 
     return self.journalized_update_attribute(:story_points, 0) if p.downcase == 's'
 
-    return self.journalized_update_attribute(:story_points, Float(p)) if Float(p) >= 0
-  end
-
-  def points_display(notsized='-')
-    format_story_points(story_points, notsized)
+    if Backlogs.setting[:story_points_are_integer]
+      return self.journalized_update_attribute(:story_points, Integer(p)) if Integer(p) >= 0
+    else
+      return self.journalized_update_attribute(:story_points, Float(p)) if Float(p) >= 0
+    end
   end
 
   def update_and_position!(params)

@@ -154,7 +154,7 @@ module BacklogsPlugin
             if Backlogs.setting[:story_points].blank?
               snippet += context[:form].text_field(:story_points, :size => 3)
             else
-              snippet += context[:form].select(:story_points, options_for_select(Backlogs.setting[:story_points].split(',').map(&:to_f), issue.story_points.try(:to_f).try(:to_s)), include_blank: true)
+              snippet += context[:form].select(:story_points, options_for_select(get_story_points_map, format_story_points(issue.story_points)), include_blank: true)
             end
             snippet += '</p>'
 
