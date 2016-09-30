@@ -1,24 +1,30 @@
-<%- if tooltip.parent_id? %>
-<b><%= I18n.t :field_parent_issue %></b>: <%=h "#{tooltip.parent.tracker.name} ##{tooltip.parent_id}: #{tooltip.parent.subject}" %><br />
-<%- end %>
-<b><%= I18n.t :field_subject %></b>: <%=h tooltip.subject %><br />
-<b><%= I18n.t :field_priority %></b>: <%=h tooltip.priority %><br />
-<b><%= I18n.t :field_tracker_id %></b>: <%=h tooltip.tracker %><br />
-<b><%= I18n.t :story_status %></b>: <%=h status_label_or_default(tooltip) %><br />
-<%- unless tooltip.category.blank? %>
-<b><%= I18n.t :field_category %></b>: <%=h tooltip.category %><br />
-<%- end %>
-<b><%= I18n.t :story_points %></b>: <%=h story_points_or_empty(tooltip) %><br />
-<b><%= I18n.t :story_estimation_hours %></b>: <%=h tooltip.estimated_hours %><br />
-<b><%= I18n.t :story_spent_time %></b>: <%= tooltip.total_spent_hours.round(2) %><br />
-<b><%= I18n.t :story_remaining_hours %></b>: <%=h remaining_hours_or_empty(tooltip) %><br />
-<b><%= I18n.t :field_assigned_to %></b>: <%=h assignee_name_or_empty(tooltip) %><br />
-<b><%= I18n.t :field_project %></b>: <%=h project_name_or_empty(tooltip) %><br />
-<b><%= I18n.t :field_release %></b>: <%=h release_or_empty(tooltip) %><br />
-<b><%= I18n.t :field_sprint %></b>: <%=h sprint_or_empty(tooltip) %><br />
-<%- unless tooltip.rbteam.blank? %>
-<b><%= I18n.t :field_team %></b>: <%= rbteam_name_or_empty(tooltip) %><br />
-<%- end %>
-<div><%= textilizable tooltip, :description, :attachments => tooltip.attachments%></div>
-
-<%=h custom_fields_or_empty(tooltip) %>
+<div class="backlog_tooltip">
+	<div class="header"><%=h "#{tooltip.tracker} ##{tooltip.id} - #{tooltip.subject}" %></div>
+	<%- if tooltip.parent_id? %>
+	<div class="parent"><%= I18n.t :field_parent_issue %>: <%=h "#{tooltip.parent.tracker.name} ##{tooltip.parent_id}: #{tooltip.parent.subject}" %></div>
+	<%- end %>
+	<div class="splitcontent">
+		<div class="splitcontentleft">
+			<%= tooltip_line_key :story_status, status_label_or_default(tooltip), 'status' %>
+			<%= tooltip_line_key :field_priority, tooltip.priority, 'priority' %>
+			<%= tooltip_line_key :field_assigned_to, assignee_name_or_empty(tooltip), 'assigned_to' %>
+			<%- unless tooltip.category.blank? %>
+			<%= tooltip_line_key :field_category, tooltip.category, 'category' %>
+			<%- end %>
+			<%= tooltip_line_key :field_sprint, sprint_or_empty(tooltip), 'sprint' %>
+			<%= tooltip_line_key :field_project, project_name_or_empty(tooltip), 'project' %>
+		</div>
+		<div class="splitcontentleft">
+			<%= tooltip_story_points_or_empty(tooltip) %>
+			<%= tooltip_line_key :story_estimation_hours, tooltip.estimated_hours, 'estimation_hours' %>
+			<%= tooltip_line_key :story_spent_time, tooltip.total_spent_hours.round(2), 'total_spent_time' %>
+			<%= tooltip_line_key :story_remaining_hours, remaining_hours_or_empty(tooltip), 'remaining_hours' %>
+			<%= tooltip_line_key :field_release, release_or_empty(tooltip), 'release' %>
+			<%- unless tooltip.rbteam.blank? %>
+			<%= tooltip_line_key :field_team, rbteam_name_or_empty(tooltip), 'team' %>
+			<%- end %>
+		</div>
+	</div>
+	<%=h tooltip_custom_fields_or_empty(tooltip) %>
+	<div><%= textilizable tooltip, :description, :attachments => tooltip.attachments%></div>
+</div>

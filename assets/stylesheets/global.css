@@ -129,3 +129,31 @@ ul.ui-sortable {
 #project_quick_jump_box{
   max-width: 300px;
 }
+
+.backlog_tooltip {
+  font-size: 1em;
+}
+
+.backlog_tooltip .header {
+  font-weight: bold;
+  font-size:1.2em;
+}
+
+.backlog_tooltip .attribute {
+  clear: left;
+}
+
+.backlog_tooltip .attribute .header {
+  font-weight: bold;
+  font-size:1.2em;
+}
+
+.backlog_tooltip .attribute .label {
+  font-weight: bold;
+  float: left;
+}
+
+.backlog_tooltip .value {
+  margin-left: .5em;
+  float: left;
+}
