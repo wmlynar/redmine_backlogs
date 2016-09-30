@@ -150,12 +150,12 @@ class RbSprint < Version
       ) #.sort {|a,b| a.closed? == b.closed? ?  a.updated_on <=> b.updated_on : (a.closed? ? 1 : -1) }
   end
 
-  #override version issue count to count only stories
+  #override version load_issue_count to count only stories
   def load_issue_counts
     unless @issue_count
       @open_issues_count = 0
       @closed_issues_count = 0
-      fixed_issues.where(:tracker_id => RbStory.trackers.map(&:to_i)).group(:status).count.each do |status, count|
+      stories.group(:status).count.each do |status, count|
         if status.is_closed?
           @closed_issues_count += count
         else
@@ -165,7 +165,28 @@ class RbSprint < Version
       @issue_count = @open_issues_count + @closed_issues_count
     end
   end
+  
+  # Returns the total progress of open or closed issues.  The returned percentage takes into account
+  # the amount of estimated time set for this version.
+  #
+  # Examples:
+  # issues_progress(true)   => returns the progress percentage for open issues.
+  # issues_progress(false)  => returns the progress percentage for closed issues.
+  #override version issue_progress to count only stories
+  def issues_progress(open)
+    @issues_progress ||= {}
+    @issues_progress[open] ||= begin
+      progress = 0
+      if issues_count > 0
+        ratio = open ? 'done_ratio' : 100
 
+        done = stories.open(open).sum("COALESCE(estimated_hours, #{estimated_average}) * #{ratio}").to_f
+        progress = done / (estimated_average * issues_count)
+      end
+      progress
+    end
+  end
+  
   def sprint_points
     load_sprint_points
     @sprint_points
@@ -179,7 +200,7 @@ class RbSprint < Version
   
   def load_sprint_points
     unless @sprint_points
-      @sprint_points = fixed_issues.where(:tracker_id => RbStory.trackers.map(&:to_i)).sum(:story_points)
+      @sprint_points = stories.sum(:story_points)
     end
   end
 end
