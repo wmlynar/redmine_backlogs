@@ -18,6 +18,7 @@
     <% end %>
     <header>
       <h3 class="version"><%= link_to_sprint sprint, :name => version_anchor(sprint) %></h3>
+      <div id=taskboard></div><%= link_to(l(:label_task_board), rb_taskboard_path(sprint)) %></div>
     </header>
     <%= render :partial => 'overview', :locals => {:version => sprint} %>
     <%= render(:partial => "wiki/content",

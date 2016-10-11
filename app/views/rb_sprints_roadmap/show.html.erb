@@ -6,7 +6,7 @@
 </div>
 
 <h2><%= @sprint.name %></h2>
-
+<div id=taskboard><%= link_to(l(:label_task_board), rb_taskboard_path(@sprint)) %></div>
 <div id="roadmap" class="<%= @sprint.css_classes %>">
 <%= render :partial => 'overview', :locals => {:version => @sprint} %>
 <%= render(:partial => "wiki/content", :locals => {:content => @sprint.wiki_page.content}) if @sprint.wiki_page %>
