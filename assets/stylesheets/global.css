@@ -130,6 +130,15 @@ ul.ui-sortable {
   max-width: 300px;
 }
 
+.splitcontent {
+    overflow: auto;
+}
+
+.splitcontentleft {
+    float: left;
+    width: 49%;
+}
+
 .backlog_tooltip {
   font-size: 1em;
 }
