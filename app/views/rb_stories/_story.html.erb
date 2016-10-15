@@ -1,8 +1,12 @@
 <li class="model story fff-wrapper <%= mark_if_closed(story) %> tracker<%= story ? story.tracker_id : '' %>" id="<%= story_html_id_or_empty(story) %>">
  <div class="fff-wrapmiddle">
    <div class="story_field fff-middle">
-     <% if !story.category.nil? && User.current.backlogs_preference[:show_category] == '1' %>
-         <span class="category"><%= story.category%></span>
+     <% category_style = story.category ? 'display: inline;' : 'display: none;' %>
+     <% if User.current.backlogs_preference[:show_category] == '1' %>
+         <div class="editable category" fieldtype="select" fieldname="category_id" style="<%= category_style%>">
+           <div class="t" style="display: inline"><%= h story.category.to_s+' - ' if story.category  %></div>
+           <div class="v"><%= story.category.id if story.category %></div>
+         </div>
      <%end%>
      <span class="editable subject" fieldname="subject" fieldlabel="<%=l(:field_subject)%>" fieldtype="textarea"><%=h story.subject %></span>
      <% if !story.assigned_to.nil?%>

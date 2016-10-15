@@ -27,6 +27,14 @@
   <option value="<%= @project.id %>"><%= @project.name %></option>
 </select>
 
+<select class="category_id helper" id="category_id_options">
+  <option value=""></option>
+	<% IssueCategory.where(project_id: @project.id).order("name ASC").each do |category| %>
+		<option value="<%= category.id%>"><%=h category.name %></option>
+	<%end%>
+</select>
+
 <div id="story_template">
   <%= render :partial => 'rb_stories/story', :object => RbStory.new %>
 </div>
+
