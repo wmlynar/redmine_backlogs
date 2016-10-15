@@ -12,9 +12,6 @@
          <% if User.current.backlogs_preference[:show_assigned_to_short] == '1' %>
              <span class = "assigned_to_full"> - <%= story.assigned_to.lastname[0]%>. <%= story.assigned_to.firstname[0]%>.</span>
          <%end%>
-         <% if User.current.backlogs_preference[:show_backlog_story_color] == '1'%>
-          <div class="assigned_to_color" style="background-color: <%= story.assigned_to.backlogs_preference[:task_color]%>; width: 20px; height: 20px;"></div>
-         <%end%>
      <%end%>
   </div>
  </div>
@@ -26,6 +23,11 @@
     <div class="t"><%= issue_link_or_empty(story) %></div>
     <div class="v"><%= id_or_empty(story) %></div>
   </div>
+
+  <% if User.current.backlogs_preference[:show_backlog_story_color] == '1' && story.assigned_to.present? %>
+    <% task_color = story.assigned_to.backlogs_preference[:task_color] %>
+    <div title="<%= story.assigned_to %>" class="assigned_to_color" style="background-color: <%= task_color %>; border-color: <%= task_color %>;"></div>
+  <%end%>
 
   <div class="project editable story_field" fieldtype="select" fieldname="project_id" fieldlabel="<%=l(:field_project_id)%>">
     <div class="t"><%= story.project %></div>
