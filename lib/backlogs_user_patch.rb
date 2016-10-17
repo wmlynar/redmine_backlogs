@@ -17,7 +17,7 @@ module Backlogs
           raise "Color format must be 6 hex digit string or empty, supplied value: #{value.inspect}" unless value == '' || value =~ /^#[0-9A-F]{6}$/i
           value.upcase!
         when :show_backlog_story_color , :show_assigned_to_full, :show_assigned_to_short, :show_category
-          value = value.to_s
+          value = '0' unless value == '1'
         else
           raise "Unsupported attribute '#{attr}'"
       end
