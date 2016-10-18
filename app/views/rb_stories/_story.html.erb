@@ -15,7 +15,7 @@
           <span class = "assigned_to_full"> - <%= story.assigned_to%></span>
          <%end%>
          <% if User.current.backlogs_preference[:show_assigned_to_short] == '1' %>
-             <span class = "assigned_to_full"> - <%= story.assigned_to.lastname[0]%>. <%= story.assigned_to.firstname[0]%>.</span>
+             <span class = "assigned_to_short"> - <%= story.assigned_to.lastname[0]%>. <%= story.assigned_to.firstname[0]%>.</span>
          <%end%>
      <%end%>
   </div>
