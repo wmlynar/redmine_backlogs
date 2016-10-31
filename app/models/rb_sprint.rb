@@ -166,6 +166,20 @@ class RbSprint < Version
     end
   end
   
+  # Returns the average estimated time of assigned issues
+  # or 1 if no issue has an estimated time
+  # Used to weight unestimated issues in progress calculation
+  def estimated_average
+    if @estimated_average.nil?
+      average = stories.average(:estimated_hours).to_f
+      if average == 0
+        average = 1
+      end
+      @estimated_average = average
+    end
+    @estimated_average
+  end
+
   # Returns the total progress of open or closed issues.  The returned percentage takes into account
   # the amount of estimated time set for this version.
   #
