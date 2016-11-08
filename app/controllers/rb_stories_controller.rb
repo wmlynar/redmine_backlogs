@@ -54,6 +54,9 @@ class RbStoriesController < RbApplicationController
 
   def update
     story = RbStory.find(params[:id])
+    if params[:view] == "taskboard"
+      params.delete(:next)
+    end
     begin
       result = story.update_and_position!(params)
     rescue => e
@@ -63,7 +66,11 @@ class RbStoriesController < RbApplicationController
 
     status = (result ? 200 : 400)
 
-    if params[:view] == "story_eb"
+    if params[:view] == "taskboard"
+      respond_to do |format|
+        format.html { render :partial => "story_tb", :collection => [story], :as => :story }
+      end
+    elsif params[:view] == "story_eb"
       respond_to do |format|
         format.html { render :partial => "story_eb", :collection => [story], :as => :story }
       end

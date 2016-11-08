@@ -50,6 +50,11 @@ RB.Taskboard = RB.Object.create({
         }, sortableOpts));
     }
 
+    // Initialize each story in the board
+    j.find('.story').each(function(index){
+      var story = RB.Factory.initialize(RB.StoryEB, this); // 'this' refers to an element with class="story"
+    });
+
     // Initialize each task in the board
     j.find('.task').each(function(index){
       var task = RB.Factory.initialize(RB.Task, this); // 'this' refers to an element with class="task"

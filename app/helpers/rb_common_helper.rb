@@ -81,6 +81,18 @@ filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,Start
     !story.new_record? && story.status.is_closed? ? "closed" : ""
   end
 
+  def mark_scrum_status(story)
+    if story.new_record?
+      return "new"
+    end
+    
+    scrumstatus = story.status.backlog(story.tracker)
+    return "todo" if scrumstatus == :new
+    return "inprogress" if scrumstatus == :in_progress
+    return "closed accepted" if scrumstatus == :success 
+    return "closed rejected" if scrumstatus == :failure 
+  end
+
   def get_story_points_map
     return Backlogs.setting[:story_points].split(',').map(&:to_i) if Backlogs.setting[:story_points_are_integer]
     return Backlogs.setting[:story_points].split(',').map(&:to_f)
