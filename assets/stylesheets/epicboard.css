@@ -20,8 +20,29 @@
   font-size: 9px;
 }
 
-#epicboard .issue .status {
-  font-style: italic;
+
+#epicboard .story.closed .status {
+    text-decoration: line-through;
+    background-color: darkred;
+}
+#epicboard .story.todo .status {
+}
+
+#epicboard .story.inprogress .status {
+    background-color: blue;
+}
+
+#epicboard .story .status{
+  -moz-border-radius:10px 10px 10px 10px;
+  -webkit-border-radius:10px 10px 10px 10px;
+  border-radius:10px 10px 10px 10px;
+  border:2px solid #FFFFFF;
+  background-color:#008800;
+  color:#FFFFFF;
+  position:absolute;
+  padding:.4em;
+  bottom:-5px;
+  right:35px;
 }
 
 #assigned_to_id_options{
