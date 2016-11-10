@@ -57,6 +57,10 @@ class RbStoriesController < RbApplicationController
     if params[:view] == "taskboard"
       params.delete(:next)
     end
+    
+    #to be able to add story specific status_id change combo, the fieldname also contains the story-id
+    params[:status_id] = params.delete("status_id_story_#{params[:id]}") if params.include?("status_id_story_#{params[:id]}")
+
     begin
       result = story.update_and_position!(params)
     rescue => e

@@ -23,7 +23,7 @@
     </div>
   <%- end %>
   <div class="status story_field status<%= status_id_or_default(story)%>"><%= status_label_or_default(story) %></div>
-  <div class="status_id editable story_field" style="display: none;" fieldtype="select" fieldname="status_id" fieldlabel="<%=l(:story_status)%>">
+  <div class="status_id editable story_field" style="display: none;" fieldtype="select" fieldname="status_id_<%= story_html_id_or_empty(story) %>" fieldlabel="<%=l(:story_status)%>">
     <div class="t"><%= status_label_or_default(story) %></div>
     <div class="v"><%= status_id_or_default(story) %></div>
   </div>
@@ -45,5 +45,13 @@
     <div class="tracker_id"><%= tracker_id_or_empty(story) %></div>
     <div class="story_points"><%= story_points_or_empty(story) %></div>
     <%= render :partial => "backlogs/model_errors", :object => story.errors %>
+    <div class="helper">
+	  <select class="status_id helper" id="status_id_<%= story_html_id_or_empty(story) %>_options">
+	    <option value="<%= story.status.id %>" class="<%= (story.status.is_closed? ?  l(:label_closed_issues) + ' ' : "") %>"><%= h story.status.name %></option>
+	    <%- IssueStatus.new_statuses_allowed(story.status, @roles, story.tracker).each do |status| %>
+	    <option value="<%= status.id %>" class="<%= (status.is_closed? ?  l(:label_closed_issues) + ' ' : "") %>"><%= h status.name %></option>
+	    <%- end %>
+	  </select>
+	</div>
   </div>		  
 </div>
