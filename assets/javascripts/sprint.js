@@ -53,7 +53,9 @@ RB.Sprint = RB.Object.create(RB.Model, RB.EditableInplace, {
   },
 
   afterCreate: function(data, textStatus, xhr){
-    this.getBacklog().data('this').drawMenu();
+    var backlog = this.getBacklog().data('this');
+    backlog.drawMenu();
+    backlog.enableNewSprintAsDropTarget();
   },
 
   afterUpdate: function(data, textStatus, xhr){

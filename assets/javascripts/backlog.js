@@ -134,7 +134,22 @@ RB.Backlog = RB.Object.create({
       }
     });
   },
-  
+
+  enableNewSprintAsDropTarget: function() {
+    if (!this.isSprintBacklog()) { return; }
+
+    var sprintIdAttr = this.getSprint().attr('id'); // 'sprint_123'
+    var sprintId = sprintIdAttr.split('_').pop();
+
+    // Put new sprint id into this array of valid drop targets
+    RB.constants.project_versions[RB.constants.project_id].push(sprintId);
+
+    // Append sprint id to the story container's id end, because it is needed to be a valid DnD target
+    var storyContainer = this.getList();
+    var storyContainerIdPrefix = storyContainer.attr('id'); // 'stories-for-'
+    storyContainer.attr('id', storyContainerIdPrefix + sprintId); // 'stories-for-123'
+  },
+
   dragComplete: function(event, ui) {
     // jQuery triggers dragComplete of source and target. 
     // Thus we have to check here. Otherwise, the story
@@ -210,7 +225,7 @@ RB.Backlog = RB.Object.create({
     validDrop = validDrop && RB.constants.project_versions[storyProject];
     validDrop = validDrop && (RB.$.inArray(targetSprint, RB.constants.project_versions[storyProject]) >= 0);
 
-    if (RB.constants.project_versions[storyProject] && RB.$.inArray(targetSprint, RB.constants.project_versions[storyProject]) >= 0) { return; }
+    if (validDrop) { return; }
 
     ui.item.removeData('dragging');
   },
