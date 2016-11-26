@@ -5,7 +5,12 @@
 <%= call_hook(:view_versions_show_contextual, { :version => @sprint, :project => @project }) %>
 </div>
 
-<h2><%= @sprint.name %></h2>
+<h2 class="version">
+	<%= @sprint.name %>
+	<%- if @sprint.story_points? %>
+	<div class>(<%= format_story_points(@sprint.story_points) %><%= l(:label_points_short)%>)</span>
+	<%- end %>
+</h2>
 <div id=taskboard><%= link_to(l(:label_task_board), rb_taskboard_path(@sprint)) %></div>
 <div id="roadmap" class="<%= @sprint.css_classes %>">
 <%= render :partial => 'overview', :locals => {:version => @sprint} %>

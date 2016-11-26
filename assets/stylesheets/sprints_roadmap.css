@@ -1,3 +1,16 @@
 div#roadmap .sprint-issues {
     width: 70%;
 }
+
+div#roadmap .version{
+	overflow: auto;
+}
+
+div#roadmap .version .story_points {
+	float: left;
+	margin-left: 4px;
+}
+
+div#roadmap .version .sprint-title {
+	float: left;
+}
