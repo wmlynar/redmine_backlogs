@@ -35,7 +35,9 @@
   <%= stylesheet_link_tag 'jquery/jquery.multiselect.css', :plugin => 'redmine_backlogs' %>
   <%= stylesheet_link_tag 'master_backlog.css', :plugin => 'redmine_backlogs', :media => 'print,screen' %>
   <%= stylesheet_link_tag 'master_backlog_print.css', :plugin => 'redmine_backlogs', :media => 'print' %>
-  <script type="text/javascript">RB.$(document).ready(function() { RB.$("#livefilter_controll").focus(); });</script>
+  <%= stylesheet_link_tag 'backlog_story_assigned_to_color.css', :plugin => 'redmine_backlogs' if User.current.backlogs_preference[:show_backlog_story_color] == '1'%>
+  <%= stylesheet_link_tag 'backlog_story_category.css', :plugin=> 'redmine_backlogs' if User.current.backlogs_preference[:show_category] == '1' %>
+    <script type="text/javascript">RB.$(document).ready(function() { RB.$("#livefilter_controll").focus(); });</script>
   <!--[if IE]>
   <script type="text/javascript">
     RB.$(document).ready(function() {

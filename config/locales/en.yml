@@ -122,6 +122,10 @@ en:
   field_total_spent_hours: "Total Spent Hours"
   field_tracker_id: "Tracker ID"
   field_velocity_based_estimate: "Velocity based estimate"
+  field_show_backlog_story_color : "Show assigned to color in backlogs"
+  field_show_assigned_to_full : "Show assigned to full name in backlogs"
+  field_show_assigned_to_short : "Show assigned to initials in backlogs"
+  field_show_category : "Show issue category in backlogs"
   label_all_tasks: "All tasks"
   label_back_to_project: "Back to project page"
   label_backlogs: Backlogs

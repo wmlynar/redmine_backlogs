@@ -1,8 +1,28 @@
 <li class="model story fff-wrapper <%= mark_if_closed(story) %> tracker<%= story ? story.tracker_id : '' %>" id="<%= story_html_id_or_empty(story) %>">
  <div class="fff-wrapmiddle">
    <div class="story_field fff-middle">
+     <% show_category = User.current.backlogs_preference[:show_category] == '1' %>
+     <% if show_category %>
+         <% category_style = story.category ? 'display: inline;' : 'display: none;' %>
+         <div style="display: inline; white-space: nowrap;">
+         <div class="editable category" fieldtype="select" fieldname="category_id" style="<%= category_style %>">
+           <div class="t" style="display: inline"><%= h story.category.to_s+' - ' if story.category %></div>
+           <div class="v"><%= story.category.id if story.category %></div>
+         </div>
+     <%end%>
      <span class="editable subject" fieldname="subject" fieldlabel="<%=l(:field_subject)%>" fieldtype="textarea"><%=h story.subject %></span>
-     <span class="story_field">(<%= story.estimated_hours.to_f %> est h, <%= story.priority.name %> )</span>
+     <% if show_category %>
+          </div>
+      <% end %>
+     <span class="story_field">(<%= story.estimated_hours.to_f %> est h, <%= story.priority.name %>)</span>
+     <% if story.assigned_to %>
+         <% if User.current.backlogs_preference[:show_assigned_to_full] == '1' %>
+          <span class = "assigned_to_full"> - <%= story.assigned_to%></span>
+         <%end%>
+         <% if User.current.backlogs_preference[:show_assigned_to_short] == '1' %>
+             <span class = "assigned_to_short"> - <%= story.assigned_to.lastname[0]%>. <%= story.assigned_to.firstname[0]%>.</span>
+         <%end%>
+     <%end%>
   </div>
  </div>
  <div class="fff-left">
@@ -13,6 +33,11 @@
     <div class="t"><%= issue_link_or_empty(story) %></div>
     <div class="v"><%= id_or_empty(story) %></div>
   </div>
+
+  <% if User.current.backlogs_preference[:show_backlog_story_color] == '1' && story.assigned_to.present? %>
+    <% task_color = story.assigned_to.backlogs_preference[:task_color] %>
+    <div title="<%= story.assigned_to %>" class="assigned_to_color" style="background-color: <%= task_color %>; border-color: <%= task_color %>;"></div>
+  <%end%>
 
   <div class="project editable story_field" fieldtype="select" fieldname="project_id" fieldlabel="<%=l(:field_project_id)%>">
     <div class="t"><%= story.project %></div>
