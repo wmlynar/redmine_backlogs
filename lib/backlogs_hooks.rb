@@ -174,7 +174,7 @@ module BacklogsPlugin
               snippet += '</p></div>'
           end
 
-          if issue.is_story? && !Backlogs.settings[:always_allow_time_fields]
+          if issue.is_story? && !Backlogs.settings["always_allow_time_fields"]
             if issue.descendants.length != 0 && !issue.new_record?
               snippet += <<-generatedscript
 
