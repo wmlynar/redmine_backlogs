@@ -510,6 +510,7 @@ ul li { vertical-align: bottom; } /* close IE7 gap between list items */
 #backlogs_container .header .editing .release_start_date.editor,
 #backlogs_container .header .editing .effective_date.editor,
 #backlogs_container .header .editing .sprint_start_date.editor,
+#backlogs_container .header .editing .story_points.editor,
 #backlogs_container .header .editing .name.editor{
   float: left;
   position: relative;
@@ -517,6 +518,7 @@ ul li { vertical-align: bottom; } /* close IE7 gap between list items */
   padding:0;
   margin-right: 4px;
 }
+#backlogs_container .header .editing .story_points.editor,
 #backlogs_container .header .editing .name.editor{
   height:23px;
   line-height:15px;
@@ -723,6 +725,11 @@ ul li { vertical-align: bottom; } /* close IE7 gap between list items */
 	text-align: right;
 	width: 40px;
 	font-style: italic;
+}
+
+#backlogs_container .sprint .story_points .points,
+#backlogs_container .sprint .story_points .label {
+	display: inline
 }
 
 /* datepicker bugfix: hide until it opens itself */
