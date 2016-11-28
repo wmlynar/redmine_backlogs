@@ -1,3 +1,4 @@
+<div id="sprint">
 <div class="contextual">
 <%= link_to(l(:button_edit), edit_rb_sprint_path(@sprint), :class => 'icon icon-edit') if User.current.allowed_to?(:manage_versions, @sprint.project) %>
 <%= link_to_if_authorized(l(:button_edit_associated_wikipage, :page_title => @sprint.wiki_page_title), {:controller => 'wiki', :action => 'edit', :project_id => @sprint.project, :id => Wiki.titleize(@sprint.wiki_page_title)}, :class => 'icon icon-edit') unless @sprint.wiki_page_title.blank? || @sprint.project.wiki.nil? %>
@@ -5,8 +6,13 @@
 <%= call_hook(:view_versions_show_contextual, { :version => @sprint, :project => @project }) %>
 </div>
 
-<h2><%= @sprint.name %></h2>
-<div id=taskboard><%= link_to(l(:label_task_board), rb_taskboard_path(@sprint)) %></div>
+<h2 class="version">
+	<div class="sprint-title"><%= @sprint.name %></div>
+	<%- if @sprint.story_points? %>
+		<div class="story_points">(<%= format_story_points(@sprint.story_points) %><%= h l(:label_points_short) %>)</span>
+	<%- end %>
+</h2>
+<div id=taskboard class="taskboard"><%= link_to(l(:label_task_board), rb_taskboard_path(@sprint)) %></div>
 <div id="roadmap" class="<%= @sprint.css_classes %>">
 <%= render :partial => 'overview', :locals => {:version => @sprint} %>
 <%= render(:partial => "wiki/content", :locals => {:content => @sprint.wiki_page.content}) if @sprint.wiki_page %>
@@ -61,7 +67,8 @@
 <%= context_menu issues_context_menu_path %>
 <% end %>
 </div>
-
 <%= call_hook :view_versions_show_bottom, :version => @sprint %>
 
 <% html_title @sprint.name %>
+
+</div>

@@ -40,8 +40,13 @@ module Backlogs
         return nil unless self.sprint_start_date && self.effective_date
         (self.sprint_start_date - 1 .. self.effective_date).to_a.select{|d| Backlogs.setting[:include_sat_and_sun] || ![0,6].include?(d.wday)}
       end
+
       def has_burndown?
         return (self.days || []).size != 0
+      end
+
+      def assignable_releases
+        RbRelease.open
       end
 
     end

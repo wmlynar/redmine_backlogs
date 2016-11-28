@@ -62,15 +62,16 @@
 }
 
 .header .fff-middle{
-  margin-right:228px;
+  margin-right: 321px;
   margin-left: 29px;
+  overflow: hidden;
 }
 .header .fff-left{
   width: 29px;
 }
 .header .fff-right{
-  width: 228px;
-  margin-left: -228px;
+  width: 320px;
+  margin-left: -320px;
 }
 /* end fixed-fluid-fixed layout */
 
@@ -119,7 +120,6 @@ ul li { vertical-align: bottom; } /* close IE7 gap between list items */
   background: -moz-linear-gradient(top, #EEE, #CCC);
   filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,StartColorStr=#EEEEEE,EndColorStr=#CCCCCC);
   position:relative;
-  white-space: nowrap;
   height:30px;
   border-bottom: 1px solid #AAAAAA
 }
@@ -193,6 +193,7 @@ ul li { vertical-align: bottom; } /* close IE7 gap between list items */
   font-size:12px;
   padding:6px;
   white-space: nowrap;
+  line-height: normal;
 }
 #backlogs_container .header .menu .item:hover > a{
   text-decoration:none;
@@ -285,7 +286,6 @@ ul li { vertical-align: bottom; } /* close IE7 gap between list items */
 .header .velocity,
 .header .date{
   height:28px;
-  line-height:28px;
   white-space: nowrap;
   font-size:12px;
 }
@@ -296,11 +296,13 @@ ul li { vertical-align: bottom; } /* close IE7 gap between list items */
   font-size: 15px;
   font-weight: bold;
   overflow: hidden;
+  float: left;
+  line-height: 28px;
 }
 
 /* backlog header*/
 #backlogs_container .header .date {
-  width: 80px;
+  width: 75px;
   margin-left: 6px;
   float: left;
 }
@@ -308,6 +310,13 @@ ul li { vertical-align: bottom; } /* close IE7 gap between list items */
 #backlogs_container .header .velocity {
   text-align: right;
   padding-right: 2px;
+  float: right;
+  width: 26px;
+}
+
+#backlogs_container .header .effective_date,
+#backlogs_container .header .sprint_start_date {
+  float: right;
 }
 
 /* backlog header invisibles */
@@ -501,6 +510,7 @@ ul li { vertical-align: bottom; } /* close IE7 gap between list items */
 #backlogs_container .header .editing .release_start_date.editor,
 #backlogs_container .header .editing .effective_date.editor,
 #backlogs_container .header .editing .sprint_start_date.editor,
+#backlogs_container .header .editing .story_points.editor,
 #backlogs_container .header .editing .name.editor{
   float: left;
   position: relative;
@@ -508,6 +518,7 @@ ul li { vertical-align: bottom; } /* close IE7 gap between list items */
   padding:0;
   margin-right: 4px;
 }
+#backlogs_container .header .editing .story_points.editor,
 #backlogs_container .header .editing .name.editor{
   height:23px;
   line-height:15px;
@@ -695,6 +706,30 @@ ul li { vertical-align: bottom; } /* close IE7 gap between list items */
 }
 #backlogs_container .stories .story.editing .story_field {
   display: none;
+}
+
+#backlogs_container .header .sprint,
+.header .velocity {
+	line-height: 31px
+}
+
+#backlogs_container .sprint .sprint_est_h {
+	float: left;
+	margin-left: 4px;
+	text-align: right;
+	width: 85px;
+}
+
+#backlogs_container .sprint .story_points {
+	float: left;
+	text-align: right;
+	width: 40px;
+	font-style: italic;
+}
+
+#backlogs_container .sprint .story_points .points,
+#backlogs_container .sprint .story_points .label {
+	display: inline
 }
 
 /* datepicker bugfix: hide until it opens itself */

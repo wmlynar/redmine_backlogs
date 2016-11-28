@@ -1,3 +1,16 @@
 div#roadmap .sprint-issues {
     width: 70%;
 }
+
+div#roadmap .version .story_points,
+div#sprint .version .story_points {
+	display: inline;
+	margin-left: 4px;
+    font-size: 12px;
+    font-style: italic;
+}
+
+div#roadmap .version .sprint-title,
+div#sprint .version .sprint-title {
+	display: inline;
+}
