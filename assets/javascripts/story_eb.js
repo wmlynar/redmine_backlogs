@@ -28,9 +28,9 @@ RB.StoryEB = RB.Object.create(RB.Issue, {
       this.$.css('background', '-moz-linear-gradient(top, '+c_light+', '+c+')');
       this.$.css('filter', 'progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,StartColorStr='+c_light+',EndColorStr='+c+')');
     } else {
-      this.$.parents('.ui-dialog').css('background', '-webkit-gradient(linear, left top, left bottom, from(#fee), to(#fd2))');
-      this.$.parents('.ui-dialog').css('background', '-moz-linear-gradient(top, #fee, #fd2)');
-      this.$.parents('.ui-dialog').css('filter', 'progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,StartColorStr=#ffeeee,EndColorStr=#ffdd22)');
+      this.$.css('background', '-webkit-gradient(linear, left top, left bottom, from(#fee), to(#fd2))');
+      this.$.css('background', '-moz-linear-gradient(top, #fee, #fd2)');
+      this.$.css('filter', 'progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,StartColorStr=#ffeeee,EndColorStr=#ffdd22)');
     }
   },
   
