@@ -23,7 +23,7 @@
 		<div class="story_points">(<%= format_story_points(sprint.story_points) %><%= h l(:label_points_short) %>)</span>
 		<%- end %>
       </h3>
-      <div id=taskboard><%= link_to(l(:label_task_board), rb_taskboard_path(sprint)) %></div>
+      <div id=taskboard class="taskboard"><%= link_to(l(:label_task_board), rb_taskboard_path(sprint)) %></div>
     </header>
     <%= render :partial => 'overview', :locals => {:version => sprint} %>
     <%= render(:partial => "wiki/content",
