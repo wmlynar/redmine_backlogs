@@ -24,6 +24,11 @@ module Backlogs
           else
             flash[:notice] = "Invalid task color code #{color}"
           end
+          hash = (params[:backlogs] || {})
+          User.current.backlogs_preference[:show_backlog_story_color] = hash[:show_backlog_story_color]
+          User.current.backlogs_preference[:show_assigned_to_full] = hash[:show_assigned_to_full]
+          User.current.backlogs_preference[:show_assigned_to_short] = hash[:show_assigned_to_short]
+          User.current.backlogs_preference[:show_category] =hash[:show_category]
         end
       end
     end

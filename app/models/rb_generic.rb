@@ -227,6 +227,10 @@ class RbGeneric < Issue
     self.fixed_version.becomes(RbSprint) if self.fixed_version
   end
 
+  def points_display(notsized='-')
+    format_story_points(story_points, notsized)
+  end
+
   #Alias to get generics into columns
   #def name
   #  subject

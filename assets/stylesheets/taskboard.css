@@ -111,7 +111,6 @@ See RB.Taskboard.initialize()
   background: -webkit-gradient(linear, left top, left bottom, from(#FEE), to(#FD2));
   background: -moz-linear-gradient(top, #FEE, #FD2);
   filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,StartColorStr=#FFEEEE,EndColorStr=#FFDD22);
-  background-color:#F8F6A5;
   border:none;
   display:block;
   float:left;
@@ -158,7 +157,19 @@ See RB.Taskboard.initialize()
 .story.closed .subject{
   text-decoration:line-through;
 }
-.story .story_points.editable{
+
+.story.closed .status {
+    text-decoration: line-through;
+    background-color: darkred;
+}
+.story.todo .status {
+}
+
+.story.inprogress .status {
+    background-color: blue;
+}
+
+.story .story_points_text{
   -moz-border-radius:15px 15px 15px 15px;
   -webkit-border-radius:15px 15px 15px 15px;
   border-radius:15px 15px 15px 15px;
@@ -170,7 +181,21 @@ See RB.Taskboard.initialize()
   bottom:-5px;
   right:-5px;
 }
-.story .story_points.editable:empty{
+
+.story .status{
+  -moz-border-radius:10px 10px 10px 10px;
+  -webkit-border-radius:10px 10px 10px 10px;
+  border-radius:10px 10px 10px 10px;
+  border:2px solid #FFFFFF;
+  background-color:#008800;
+  color:#FFFFFF;
+  position:absolute;
+  padding:.4em;
+  bottom:-5px;
+  right:35px;
+}
+
+.story .story_points_text:empty{
   display:none;
 }
 

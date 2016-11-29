@@ -1,5 +1,5 @@
 /**************************************
-  TASK
+  STORY_EB
 ***************************************/
 
 RB.StoryEB = RB.Object.create(RB.Issue, {
@@ -27,6 +27,10 @@ RB.StoryEB = RB.Object.create(RB.Issue, {
       this.$.css('background', '-webkit-gradient(linear, left top, left bottom, from('+c_light+'), to('+c+'))');
       this.$.css('background', '-moz-linear-gradient(top, '+c_light+', '+c+')');
       this.$.css('filter', 'progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,StartColorStr='+c_light+',EndColorStr='+c+')');
+    } else {
+      this.$.css('background', '-webkit-gradient(linear, left top, left bottom, from(#fee), to(#fd2))');
+      this.$.css('background', '-moz-linear-gradient(top, #fee, #fd2)');
+      this.$.css('filter', 'progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,StartColorStr=#ffeeee,EndColorStr=#ffdd22)');
     }
   },
   
@@ -38,9 +42,9 @@ RB.StoryEB = RB.Object.create(RB.Issue, {
       if(dialog_bg){
         dialog.parents('.ui-dialog').css('background', dialog_bg);      
       } else {
-        dialog.parents('.ui-dialog').css('background', '-webkit-gradient(linear, left top, left bottom, from(#eee), to(#aaa))');
-        dialog.parents('.ui-dialog').css('background', '-moz-linear-gradient(top, #eee, #aaa)');
-        dialog.parents('.ui-dialog').css('filter', 'progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,StartColorStr=#eeeeee,EndColorStr=#aaaaaa)');
+        dialog.parents('.ui-dialog').css('background', '-webkit-gradient(linear, left top, left bottom, from(#fee), to(#fd2))');
+        dialog.parents('.ui-dialog').css('background', '-moz-linear-gradient(top, #fee, #fd2)');
+        dialog.parents('.ui-dialog').css('filter', 'progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,StartColorStr=#ffeeee,EndColorStr=#ffdd22)');
       }
     } else {
       dialog.parents('.ui-dialog').css('background-color', dialog_bgcolor);
@@ -64,16 +68,21 @@ RB.StoryEB = RB.Object.create(RB.Issue, {
     var url;
     var nxt = this.$.next();
     var project = j.parents('tr').find('.story .project .v');
-    var parentId = j.parents('tr').first().attr('_rb_parent_id');
+    var view = j.attr('_view');
 
     var vtype = j.parents('td').first().attr('_rb_type');
     var vid = j.parents('td').first().attr('_rb_sprint_id');
 
     var data = j.find('.editor').serialize() +
-               "&view=story_eb"+
-               "&parent_issue_id=" + parentId +
+               "&view="+view+
                "&next=" + (nxt.length==1 ? nxt.data('this').getID() : '') +
                (this.isNew() ? "" : "&id=" + j.children('.id').text());
+
+    if (view != "taskboard")
+    {
+	    var parentId = j.parents('tr').first().attr('_rb_parent_id');
+        data += "&parent_issue_id=" + parentId;
+	}
     switch (vtype) {
       case 'sprint':
         data += '&release_id=';
@@ -82,13 +91,13 @@ RB.StoryEB = RB.Object.create(RB.Issue, {
       case 'release':
         data += '&release_id='+vid;
         data += '&fixed_version_id=';
-        break
+        break;
       case 'productbacklog':
         data += '&release_id=';
         data += '&fixed_version_id=';
-        break
+        break;
       default:
-        break
+        break;
     }
 
     if( this.isNew() ){

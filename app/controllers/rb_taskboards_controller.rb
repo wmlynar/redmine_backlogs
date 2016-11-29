@@ -45,6 +45,8 @@ class RbTaskboardsController < RbApplicationController
                             .order("updated_on DESC").first
     end
 
+    @roles = User.current.admin ? Role.all : User.current.roles_for_project(@project)
+
     respond_to do |format|
       format.html { render :layout => "rb" }
     end

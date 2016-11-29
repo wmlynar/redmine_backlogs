@@ -15,6 +15,10 @@ module RbSprintsRoadmapHelper
     "/rb/sprints/#{project.identifier}/new"
   end
 
+  def rb_taskboard_path(sprint)
+    "/rb/taskboards/#{sprint.id}"
+  end
+
   def link_to_sprint(sprint, options = {})
     return 'no sprint' unless sprint && sprint.is_a?(RbSprint)
     options = {:title => format_date(sprint.effective_date)}.merge(options)

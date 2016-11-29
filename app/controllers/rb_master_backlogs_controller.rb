@@ -100,6 +100,9 @@ class RbMasterBacklogsController < RbApplicationController
              } if @sprint && @sprint.sprint_start_date && User.current.allowed_to?(:reset_sprint, @project)
     links << {:label => l(:label_version),
               :url => url_for(:controller => 'versions', :action => 'show', :id => @sprint, :target => '_blank', :only_path => true)
+             } if @sprint && !Backlogs.setting[:hide_roadmap]
+    links << {:label => l(:label_sprint),
+              :url => url_for(:controller => 'rb_sprints_roadmap', :action => 'show', :sprint_id => @sprint, :target => '_blank', :only_path => true)
              } if @sprint
     links << {:label => l(:label_release),
               :url => url_for(:controller => 'rb_releases', :action => 'show', :release_id => @release, :target => '_blank', :only_path => true)

@@ -152,9 +152,9 @@ module BacklogsPlugin
             snippet += '<p>'
             #snippet += context[:form].label(:story_points)
             if Backlogs.setting[:story_points].blank?
-              snippet += context[:form].text_field(:story_points, :size => 3)
+              snippet += context[:form].text_field(:story_points, :size => 3, :value => format_story_points(issue.story_points))
             else
-              snippet += context[:form].select(:story_points, options_for_select(Backlogs.setting[:story_points].split(',').map(&:to_f), issue.story_points.try(:to_f).try(:to_s)), include_blank: true)
+              snippet += context[:form].select(:story_points, options_for_select(get_story_points_map, format_story_points(issue.story_points)), include_blank: true)
             end
             snippet += '</p>'
 
@@ -174,7 +174,7 @@ module BacklogsPlugin
               snippet += '</p></div>'
           end
 
-          if issue.is_story? && !Backlogs.settings[:always_allow_time_fields]
+          if issue.is_story? && !Backlogs.settings["always_allow_time_fields"]
             if issue.descendants.length != 0 && !issue.new_record?
               snippet += <<-generatedscript
 
@@ -320,6 +320,30 @@ module BacklogsPlugin
       end
 
       def view_my_account(context={ })
+        color_hash = {
+            :value => '1'
+        }
+
+        color_hash[:checked] = "checked" if context[:user].backlogs_preference[:show_backlog_story_color] == '1'
+
+        full_name_hash = {
+            :value => '1'
+        }
+
+        full_name_hash[:checked] = "checked" if context[:user].backlogs_preference[:show_assigned_to_full] == '1'
+
+        short_name_hash = {
+            :value => '1'
+        }
+
+        short_name_hash[:checked] = "checked" if context[:user].backlogs_preference[:show_assigned_to_short] == '1'
+
+        category_hash = {
+            :value => '1'
+        }
+
+        category_hash[:checked] = "checked" if context[:user].backlogs_preference[:show_category] == '1'
+
         begin
           return %{
             </fieldset>
@@ -329,7 +353,24 @@ module BacklogsPlugin
               #{label :backlogs, l(:field_task_color)}
               #{text_field :backlogs, :task_color, :value => context[:user].backlogs_preference[:task_color]}
             </p>
+            <p>
+              #{label :backlogs, l(:field_show_backlog_story_color)}
+              #{check_box :backlogs, :show_backlog_story_color, color_hash}
+            </p>
+            <p>
+            #{label :backlogs, l(:field_show_assigned_to_full)}
+            #{check_box :backlogs, :show_assigned_to_full, full_name_hash}
+            </p>
+            <p>
+              #{label :backlogs, l(:field_show_assigned_to_short)}
+              #{check_box :backlogs, :show_assigned_to_short, short_name_hash}
+            </p>
+            <p>
+              #{label :backlogs, l(:field_show_category)}
+              #{check_box :backlogs, :show_category, category_hash}
+            </p>
           }
+
         rescue => e
           exception(context, e)
           return ''

@@ -6,6 +6,8 @@ class RbSprint < Version
 
   validate :start_and_end_dates
 
+  belongs_to :release, :class_name => 'RbRelease', :foreign_key => 'release_id'
+
   def start_and_end_dates
     errors.add(:base, l(:error_sprint_end_before_start) ) if self.effective_date && self.sprint_start_date && self.sprint_start_date >= self.effective_date
   end
@@ -26,7 +28,9 @@ class RbSprint < Version
   scope :by_date, -> { order(by_date_clause) }
   scope :in_project, lambda {|project| where(:project_id => project) }
 
-  safe_attributes 'sprint_start_date'
+  safe_attributes 'sprint_start_date',
+      'story_points',
+      'release_id'
   
   #depending on sharing mode
   #return array of projects where this sprint is visible
@@ -150,12 +154,12 @@ class RbSprint < Version
       ) #.sort {|a,b| a.closed? == b.closed? ?  a.updated_on <=> b.updated_on : (a.closed? ? 1 : -1) }
   end
 
-  #override version issue count to count only stories
+  #override version load_issue_count to count only stories
   def load_issue_counts
     unless @issue_count
       @open_issues_count = 0
       @closed_issues_count = 0
-      fixed_issues.where(:tracker_id => RbStory.trackers.map(&:to_i)).group(:status).count.each do |status, count|
+      stories.group(:status).count.each do |status, count|
         if status.is_closed?
           @closed_issues_count += count
         else
@@ -165,7 +169,42 @@ class RbSprint < Version
       @issue_count = @open_issues_count + @closed_issues_count
     end
   end
+  
+  # Returns the average estimated time of assigned issues
+  # or 1 if no issue has an estimated time
+  # Used to weight unestimated issues in progress calculation
+  def estimated_average
+    if @estimated_average.nil?
+      average = stories.average(:estimated_hours).to_f
+      if average == 0
+        average = 1
+      end
+      @estimated_average = average
+    end
+    @estimated_average
+  end
 
+  # Returns the total progress of open or closed issues.  The returned percentage takes into account
+  # the amount of estimated time set for this version.
+  #
+  # Examples:
+  # issues_progress(true)   => returns the progress percentage for open issues.
+  # issues_progress(false)  => returns the progress percentage for closed issues.
+  #override version issue_progress to count only stories
+  def issues_progress(open)
+    @issues_progress ||= {}
+    @issues_progress[open] ||= begin
+      progress = 0
+      if issues_count > 0
+        ratio = open ? 'done_ratio' : 100
+
+        done = stories.open(open).sum("COALESCE(estimated_hours, #{estimated_average}) * #{ratio}").to_f
+        progress = done / (estimated_average * issues_count)
+      end
+      progress
+    end
+  end
+  
   def sprint_points
     load_sprint_points
     @sprint_points
@@ -175,11 +214,16 @@ class RbSprint < Version
     format_story_points(sprint_points, notsized)
   end
 
+  def release_id=(rid)
+    self.release = nil
+    write_attribute(:release_id, rid)
+  end
+
   private
   
   def load_sprint_points
     unless @sprint_points
-      @sprint_points = fixed_issues.where(:tracker_id => RbStory.trackers.map(&:to_i)).sum(:story_points)
+      @sprint_points = stories.sum(:story_points)
     end
   end
 end

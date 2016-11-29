@@ -1,5 +1,7 @@
+
 <!-- rb_include_scripts -->
 <%= stylesheet_link_tag 'jquery/jquery.jqplot.min.css', :plugin => 'redmine_backlogs' %>
+<%= stylesheet_link_tag 'sprints_roadmap.css', :plugin => 'redmine_backlogs' %>
 <%= if (! ((Redmine::VERSION::MAJOR == 2) && (Redmine::VERSION::MINOR >= 1)) ||
           (Redmine::VERSION::MAJOR > 2)
        ) || (controller.is_a? RbApplicationController)

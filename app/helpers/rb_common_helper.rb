@@ -81,6 +81,23 @@ filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,Start
     !story.new_record? && story.status.is_closed? ? "closed" : ""
   end
 
+  def mark_scrum_status(story)
+    if story.new_record?
+      return "new"
+    end
+    
+    scrumstatus = story.status.backlog(story.tracker)
+    return "todo" if scrumstatus == :new
+    return "inprogress" if scrumstatus == :in_progress
+    return "closed accepted" if scrumstatus == :success 
+    return "closed rejected" if scrumstatus == :failure 
+  end
+
+  def get_story_points_map
+    return Backlogs.setting[:story_points].split(',').map(&:to_i) if Backlogs.setting[:story_points_are_integer]
+    return Backlogs.setting[:story_points].split(',').map(&:to_f)
+  end
+
   def format_story_points(points, notsized='-')
     # For reasons I have yet to uncover, activerecord will
     # sometimes return numbers as Fixnums that lack the nil?
@@ -164,15 +181,37 @@ filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,Start
     story.new_record? ? "" : story.project.name
   end
 
-  def custom_fields_or_empty(story)
-    return '' if story.new_record?
-    res = ''
-    story.custom_field_values.each{|value|
+  # <div class="status attribute"><div class="label"><%= I18n.t :story_status %>:</div><div class="value"><%=h status_label_or_default(tooltip) %></div></div>
+  def tooltip_line(label, value, hclass)
+    ('<div class="' + hclass.to_s + ' attribute"><div class="label">' + label.to_s + ':</div><div class="value">' + value.to_s + '</div></div>').html_safe
+  end
+
+  def tooltip_line_key(labelkey, value, hclass)
+    tooltip_line I18n.t(labelkey), value, hclass
+  end
+
+  def tooltip_custom_fields_or_empty(tooltip)
+    return '' if tooltip.new_record?
+    values = tooltip.visible_custom_field_values
+    return '' if values.empty?
+    half = (values.size / 2.0).ceil
+    res = '<div class="splitcontent"><div class="splitcontentleft">'
+    values.each{|value, i|
       if value.value.present?
-        res += "<b>#{h(value.custom_field.name)}</b>: #{simple_format_without_paragraph(h(show_value(value)))}<br>"
+        res += tooltip_line(h(value.custom_field.name), simple_format_without_paragraph(h(show_value(value))), 'custom')
+        #res += "<b>#{h(value.custom_field.name)}</b>: #{simple_format_without_paragraph(h(show_value(value)))}<br>"
+      end
+      if i == half
+        res += '</div></div><div class="splitcontent"><div class="splitcontentleft">'
       end
     }
+    res += '</div></div>'
     res.html_safe
+  end
+  
+  def tooltip_story_points_or_empty(tooltip)
+    return '' if tooltip.story_points.blank?
+    tooltip_line_key :story_points, story_points_or_empty(tooltip), 'story_points'
   end
 
   def updated_on_with_milliseconds(story)

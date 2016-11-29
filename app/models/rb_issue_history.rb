@@ -164,7 +164,7 @@ class RbIssueHistory < ActiveRecord::Base
         date = j.timestamp.to_date
         full_journal[date] ||= {}
         case j.property
-        when 'story_points' then full_journal[date][:story_points] = {:new => j.value ? j.value.to_f : nil}
+        when 'story_points' then full_journal[date][:story_points] = {:new => j.value ? (Backlogs.setting[:story_points_are_integer] ? j.value.to_i : j.value.to_f ) : nil}
         when 'status_success' then full_journal[date][:status_success] = {:new => j.value == 'true'}
         when 'status_open' then full_journal[date][:status_open] = {:new => j.value == 'true'}
         when 'fixed_version_id' then full_journal[date][:sprint] = {:new => j.value ? j.value.to_i : nil}
