@@ -30,7 +30,7 @@ a:hover{
   position:relative;
   width:100%;
   box-shadow: 0 3px 4px #A0A0A0;
-  z-index:1000;
+  z-index:1;
 }
 #toolbar .breadcrumbs{
   float: left;
@@ -52,7 +52,7 @@ a:hover{
   position:relative;
 }
 #toolbar .links{
-  padding:12px;
+  padding:4px;
   display:block;
   right:10px;
   position:absolute;

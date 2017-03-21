@@ -13,7 +13,7 @@ RB.Release = RB.Object.create(RB.Sprint, {
 
   editorDisplayed: function(editor){
     var name = editor.find('.name.editor');
-    name.width(Math.max(300, parseInt(name.attr('_rb_width'), 10)));
+    name.width(Math.max(485, parseInt(name.attr('_rb_width'), 10)));
     var d = new Date();
     var now, start, end;
     start = editor.find('.release_start_date.editor');

@@ -64,7 +64,7 @@ RB.Sprint = RB.Object.create(RB.Model, RB.EditableInplace, {
 
   editorDisplayed: function(editor){
     var name = editor.find('.name.editor');
-    name.width(editor[0].offsetWidth-230);
+    name.width(editor[0].offsetWidth-340);
     var d = new Date();
     var now, start, end;
     start = editor.find('.sprint_start_date.editor');
