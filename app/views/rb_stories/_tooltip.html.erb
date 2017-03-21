@@ -1,30 +1,32 @@
 <div class="backlog_tooltip">
-	<div class="header"><%=h "#{tooltip.tracker} ##{tooltip.id} - #{tooltip.subject}" %></div>
-	<%- if tooltip.parent_id? %>
-	<div class="parent"><%= I18n.t :field_parent_issue %>: <%=h "#{tooltip.parent.tracker.name} ##{tooltip.parent_id}: #{tooltip.parent.subject}" %></div>
-	<%- end %>
-	<div class="splitcontent">
-		<div class="splitcontentleft">
-			<%= tooltip_line_key :story_status, status_label_or_default(tooltip), 'status' %>
-			<%= tooltip_line_key :field_priority, tooltip.priority, 'priority' %>
-			<%= tooltip_line_key :field_assigned_to, assignee_name_or_empty(tooltip), 'assigned_to' %>
-			<%- unless tooltip.category.blank? %>
-			<%= tooltip_line_key :field_category, tooltip.category, 'category' %>
-			<%- end %>
-			<%= tooltip_line_key :field_sprint, sprint_or_empty(tooltip), 'sprint' %>
-			<%= tooltip_line_key :field_project, project_name_or_empty(tooltip), 'project' %>
-		</div>
-		<div class="splitcontentleft">
-			<%= tooltip_story_points_or_empty(tooltip) %>
-			<%= tooltip_line_key :story_estimation_hours, tooltip.estimated_hours, 'estimation_hours' %>
-			<%= tooltip_line_key :story_spent_time, tooltip.total_spent_hours.round(2), 'total_spent_time' %>
-			<%= tooltip_line_key :story_remaining_hours, remaining_hours_or_empty(tooltip), 'remaining_hours' %>
-			<%= tooltip_line_key :field_release, release_or_empty(tooltip), 'release' %>
-			<%- unless tooltip.rbteam.blank? %>
-			<%= tooltip_line_key :field_team, rbteam_name_or_empty(tooltip), 'team' %>
-			<%- end %>
-		</div>
-	</div>
-	<%=h tooltip_custom_fields_or_empty(tooltip) %>
-	<div><%= textilizable tooltip, :description, :attachments => tooltip.attachments%></div>
+  <div class="header"><%=h "#{tooltip.tracker} ##{tooltip.id} - #{tooltip.subject}" %></div>
+  <%- if tooltip.parent_id? %>
+    <div class="parent"><%= I18n.t :field_parent_issue %>: <%=h "#{tooltip.parent.tracker.name} ##{tooltip.parent_id}: #{tooltip.parent.subject}" %></div>
+  <%- end %>
+  <div class="splitcontent">
+    <div class="splitcontentleft">
+      <%= tooltip_line_key :story_status, status_label_or_default(tooltip), 'status' %>
+      <%= tooltip_line_key :field_priority, tooltip.priority, 'priority' %>
+      <%= tooltip_line_key :field_assigned_to, assignee_name_or_empty(tooltip), 'assigned_to' %>
+      <%- unless tooltip.category.blank? %>
+        <%= tooltip_line_key :field_category, tooltip.category, 'category' %>
+      <%- end %>
+      <%= tooltip_line_key :field_sprint, sprint_or_empty(tooltip), 'sprint' %>
+      <%= tooltip_line_key :field_project, project_name_or_empty(tooltip), 'project' %>
+    </div>
+    <div class="splitcontentleft">
+      <%= tooltip_story_points_or_empty(tooltip) %>
+      <%= tooltip_line_key :story_estimation_hours, tooltip.estimated_hours, 'estimation_hours' %>
+      <% if User.current.allowed_to?(:view_time_entries, @project) %>
+        <%= tooltip_line_key :story_spent_time, tooltip.total_spent_hours.round(2), 'total_spent_time' %>
+      <% end %>
+      <%= tooltip_line_key :story_remaining_hours, remaining_hours_or_empty(tooltip), 'remaining_hours' %>
+      <%= tooltip_line_key :field_release, release_or_empty(tooltip), 'release' %>
+      <%- unless tooltip.rbteam.blank? %>
+        <%= tooltip_line_key :field_team, rbteam_name_or_empty(tooltip), 'team' %>
+      <%- end %>
+    </div>
+  </div>
+  <%=h tooltip_custom_fields_or_empty(tooltip) %>
+  <div><%= textilizable tooltip, :description, :attachments => tooltip.attachments%></div>
 </div>
