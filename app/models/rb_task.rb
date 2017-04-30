@@ -9,6 +9,12 @@ class RbTask < Issue
     return Integer(task_tracker)
   end
 
+  def self.bugtracker
+    task_tracker = Backlogs.setting[:bug_tracker]
+    return nil if task_tracker.blank?
+    return Integer(task_tracker)
+  end
+  
   def self.class_default_status
     begin
       t = Tracker.find(self.tracker)

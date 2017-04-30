@@ -109,6 +109,11 @@
 </p>
 
 <p>
+  <%= content_tag(:label, l(:backlogs_bug_tracker)) %>
+  <%= select_tag("settings[bug_tracker]", options_from_collection_for_select(Tracker.all, :id, :name, RbTask.bugtracker)) %>
+</p>
+
+<p>
   <%= content_tag(:label, l(:backlogs_wiki_template)) %>
   <%= text_field_tag("settings[wiki_template]", Backlogs.setting[:wiki_template]) %>
 </p>

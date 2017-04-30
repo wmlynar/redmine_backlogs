@@ -224,3 +224,6 @@ en:
          story/task properties
       * State will be set to the default issue state
   error_cannot_close_sprint_with_open_stories: "Cannot close a sprint while it still has open stories."
+  label_sprint_tasks: "Sprint Tasks"
+  label_sprint_bugs: "Sprint Bugs"
+  backlogs_bug_tracker: "Bug tracker"
