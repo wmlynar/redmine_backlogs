@@ -1,4 +1,10 @@
 <li class="model story fff-wrapper <%= mark_if_closed(story) %> tracker<%= story ? story.tracker_id : '' %>" id="<%= story_html_id_or_empty(story) %>">
+  <%- task_color = nil %>
+  <%- if User.current.backlogs_preference[:show_backlog_story_color] == '1' && story.assigned_to.present? %>
+	  <%- task_color = story.assigned_to.backlogs_preference[:task_color] %>
+  <%- end %>
+  <%- show_assigned_to_full = User.current.backlogs_preference[:show_assigned_to_full] == '1' %>
+  <%- show_assigned_to_short = User.current.backlogs_preference[:show_assigned_to_short] == '1' %>
  <div class="fff-wrapmiddle">
    <div class="story_field fff-middle">
      <% show_category = User.current.backlogs_preference[:show_category] == '1' %>
@@ -15,14 +21,30 @@
           </div>
       <% end %>
      <span class="story_field">(<%= story.estimated_hours.to_f %> est h, <%= story.priority.name %>)</span>
-     <% if story.assigned_to %>
-         <% if User.current.backlogs_preference[:show_assigned_to_full] == '1' %>
-          <span class = "assigned_to_full"> - <%= story.assigned_to%></span>
-         <%end%>
-         <% if User.current.backlogs_preference[:show_assigned_to_short] == '1' %>
-             <span class = "assigned_to_short"> - <%= story.assigned_to.lastname[0]%>. <%= story.assigned_to.firstname[0]%>.</span>
-         <%end%>
-     <%end%>
+     <%- if story.assigned_to %>
+         <%- if show_assigned_to_full %>
+           <span class="assigned_to_full"> - 
+           <%- if task_color %>
+           		<span  class="assigned_to_color" style="background-color: <%= task_color %>; border-color: <%= task_color %>;">
+           <%- end %>
+				<%= story.assigned_to%>
+           <%- if task_color %>
+				</span>
+		   <%- end %>
+		   </span>
+         <%- end %>
+         <%- if show_assigned_to_short %>
+			<span class = "assigned_to_short"> - 
+	        <%- if task_color %>
+           		<span  class="assigned_to_color" style="background-color: <%= task_color %>; border-color: <%= task_color %>;">
+           <%- end %>
+           <%= story.assigned_to.lastname[0]%>. <%= story.assigned_to.firstname[0]%>.
+           <%- if task_color %>
+				</span>
+		   <%- end %>
+		   </span>
+         <%- end %>
+     <%- end %>
   </div>
  </div>
  <div class="fff-left">
@@ -34,7 +56,7 @@
     <div class="v"><%= id_or_empty(story) %></div>
   </div>
 
-  <% if User.current.backlogs_preference[:show_backlog_story_color] == '1' && story.assigned_to.present? %>
+  <% if User.current.backlogs_preference[:show_backlog_story_color] == '1' && story.assigned_to.present? && !show_assigned_to_full && !show_assigned_to_short %>
     <% task_color = story.assigned_to.backlogs_preference[:task_color] %>
     <div title="<%= story.assigned_to %>" class="assigned_to_color" style="background-color: <%= task_color %>; border-color: <%= task_color %>;"></div>
   <%end%>
