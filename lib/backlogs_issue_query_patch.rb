@@ -60,7 +60,7 @@ module Backlogs
             # mother of *&@&^*@^*#.... order "20" is a magical constant in RM2.2 which means "I'm a custom field". What. The. Fuck.
             "backlogs_issue_type" => {  :type => :list,
                                         :name => l(:field_backlogs_issue_type),
-                                        :values => [[l(:backlogs_story), "story"], [l(:backlogs_task), "task"], [l(:backlogs_impediment), "impediment"], [l(:backlogs_any), "any"]],
+                                        :values => [[l(:backlogs_story), "story"], [l(:backlogs_task), "task"], [l(:backlogs_bug), "bug"], [l(:backlogs_subtask), "subtask"], [l(:backlogs_orphantask), "orphantask"], [l(:backlogs_impediment), "impediment"], [l(:backlogs_any), "any"]],
                                         :order => 21 },
             "story_points" => { :type => :float,
                                 :name => l(:field_story_points),
@@ -114,6 +114,13 @@ module Backlogs
             when "task"
               sql << "(#{db_table}.tracker_id = #{RbTask.tracker})"
 
+			when "bug"
+				sql << "(#{db_table}.tracker_id = #{RbTask.bugtracker})"
+			when "subtask"
+				sql << "(#{db_table}.tracker_id = #{RbTask.tracker} and #{db_table}.parent_id IS NOT NULL)"
+			when "orphantask"
+				sql << "(#{db_table}.tracker_id = #{RbTask.tracker} and #{db_table}.parent_id IS NULL)"
+							
             when "impediment"
               sql << "(#{db_table}.id in (
                                 select issue_from_id
