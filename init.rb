@@ -59,6 +59,7 @@ Redmine::Plugin.register :redmine_backlogs do
                          :story_trackers            => nil,
                          :default_story_tracker     => nil,
                          :task_tracker              => nil,
+                         :task_bugtracker           => nil,
                          :card_spec                 => nil,
                          :story_close_status_id     => '0',
                          :taskboard_card_order      => 'story_follows_tasks',
