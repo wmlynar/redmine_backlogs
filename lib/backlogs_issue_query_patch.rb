@@ -101,7 +101,7 @@ module Backlogs
         sql = []
 
         selected_values = values_for(field)
-        selected_values = ['story', 'task'] if selected_values.include?('any')
+        selected_values = ['story', 'task', 'bug'] if selected_values.include?('any')
 
         story_trackers = RbStory.trackers(:type=>:string)
         all_trackers = (RbStory.trackers + [RbTask.tracker]).collect{|val| "#{val}"}.join(",")
