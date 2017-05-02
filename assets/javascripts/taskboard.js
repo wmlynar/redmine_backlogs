@@ -58,10 +58,19 @@ RB.Taskboard = RB.Object.create({
     // Add handler for .add_new click
     if (RB.permissions.create_tasks) {
       j.find('#tasks .add_new').bind('click', self.handleAddNewTaskClick);
+      j.find('#orphan_tasks .add_new').bind('click', self.handleAddNewTaskClick);
+      j.find('#impediments .add_new').bind('click', self.handleAddNewTaskClick);
+    }
+
+    //initialize the cells (td) as sortable
+    if (RB.permissions.update_tasks) {
+      j.find('.bugs-swimlane .list').sortable(RB.$.extend({
+        connectWith: '.bugs-swimlane .list'
+        }, sortableOpts));
     }
 
 
-    // Initialize impediment lists
+/*    // Initialize impediment lists
     if (RB.permissions.update_impediments) {
       j.find("#impediments .list").sortable(RB.$.extend({
         connectWith: '#impediments .list'
@@ -76,7 +85,7 @@ RB.Taskboard = RB.Object.create({
     // Add handler for .add_new click
     if (RB.permissions.create_impediments) {
       j.find('#impediments .add_new').bind('click', self.handleAddNewImpedimentClick);
-    }
+    }*/
   },
   
   onMouseUp: function(e) {
@@ -104,6 +113,9 @@ RB.Taskboard = RB.Object.create({
     var old_project_id = el.find('.meta .project_id').text();
     var old_story_id = el.find('.meta .story_id').text();
 
+	// woj
+    var old_tracker = el.closest('tr')[0].className;
+	
     //disable non-droppable cells
     RB.$('.ui-sortable').each(function() {
       var new_project_id = this.getAttribute('-rb-project-id');
@@ -115,6 +127,13 @@ RB.Taskboard = RB.Object.create({
         return;
       }
 
+	  // woj
+      var new_tracker = $(this).closest('tr')[0].className;
+      if (old_tracker != new_tracker) {
+        RB.$(this).sortable('disable');
+        return;
+      }
+	  
       // check for status
       var new_status_id = this.getAttribute('-rb-status-id');
       // allow dragging to same status to prevent weird behavior

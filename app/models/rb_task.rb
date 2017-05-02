@@ -36,7 +36,7 @@ class RbTask < Issue
     options = {:type => options} if options.is_a?(Symbol)
 
     # somewhere early in the initialization process during first-time migration this gets called when the table doesn't yet exist
-    trackers = [self.tracker]
+    trackers = [self.tracker, self.bugtracker]
 
     begin
       trackers = Tracker.where(id: trackers)
@@ -73,7 +73,7 @@ class RbTask < Issue
     attribs = rb_safe_attributes(params)
 
     attribs['author_id'] = user_id
-    attribs['tracker_id'] = RbTask.tracker
+    attribs['tracker_id'] = params[:is_bug]=='true' ? RbTask.bugtracker : RbTask.tracker
     attribs['project_id'] = project_id
 
     blocks = params.delete('blocks')
@@ -89,7 +89,7 @@ class RbTask < Issue
     end
 
     task = new(attribs)
-    if params['parent_issue_id']
+    if params['parent_issue_id'] && params['parent_issue_id'] != ""
       parent = Issue.find(params['parent_issue_id'])
       task.start_date = parent.start_date
     end

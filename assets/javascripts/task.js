@@ -69,6 +69,8 @@ RB.Task = RB.Object.create(RB.Issue, {
     var cellID = j.parents('td').first().attr('id').split("_");
 
     var data = j.find('.editor').serialize() +
+               "&is_bug=" + (cellID.length==3) +
+               "&fixed_version_id=" + RB.constants['sprint_id'] +
                "&parent_issue_id=" + cellID[0] +
                "&status_id=" + cellID[1] +
                "&next=" + (nxt.length==1 ? nxt.data('this').getID() : '') +

@@ -83,18 +83,18 @@
   </table>
 
   <table id="impediments" class="board" cellspacing="0">
-    <tr>
+    <tr id="swimlane-" class="bugs-swimlane">
       <td><div class="label_sprint_impediments">
             <% if User.current.allowed_to?(:create_impediments, @project) %>
             <span class="add_new">
               <%= image_tag("add.png", :alt => "+") %>
             </span>
             <% end %>
-            <%= l(:label_sprint_impediments) %>
+            <%= l(:label_sprint_bugs) %>
       </div></td>
       <%- @statuses.each do |status| %>
-      <td class="swimlane list <%= status.is_closed? ? 'closed' : '' %>" id="impcell_<%= status.id %>" -rb-status-id="<%= status.id %>" -rb-project-id="impediments">
-        <%= render :partial => "rb_impediments/impediment", :collection => @sprint.impediments.select{|impediment| impediment.status_id==status.id} %>
+      <td class="swimlane list <%= status.is_closed? ? 'closed' : '' %>" id="_<%= status.id %>_bug" -rb-status-id="<%= status.id %>" -rb-project-id="<%= @project.id %>">
+        <%= render_rb_task_collection(@sprint.impediments_bugs.select{|task| task.status_id==status.id}) %>
       </td>
       <%- end %>
     </tr>
@@ -136,6 +136,24 @@
       <%- end %>
     </tr>
     <%- end %>
+  </table>
+
+  <table id="orphan_tasks" class="board" cellspacing="0">
+    <tr id="swimlane-" class="story-swimlane">
+      <td><div class="label_sprint_impediments">
+            <% if User.current.allowed_to?(:create_impediments, @project) %>
+            <span class="add_new">
+              <%= image_tag("add.png", :alt => "+") %>
+            </span>
+            <% end %>
+            <%= l(:label_sprint_tasks) %>
+      </div></td>
+      <%- @statuses.each do |status| %>
+      <td class="swimlane list <%= status.is_closed? ? 'closed' : '' %>" id="_<%= status.id %>" -rb-status-id="<%= status.id %>" -rb-project-id="<%= @project.id %>">
+        <%= render_rb_task_collection(@sprint.impediments_tasks.select{|task| task.status_id==status.id}) %>
+      </td>
+      <%- end %>
+    </tr>
   </table>
 </div>
 <%- end %>
