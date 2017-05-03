@@ -92,6 +92,9 @@ class RbTask < Issue
     if params['parent_issue_id'] && params['parent_issue_id'] != ""
       parent = Issue.find(params['parent_issue_id'])
       task.start_date = parent.start_date
+	  
+      #woj - assign same release as parent
+      task.release = parent.release
     end
     task.save!
 
