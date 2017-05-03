@@ -275,6 +275,7 @@ RB.UserFilter = RB.Object.create({
     //Check if all stories should be visible even if not used
     var showUnusedStories = this.el.multiselect("widget").find(":checkbox[value='s']").is(':checked');
     var showClosedStories = this.el.multiselect("widget").find(":checkbox[value='c']").is(':checked');
+    var showOther = this.el.multiselect("widget").find(":checkbox[value='o']").is(':checked');
 
     //Parse through all the stories and hide the ones not used
     RB.$('.story').each(function() {
@@ -298,6 +299,13 @@ RB.UserFilter = RB.Object.create({
 
       //Hide or show story row based on if any tasks are visible
       if ((hasVisTasks || (showUnusedStories && !hasTasks)) && (showClosedStories || !isClosed))
+        RB.$(this).closest('tr').show();
+      else
+        RB.$(this).closest('tr').hide();
+    });
+	
+    RB.$('.label_sprint_impediments_other').each(function() {
+      if (showOther)
         RB.$(this).closest('tr').show();
       else
         RB.$(this).closest('tr').hide();
