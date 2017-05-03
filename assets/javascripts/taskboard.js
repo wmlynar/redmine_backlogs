@@ -67,6 +67,10 @@ RB.Taskboard = RB.Object.create({
         }, sortableOpts));
     }
 
+    // woj: Initialize each story
+    j.find('.story').each(function(index){
+      var story = RB.Factory.initialize(RB.StoryTaskboard, this); // 'this' refers to an element with class="story"
+    });
 
 /*    // Initialize impediment lists
     if (RB.permissions.update_impediments) {

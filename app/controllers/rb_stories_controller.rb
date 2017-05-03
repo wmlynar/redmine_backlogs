@@ -55,7 +55,7 @@ class RbStoriesController < RbApplicationController
     status = (result ? 200 : 400)
 
     respond_to do |format|
-      format.html { render :partial => "story", :object => story, :status => status }
+      format.html { render :partial => (params[:taskboard]?"story_taskboard":"story"), :object => story, :status => status, :locals => { :story => story } }
     end
   end
 

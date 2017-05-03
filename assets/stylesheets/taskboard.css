@@ -330,6 +330,33 @@ See RB.Taskboard.initialize()
   display:none;
 }
 
+.story .indicator{
+  -moz-border-radius:12px 12px 12px 12px;
+  -webkit-border-radius:12px 12px 12px 12px;
+  border-radius:12px 12px 12px 12px;
+  background-color:#FFFFFF;
+  background-position:center;
+  background-repeat:no-repeat;
+  border:2px solid #000000;
+  display:none;
+  height:16px;
+  left:83px;
+  padding:2px;
+  position:absolute;
+  top:38px;
+  width:16px;
+}
+.story.saving .indicator{
+  background-image:url('images/indicator.gif');
+  display:block;
+}
+.story.error .indicator{
+  background-image:url('images/warning.png');
+  background-position:2px 0;
+  border-color:#CC0000;
+  display:block;
+}
+
 /* dialog */
 .rb_editor_dialog.ui-dialog .ui-dialog-titlebar-close{
   display:none;
