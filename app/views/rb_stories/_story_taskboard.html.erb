@@ -14,6 +14,10 @@
     </span>
     <span class="remaininghours">(<%= story.remaining_hours.to_f %> <%= l(:label_hours) %>)</span>
   </div>
+  <div class="status_id editable" fieldtype="select" fieldname="status_id" style="display:none;">
+    <div class="t"><%= status_label_or_default(story) %></div>
+    <div class="v"><%= status_id_or_default(story) %></div>
+  </div>
   <div class="subject editable" fieldtype="textarea" fieldname="subject" fieldlabel="<%=l(:field_subject)%>"><%= h story.subject %></div>
   <%- if @project != story.project %>
     <div class="id project">

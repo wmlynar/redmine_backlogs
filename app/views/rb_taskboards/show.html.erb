@@ -200,6 +200,13 @@
   <div id="impediment_template">
     <%= render :partial => "rb_impediments/impediment", :object => RbTask.new %>
   </div>
+  
+  <select class="status_id helper" id="status_id_options">
+    <%- IssueStatus.order("position ASC").each do |status| %>
+    <option value="<%= status.id %>" class="<%= (status.is_closed? ?  l(:label_closed_issues) + ' ' : "") %>"><%= status.name %></option>
+    <%- end %>
+  </select>
+
   <!-- end of templates -->
   <div id="issue_editor"> </div>
   <div class="meta" id="last_updated"><%= date_string_with_milliseconds( (@last_updated.blank? ? Time.now : @last_updated.updated_on) )  %></div>
