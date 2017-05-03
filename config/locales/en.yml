@@ -226,6 +226,8 @@ en:
   error_cannot_close_sprint_with_open_stories: "Cannot close a sprint while it still has open stories."
   label_sprint_tasks: "Sprint Tasks"
   label_sprint_bugs: "Sprint Bugs"
+  label_other_tasks: "Other Tasks"
+  label_other_bugs: "Other Bugs"
   backlogs_bug_tracker: "Bug tracker"
   backlogs_subtask: Subtask
   backlogs_orphantask: Orphan Task

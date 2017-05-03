@@ -118,6 +118,17 @@ See RB.Taskboard.initialize()
   position:relative;
   width:190px;
 }
+
+.label_sprint_impediments_other{
+  -moz-box-shadow: 2px 2px 2px #CCCCCC;
+  -webkit-box-shadow: 2px 2px 2px #CCCCCC;;
+  background-color:#CCCCCC;
+  background: -webkit-gradient(linear, left top, left bottom, from(#E0E0E0), to(#AAA));
+  background: -moz-linear-gradient(top, #E0E0E0, #AAA);
+  filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,StartColorStr=#E0E0E0,EndColorStr=#AAAAAA);
+  box-shadow: 2px 2px 2px #CCCCCC;;
+}
+
 .story .id{
   -moz-border-radius:4px 4px 4px 4px;
   -webkit-border-radius:4px 4px 4px 4px;

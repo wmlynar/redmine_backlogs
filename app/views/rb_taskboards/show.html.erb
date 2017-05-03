@@ -82,24 +82,8 @@
       <%- end %>
     </tr>
   </table>
-
-  <table id="impediments" class="board" cellspacing="0">
-    <tr id="swimlane-" class="bugs-swimlane">
-      <td><div class="label_sprint_impediments">
-            <% if User.current.allowed_to?(:create_impediments, @project) %>
-            <span class="add_new">
-              <%= image_tag("add.png", :alt => "+") %>
-            </span>
-            <% end %>
-            <%= l(:label_sprint_bugs) %>
-      </div></td>
-      <%- @statuses.each do |status| %>
-      <td class="swimlane list <%= status.is_closed? ? 'closed' : '' %>" id="_<%= status.id %>_bug" -rb-status-id="<%= status.id %>" -rb-project-id="<%= @project.id %>">
-        <%= render_rb_task_collection(@sprint.impediments_bugs.select{|task| task.status_id==status.id}) %>
-      </td>
-      <%- end %>
-    </tr>
-  </table>
+  
+  <div style="padding-top:40px;"/>
 
   <table id="tasks" class="board" cellspacing="0">
     <%- @sprint.stories.each do |story| %>
@@ -139,6 +123,42 @@
     <%- end %>
   </table>
 
+  <table id="bugs" class="board" cellspacing="0">
+    <tr id="swimlane-" class="bugs-swimlane">
+      <td><div class="label_sprint_impediments">
+            <% if User.current.allowed_to?(:create_impediments, @project) %>
+            <span class="add_new">
+              <%= image_tag("add.png", :alt => "+") %>
+            </span>
+            <% end %>
+            <%= l(:label_sprint_bugs) %>
+      </div></td>
+      <%- @statuses.each do |status| %>
+      <td class="swimlane list <%= status.is_closed? ? 'closed' : '' %>" id="_<%= status.id %>_bug" -rb-status-id="<%= status.id %>" -rb-project-id="<%= @project.id %>">
+        <%= render_rb_task_collection(@sprint.impediments_bugs.select{|task| task.status_id==status.id}) %>
+      </td>
+      <%- end %>
+    </tr>
+  </table>
+
+  <table id="other_bugs" class="board" cellspacing="0">
+    <tr id="swimlane-" class="bugs-swimlane">
+      <td><div class="label_sprint_impediments label_sprint_impediments_other">
+            <% if User.current.allowed_to?(:create_impediments, @project) %>
+            <span class="add_new">
+              <%= image_tag("add.png", :alt => "+") %>
+            </span>
+            <% end %>
+            <%= l(:label_other_bugs) %>
+      </div></td>
+      <%- @statuses.each do |status| %>
+      <td class="swimlane list <%= status.is_closed? ? 'closed' : '' %>" id="other_<%= status.id %>_bug" -rb-status-id="<%= status.id %>" -rb-project-id="<%= @project.id %>">
+        <%= render_rb_task_collection(@sprint.impediments_other_bugs.select{|task| task.status_id==status.id}) %>
+      </td>
+      <%- end %>
+    </tr>
+  </table>
+
   <table id="orphan_tasks" class="board" cellspacing="0">
     <tr id="swimlane-" class="story-swimlane">
       <td><div class="label_sprint_impediments">
@@ -156,6 +176,25 @@
       <%- end %>
     </tr>
   </table>
+  
+  <table id="other_orphan_tasks" class="board" cellspacing="0">
+    <tr id="swimlane-" class="story-swimlane">
+      <td><div class="label_sprint_impediments label_sprint_impediments_other">
+            <% if User.current.allowed_to?(:create_impediments, @project) %>
+            <span class="add_new">
+              <%= image_tag("add.png", :alt => "+") %>
+            </span>
+            <% end %>
+            <%= l(:label_other_tasks) %>
+      </div></td>
+      <%- @statuses.each do |status| %>
+      <td class="swimlane list <%= status.is_closed? ? 'closed' : '' %>" id="other_<%= status.id %>" -rb-status-id="<%= status.id %>" -rb-project-id="<%= @project.id %>">
+        <%= render_rb_task_collection(@sprint.impediments_other_tasks.select{|task| task.status_id==status.id}) %>
+      </td>
+      <%- end %>
+    </tr>
+  </table>
+  
 </div>
 <%- end %>
 

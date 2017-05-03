@@ -75,6 +75,11 @@ class RbTask < Issue
     attribs['author_id'] = user_id
     attribs['tracker_id'] = params[:is_bug]=='true' ? RbTask.bugtracker : RbTask.tracker
     attribs['project_id'] = project_id
+	
+	#if other task then clear fixed_version_id
+	if params[:is_other]=='true'
+      attribs[:fixed_version_id] = ''
+	end
 
     blocks = params.delete('blocks')
 
@@ -130,6 +135,15 @@ class RbTask < Issue
 
     attribs = RbTask.rb_safe_attributes(params)
 
+	#if moved from other tasks to other tasks - do not clear fixed_version_id, otherwise clear it
+	if params[:is_other]=='true'
+	  if self.fixed_version_id != params[:fixed_version_id].to_i
+	    attribs.delete(:fixed_version_id)
+	  else
+	    attribs[:fixed_version_id] = ''
+	  end
+	end
+	
     # Auto assign task to current user when
     # 1. the task is not assigned to anyone yet
     # 2. task status changed (i.e. Updating task name or remaining hours won't assign task to user)

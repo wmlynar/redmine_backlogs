@@ -57,9 +57,7 @@ RB.Taskboard = RB.Object.create({
 
     // Add handler for .add_new click
     if (RB.permissions.create_tasks) {
-      j.find('#tasks .add_new').bind('click', self.handleAddNewTaskClick);
-      j.find('#orphan_tasks .add_new').bind('click', self.handleAddNewTaskClick);
-      j.find('#impediments .add_new').bind('click', self.handleAddNewTaskClick);
+      j.find('.board .add_new').bind('click', self.handleAddNewTaskClick);
     }
 
     //initialize the cells (td) as sortable
