@@ -118,13 +118,15 @@ RB.Taskboard = RB.Object.create({
     RB.$('.ui-sortable').each(function() {
       var new_project_id = this.getAttribute('-rb-project-id');
       var new_story_id = $(this).closest('tr').find('div.story a').text();
+
+/* woj: allow moving between projects / subprojects	  
       // check for project
       //sharing, restrictive case: only allow same-project story-task relationship
       if (new_project_id != old_project_id && old_story_id != new_story_id) {
         RB.$(this).sortable('disable');
         return;
       }
-
+*/
 	  // woj
       var new_tracker = $(this).closest('tr')[0].className;
       if (old_tracker != new_tracker) {

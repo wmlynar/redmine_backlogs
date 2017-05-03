@@ -135,14 +135,17 @@ class RbTask < Issue
 
     attribs = RbTask.rb_safe_attributes(params)
 
-	#if moved from other tasks to other tasks - do not clear fixed_version_id, otherwise clear it
-	if params[:is_other]=='true'
-	  if self.fixed_version_id != params[:fixed_version_id].to_i
-	    attribs.delete(:fixed_version_id)
-	  else
-	    attribs[:fixed_version_id] = ''
-	  end
-	end
+    #if moved from other tasks swimlane to other tasks swimlane - do not clear fixed_version_id, otherwise clear it
+    if params[:is_other]=='true'
+      if self.fixed_version_id != params[:fixed_version_id].to_i
+        attribs.delete(:fixed_version_id)
+      else
+        attribs[:fixed_version_id] = ''
+      end
+    end
+
+    # do not overwrite project id
+    attribs.delete(:project_id)
 	
     # Auto assign task to current user when
     # 1. the task is not assigned to anyone yet
