@@ -153,13 +153,15 @@ class RbSprint < Version
             ["tracker_id = (?) AND fixed_version_id = (?) AND parent_id IS NULL",
             RbTask.tracker,
             self.id]
-      ) #.sort {|a,b| a.closed? == b.closed? ?  a.updated_on <=> b.updated_on : (a.closed? ? 1 : -1) }
+      ).order("position") #.sort_by{ |a| a.position }
+	  #.sort {|a,b| a.closed? == b.closed? ?  a.updated_on <=> b.updated_on : (a.closed? ? 1 : -1) }
   end
   def impediments_bugs
     @impediments_bugs ||= Issue.where(
             ["tracker_id = (?) AND fixed_version_id = (?)",
             RbTask.bugtracker,
             self.id]
-      ) #.sort {|a,b| a.closed? == b.closed? ?  a.updated_on <=> b.updated_on : (a.closed? ? 1 : -1) }
+      ).order("position") #.sort_by{ |a| a.position }
+	  #.sort {|a,b| a.closed? == b.closed? ?  a.updated_on <=> b.updated_on : (a.closed? ? 1 : -1) }
   end
 end

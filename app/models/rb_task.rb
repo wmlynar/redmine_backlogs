@@ -100,7 +100,7 @@ class RbTask < Issue
 
     raise "Block list must be comma-separated list of task IDs" if is_impediment && !task.validate_blocks_list(blocks) # could we do that before save and integrate cross-project checks?
 
-    task.move_before params[:next] unless is_impediment # impediments are not hosted under a single parent, so you can't tree-order them
+    task.move_before3 params[:next] unless is_impediment # impediments are not hosted under a single parent, so you can't tree-order them
     task.update_blocked_list blocks.split(/\D+/) if is_impediment
     task.time_entry_add(params)
 
@@ -145,7 +145,7 @@ class RbTask < Issue
                           end
 
     if valid_relationships && result = self.journalized_update_attributes!(attribs)
-      move_before params[:next] unless is_impediment # impediments are not hosted under a single parent, so you can't tree-order them
+      move_before3 params[:next] unless is_impediment # impediments are not hosted under a single parent, so you can't tree-order them
       update_blocked_list params[:blocks].split(/\D+/) if params[:blocks]
 
       if params.has_key?(:remaining_hours)
@@ -191,8 +191,17 @@ class RbTask < Issue
     end
   end
 
+  def move_before3(id)
+    id = nil if id.respond_to?('blank?') && id.blank?
+    if id.nil?
+        self.move_to_bottom
+    else
+        self.move_before(Issue.find(id))
+    end
+  end
+
   # assumes the task is already under the same story as 'id'
-  def move_before(id)
+  def move_before2(id)
     id = nil if id.respond_to?('blank?') && id.blank?
     if id.nil?
       sib = self.siblings
