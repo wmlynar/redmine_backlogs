@@ -150,7 +150,7 @@ class RbSprint < Version
   # woj - added methods to retrieve all orphan tasks  
   def impediments_tasks
     @impediments_tasks ||= Issue.where(
-            ["tracker_id = (?) AND fixed_version_id = (?) AND parent_id IS NULL",
+            ["tracker_id = (?) AND (fixed_version_id = (?) OR fixed_version_id IS NULL) AND parent_id IS NULL",
             RbTask.tracker,
             self.id]
       ).order("position") #.sort_by{ |a| a.position }
@@ -158,7 +158,7 @@ class RbSprint < Version
   end
   def impediments_bugs
     @impediments_bugs ||= Issue.where(
-            ["tracker_id = (?) AND fixed_version_id = (?)",
+            ["tracker_id = (?) AND (fixed_version_id = (?) OR fixed_version_id IS NULL) AND parent_id IS NULL",
             RbTask.bugtracker,
             self.id]
       ).order("position") #.sort_by{ |a| a.position }
