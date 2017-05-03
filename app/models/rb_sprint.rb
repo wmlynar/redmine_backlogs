@@ -164,17 +164,19 @@ class RbSprint < Version
       ).order("position") #.sort_by{ |a| a.position }
 	  #.sort {|a,b| a.closed? == b.closed? ?  a.updated_on <=> b.updated_on : (a.closed? ? 1 : -1) }
   end
-  def impediments_other_tasks
+  def impediments_other_tasks(project_id)
     @impediments_other_tasks ||= Issue.where(
-            ["tracker_id = (?) AND (fixed_version_id != (?) OR fixed_version_id IS NULL) AND parent_id IS NULL",
+            ["tracker_id = (?) AND (fixed_version_id != (?) OR fixed_version_id IS NULL) AND parent_id IS NULL" +
+             " AND project_id in (#{Project.find(project_id).projects_in_shared_product_backlog.map{|p| p.id}.join(',')})",
             RbTask.tracker,
             self.id]
       ).order("position") #.sort_by{ |a| a.position }
 	  #.sort {|a,b| a.closed? == b.closed? ?  a.updated_on <=> b.updated_on : (a.closed? ? 1 : -1) }
   end
-  def impediments_other_bugs
+  def impediments_other_bugs(project_id)
     @impediments_other_bugs ||= Issue.where(
-            ["tracker_id = (?) AND (fixed_version_id != (?) OR fixed_version_id IS NULL) AND parent_id IS NULL",
+            ["tracker_id = (?) AND (fixed_version_id != (?) OR fixed_version_id IS NULL) AND parent_id IS NULL" +
+             " AND project_id in (#{Project.find(project_id).projects_in_shared_product_backlog.map{|p| p.id}.join(',')})",
             RbTask.bugtracker,
             self.id]
       ).order("position") #.sort_by{ |a| a.position }

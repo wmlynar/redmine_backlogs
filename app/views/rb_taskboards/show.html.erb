@@ -155,7 +155,7 @@
       </div></td>
       <%- @statuses.each do |status| %>
       <td class="swimlane list <%= status.is_closed? ? 'closed' : '' %>" id="other_<%= status.id %>_bug" -rb-status-id="<%= status.id %>" -rb-project-id="<%= @project.id %>">
-        <%= render_rb_task_collection(@sprint.impediments_other_bugs.select{|task| task.status_id==status.id}) %>
+        <%= render_rb_task_collection(@sprint.impediments_other_bugs(@project.id).select{|task| task.status_id==status.id}) %>
       </td>
       <%- end %>
     </tr>
@@ -191,7 +191,7 @@
       </div></td>
       <%- @statuses.each do |status| %>
       <td class="swimlane list <%= status.is_closed? ? 'closed' : '' %>" id="other_<%= status.id %>" -rb-status-id="<%= status.id %>" -rb-project-id="<%= @project.id %>">
-        <%= render_rb_task_collection(@sprint.impediments_other_tasks.select{|task| task.status_id==status.id}) %>
+        <%= render_rb_task_collection(@sprint.impediments_other_tasks(@project.id).select{|task| task.status_id==status.id}) %>
       </td>
       <%- end %>
     </tr>
