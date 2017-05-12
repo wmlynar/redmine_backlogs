@@ -9,7 +9,9 @@
     </span>
     <% end %>
 	<span class="assignee"><%= assignee_name_or_empty(story) %></span>
+    <% if Backlogs.setting[:use_remaining_hours] %>
     <span class="remaininghours">(<%= story.remaining_hours.to_f %> <%= l(:label_hours) %>)</span>
+    <% end %>
   </div>
   <div class="assigned_to_id editable story_field" fieldtype="select" style="display: none;" fieldname="assigned_to_id" fieldlabel="<%=l(:field_assigned_to)%>">
     <div class="t"><%= assignee_name_or_empty(story) %></div>

@@ -20,7 +20,9 @@
       <% if User.current.allowed_to?(:view_time_entries, @project) %>
         <%= tooltip_line_key :story_spent_time, tooltip.total_spent_hours.round(2), 'total_spent_time' %>
       <% end %>
+      <% if Backlogs.setting[:use_remaining_hours] %>
       <%= tooltip_line_key :story_remaining_hours, remaining_hours_or_empty(tooltip), 'remaining_hours' %>
+      <% end %>
       <%= tooltip_line_key :field_release, release_or_empty(tooltip), 'release' %>
       <%- unless tooltip.rbteam.blank? %>
         <%= tooltip_line_key :field_team, rbteam_name_or_empty(tooltip), 'team' %>

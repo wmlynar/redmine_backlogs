@@ -277,3 +277,4 @@ en:
   backlogs_story_points_are_integer: "Show storypoints as integer number"
   sprint_release_relation: "The default release for stories linked to this sprint"
   sprint_story_points: "The maximum amount of story point that should fit into this sprint"
+  backlogs_use_remaining_hours: "Use remaining hours"
