@@ -20,12 +20,14 @@
 
   <div class="fff-right">
     <div class="story_points">
+		<%- if sprint.story_points? %>
 	    <div class="points editable" fieldname="story_points" fieldlabel="<%=l(:story_points)%>">
-			<%- if sprint.story_points? %>
 	    	<%= h format_story_points(sprint.story_points, "0") %>
-	    	<%- end %>
 	    </div>
 	    <div class="label"><%= h l(:label_points_short)%></div>
+	    <%- else %>
+	    &nbsp;
+	   	<%- end %>
     </div>
     <div class="sprint_est_h">(<%= sprint.estimated_hours.to_f %> est. h)</div>
     <div class="velocity story_tooltip" title="<b>Tracker statistics</b><br />"> </div>
