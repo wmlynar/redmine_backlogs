@@ -19,6 +19,7 @@ RB.Sprint = RB.Object.create(RB.Model, RB.EditableInplace, {
 
     if (RB.permissions[this.update_permission]) {
       j.delegate('.editable', 'click', this.handleClick);
+      j.delegate('.start_edit', 'click', this.handleClick);
     }
   },
 
