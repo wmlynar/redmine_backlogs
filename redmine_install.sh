@@ -42,6 +42,7 @@ export RELEASE1="features/release-multiview-burnchart.feature features/release-m
 
 export RAILS_ENV=test
 export IN_RBL_TESTENV=true
+export epic_trackers=Support
 
 case $REDMINE_VER in
   1.4.*)  export PATH_TO_PLUGINS=./vendor/plugins # for redmine < 2.0
