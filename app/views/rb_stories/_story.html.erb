@@ -38,7 +38,7 @@
 	        <%- if story_color %>
            		<span class="assigned_to_color" style="background-color: <%= story_color %>; border-color: <%= story_color %>;">
            <%- end %>
-           <%= story.assigned_to.lastname[0]%>. <%= story.assigned_to.firstname[0]%>.
+           <%= story.assigned_to.firstname[0]%>. <%= story.assigned_to.lastname[0]%>.
            <%- if story_color %>
 				</span>
 		   <%- end %>
