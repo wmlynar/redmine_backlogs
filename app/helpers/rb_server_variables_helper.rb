@@ -28,9 +28,9 @@ module RbServerVariablesHelper
           transitions[:transitions][tracker_id][key] ||= {}
 
           begin
-            allowed_statuses = status.new_statuses_allowed_to(roles, tracker, @project.workspace_id, creator, assignee)
+            allowed_statuses = status.new_statuses_allowed_to(roles, tracker, creator, assignee)
           rescue #Workaround in order to support redmine 1.1.3
-            allowed_statuses = status.new_statuses_allowed_to(roles, tracker, @project.workspace_id)
+            allowed_statuses = status.new_statuses_allowed_to(roles, tracker)
           end
 
           allowed = allowed_statuses.collect{|s| s.id.to_s}
