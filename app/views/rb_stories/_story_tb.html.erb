@@ -9,7 +9,9 @@
     </span>
     <% end %>
 	<span class="assignee"><%= assignee_name_or_empty(story) %></span>
+    <% if Backlogs.setting[:use_remaining_hours] %>
     <span class="remaininghours">(<%= story.remaining_hours.to_f %> <%= l(:label_hours) %>)</span>
+    <% end %>
   </div>
   <div class="assigned_to_id editable story_field" fieldtype="select" style="display: none;" fieldname="assigned_to_id" fieldlabel="<%=l(:field_assigned_to)%>">
     <div class="t"><%= assignee_name_or_empty(story) %></div>
@@ -48,7 +50,7 @@
     <div class="helper">
 	  <select class="status_id helper" id="status_id_<%= story_html_id_or_empty(story) %>_options">
 	    <option value="<%= story.status.id %>" class="<%= (story.status.is_closed? ?  l(:label_closed_issues) + ' ' : "") %>"><%= h story.status.name %></option>
-	    <%- IssueStatus.new_statuses_allowed(story.status, @roles, story.tracker, story.project.workspace_id).each do |status| %>
+	    <%- IssueStatus.new_statuses_allowed(story.status, @roles, story.tracker).each do |status| %>
 	    <option value="<%= status.id %>" class="<%= (status.is_closed? ?  l(:label_closed_issues) + ' ' : "") %>"><%= h status.name %></option>
 	    <%- end %>
 	  </select>

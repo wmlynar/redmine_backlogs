@@ -166,6 +166,12 @@
     <label class="inline"><%= radio_button_tag("settings[scrum_stats_menu_position]", 'application', Backlogs.setting[:scrum_stats_menu_position] == 'application') %><%= l(:backlogs_scrum_stats_menu_application) %></label>
     <label class="inline"><%= radio_button_tag("settings[scrum_stats_menu_position]", 'none', Backlogs.setting[:scrum_stats_menu_position] == 'none') %><%= l(:backlogs_scrum_stats_menu_none) %></label>
   </p>
+
+  <p>
+    <%= label_tag("settings_use_remaining_hours", l(:backlogs_use_remaining_hours)) %>
+    <%= check_box_tag("settings[use_remaining_hours]", 'enabled',
+                      Backlogs.setting[:use_remaining_hours]) %>
+  </p>
 </fieldset>
 
 <fieldset>

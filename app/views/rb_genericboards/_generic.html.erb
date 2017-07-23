@@ -56,7 +56,7 @@
           <div class="v"><%= el.priority_id %></div>
         </div>
       <% end %>
-      <% if User.current.allowed_to?(:update_remaining_hours, @project) %>
+      <% if User.current.allowed_to?(:update_remaining_hours, @project) && Backlogs.settings[:use_remaining_hours] %>
         <div class="remaining_hours editable" fieldname="remaining_hours" fieldlabel="<%=l(:field_remaining_hours)%>"><%= remaining_hours_or_empty(el) %></div>
       <% end %>
       <% if User.current.allowed_to?(:log_time, @project) && @settings[:timelog_from_taskboard]=='enabled'  %>

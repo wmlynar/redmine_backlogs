@@ -73,7 +73,8 @@ Redmine::Plugin.register :redmine_backlogs do
                          :use_one_product_backlog   => nil,
                          :always_allow_time_fields  => nil,
                          :show_sprint_as_roadmap    => 'enabled',
-                         :hide_roadmap              => nil
+                         :hide_roadmap              => nil,
+                         :use_remaining_hours       => 'enabled'
                        },
            :partial => 'backlogs/settings'
 
