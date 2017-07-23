@@ -129,7 +129,7 @@ module Backlogs
           end
 
           if self.is_story?
-            if Backlogs.setting[:estimated_hours_per_point].to_f > 0 && self.story_points > 0
+            if Backlogs.setting[:estimated_hours_per_point].to_f > 0 && self.story_points? && self.story_points > 0
               self.estimated_hours = Backlogs.setting[:estimated_hours_per_point].to_f * self.story_points
             end
           end

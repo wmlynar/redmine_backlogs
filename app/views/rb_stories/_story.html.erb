@@ -1,6 +1,6 @@
 <li class="model story fff-wrapper <%= mark_if_closed(story) %> tracker<%= story ? story.tracker_id : '' %>" id="<%= story_html_id_or_empty(story) %>">
   <%- story_color = nil %>
-  <%- if User.current.backlogs_preference[:show_backlog_story_color] == '1' && story.assigned_to.present? %>
+  <%- if User.current.backlogs_preference[:show_backlog_story_color] == '1' && story.assigned_to.present? && story.assigned_to.is_a?(User) %>
 	  <%- story_color = story.assigned_to.backlogs_preference[:task_color] %>
   <%- end %>
   <%- show_assigned_to_full = User.current.backlogs_preference[:show_assigned_to_full] == '1' %>
@@ -38,7 +38,7 @@
 	        <%- if story_color %>
            		<span class="assigned_to_color" style="background-color: <%= story_color %>; border-color: <%= story_color %>;">
            <%- end %>
-           <%= story.assigned_to.lastname[0]%>. <%= story.assigned_to.firstname[0]%>.
+           <%= story.assigned_to.firstname[0]%>. <%= story.assigned_to.lastname[0]%>.
            <%- if story_color %>
 				</span>
 		   <%- end %>
