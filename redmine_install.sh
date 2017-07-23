@@ -192,6 +192,7 @@ fi
 if [ "$DB_TO_RESTORE" = "" ]; then
   export story_trackers=Story
   export task_tracker=Task
+  export epic_trackers=Epic
 else
   if [ "$DBTYPE" = "mysql2" ] || [ "$DBTYPE" = "mysql" ]; then
     mysqladmin -f -u root -p$DBROOTPW drop $DBNAME

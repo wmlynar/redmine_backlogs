@@ -90,14 +90,14 @@
   </li>
 <% end %>
 </ul>
-<% if @completed_versions.present? %>
+<% if @completed_sprints.present? %>
 <p>
-  <%= link_to_function l(:label_completed_versions), 
+  <%= link_to_function l(:label_completed_sprints), 
                        '$("#toggle-completed-versions").toggleClass("collapsed"); $("#completed-versions").toggle()',
                        :id => 'toggle-completed-versions', :class => 'collapsible collapsed' %>
   <ul id = "completed-versions" style = "display:none;">
-    <% @completed_versions.each do |version| %>
-      <li><%= link_to_version version %></li>
+    <% @completed_sprints.each do |sprint| %>
+      <li><%= link_to_sprint sprint %></li>
     <% end %>  
   </ul>
 </p>

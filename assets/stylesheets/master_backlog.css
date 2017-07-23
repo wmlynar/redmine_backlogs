@@ -749,13 +749,21 @@ ul li { vertical-align: bottom; } /* close IE7 gap between list items */
 	margin-left: 72px;
 }
 */
+#backlogs_container .story .assigned_to_full,
+#backlogs_container .story .assigned_to_short {
+	display: inline;
+}
 
 #backlogs_container .backlogs-panel-inner .model.story .assigned_to_color {
     border: 2px solid;
     border-radius: 6px;
     margin-left: 2px;
+    display: inline;
 }
-
+#backlogs_container .story .assigned_to_color.bar{
+    position: relative;
+    top: 6px;
+}
 #backlogs_container .sprint .story_points .points,
 #backlogs_container .sprint .story_points .label {
 	display: inline

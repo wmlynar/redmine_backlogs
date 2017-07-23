@@ -280,3 +280,4 @@ en:
   backlogs_use_remaining_hours: "Use remaining hours"
   backlogs_estimated_hours_per_point: "Estimated hours per story point"
   backlogs_estimated_hours_per_point_explanation: "If not empty or zero, the estimated hours will be populated with the amount of story points multiplied by this value."
+  label_completed_sprints: "Completed sprints"
