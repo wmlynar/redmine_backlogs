@@ -740,6 +740,22 @@ ul li { vertical-align: bottom; } /* close IE7 gap between list items */
 	font-style: italic;
 }
 
+/*
+#backlogs_container .backlogs-panel-inner .model.story .fff-left {
+	width: 72px;
+}
+
+#backlogs_container .backlogs-panel-inner .model.story .fff-middle {
+	margin-left: 72px;
+}
+*/
+
+#backlogs_container .backlogs-panel-inner .model.story .assigned_to_color {
+    border: 2px solid;
+    border-radius: 6px;
+    margin-left: 2px;
+}
+
 #backlogs_container .sprint .story_points .points,
 #backlogs_container .sprint .story_points .label {
 	display: inline
