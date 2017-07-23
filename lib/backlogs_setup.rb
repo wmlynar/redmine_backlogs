@@ -131,7 +131,7 @@ module Backlogs
     [false, true].each{|creator|
       [false, true].each{|assignee|
         tracker.issue_statuses.each {|status|
-          status.new_statuses_allowed_to(roles, tracker, project.workspace_id, creator, assignee).each{|s|
+          status.new_statuses_allowed_to(roles, tracker, creator, assignee).each{|s|
             return true
           }
         }
