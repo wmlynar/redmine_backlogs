@@ -185,6 +185,13 @@
   </p>
 
   <p>
+    <%= label_tag("settings_estimated_hours_per_point", l(:backlogs_estimated_hours_per_point)) %>
+    <%= text_field_tag("settings[estimated_hours_per_point]",
+                       Backlogs.setting[:estimated_hours_per_point]) %>
+    <em class="info"><%= l(:backlogs_estimated_hours_per_point_explanation) %></em>
+  </p>
+
+  <p>
     <%= label_tag("settings_story_points_are_integer", l(:backlogs_story_points_are_integer)) %>
     <%= check_box_tag("settings[story_points_are_integer]", 'enabled',
         Backlogs.setting[:story_points_are_integer]) %>

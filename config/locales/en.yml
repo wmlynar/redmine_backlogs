@@ -278,3 +278,5 @@ en:
   sprint_release_relation: "The default release for stories linked to this sprint"
   sprint_story_points: "The maximum amount of story point that should fit into this sprint"
   backlogs_use_remaining_hours: "Use remaining hours"
+  backlogs_estimated_hours_per_point: "Estimated hours per story point"
+  backlogs_estimated_hours_per_point_explanation: "If not empty or zero, the estimated hours will be populated with the amount of story points multiplied by this value."

@@ -128,6 +128,12 @@ module Backlogs
             self.release = self.parent.release if (self.parent && self.parent.is_feature?)
           end
 
+          if self.is_story?
+            if Backlogs.setting[:estimated_hours_per_point].to_f > 0 && self.story_points > 0
+              self.estimated_hours = Backlogs.setting[:estimated_hours_per_point].to_f * self.story_points
+            end
+          end
+
           if (self.is_task? || self.story)
             if Backlogs.setting[:scaled_agile_enabled]
               self.rbteam_id = self.parent.rbteam_id unless self.parent.blank?

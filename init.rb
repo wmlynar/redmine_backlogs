@@ -74,7 +74,8 @@ Redmine::Plugin.register :redmine_backlogs do
                          :always_allow_time_fields  => nil,
                          :show_sprint_as_roadmap    => 'enabled',
                          :hide_roadmap              => nil,
-                         :use_remaining_hours       => 'enabled'
+                         :use_remaining_hours       => 'enabled',
+                         :estimated_hours_per_point => 0.0
                        },
            :partial => 'backlogs/settings'
 
